@@ -16,31 +16,6 @@ from .process import UPID, Process, async
 
 logger = logging.getLogger(__name__)
 
-class Scheduler(object):
-    def registered(self, driver, framework_id, masterInfo): pass
-    def reregistered(self, driver, masterInfo): pass
-    def disconnected(self, driver): pass
-    def frameworkMessage(self, driver, slave_id, executor_id, message): pass
-    def resourceOffers(self, driver, offers): pass
-    def offerRescinded(self, driver, offer_id): pass
-    def statusUpdate(self, driver, status): pass
-    def executorLost(self, driver, executor_id, slave_id, status): pass
-    def slaveLost(self, driver, slave_id): pass
-    def error(self, driver, message): pass
-
-class SchedulerDriver(object):
-    def start(self): pass
-    def join(self): pass
-    def run(self): pass
-    def abort(self): pass
-    def stop(self, failover=False): pass
-    def reviveOffers(self): pass
-    def requestResources(self, requests): pass
-    def declineOffer(self, offerId, filters=None): pass
-    def launchTasks(self, offerId, tasks, filters=None): pass
-    def killTask(self, taskId): pass
-    def sendFrameworkMessage(self, executorId, slaveId, data): pass
-
 
 class MesosSchedulerDriver(Process):
     def __init__(self, sched, framework, master_uri):

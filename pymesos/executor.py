@@ -2,30 +2,12 @@ import os
 import sys
 import time
 
-from mesos.interface.mesos_pb2 import FrameworkID, ExecutorID
+from mesos.interface import ExecutorDriver, mesos_pb2
 
 from .messages_pb2 import RegisterExecutorMessage, \
     ExecutorToFrameworkMessage, StatusUpdateMessage
 from .process import UPID, Process, async
 
-class Executor(object):
-    #def disconnected(self, driver): pass
-    #def error(self, driver, message): pass
-    def registered(self, driver, executrInfo, frameworkInfo, slaveInfo): pass
-    def launchTask(self, driver, task): pass
-    def killTask(self, driver, taskId): pass
-    def frameworkMessage(self, driver, message): pass
-    def shutdown(self, driver): pass
-
-
-class ExecutorDriver(object):
-    def start(self): pass
-    def join(self): pass
-    def run(self): pass
-    def abort(self): pass
-    def stop(self): pass
-    def sendStatusUpdate(self, update): pass
-    def sendFrameworkMessage(self, data): pass
 
 class MesosExecutorDriver(Process, ExecutorDriver):
     def __init__(self, executor):
@@ -37,9 +19,9 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         slave_pid = env.get('MESOS_SLAVE_PID')
         assert slave_pid, 'expecting MESOS_SLAVE_PID in environment'
         self.slave = UPID(slave_pid)
-        self.framework_id = FrameworkID()
+        self.framework_id = mesos_pb2.FrameworkID()
         self.framework_id.value = env.get('MESOS_FRAMEWORK_ID')
-        self.executor_id = ExecutorID()
+        self.executor_id = mesos_pb2.ExecutorID()
         self.executor_id.value = env.get('MESOS_EXECUTOR_ID')
         self.workDirectory = env.get('MESOS_DIRECTORY')
 
