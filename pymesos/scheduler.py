@@ -179,7 +179,7 @@ class MesosSchedulerDriver(Process):
 
         msg = LaunchTasksMessage()
         msg.framework_id.MergeFrom(self.framework_id)
-        msg.offer_id.MergeFrom(offer_id)
+        msg.offer_ids.add().MergeFrom(offer_id)
         msg.filters.MergeFrom(filters)
         for task in tasks:
             msg.tasks.add().MergeFrom(task)
@@ -194,7 +194,7 @@ class MesosSchedulerDriver(Process):
             return
         msg = LaunchTasksMessage()
         msg.framework_id.MergeFrom(self.framework_id)
-        msg.offer_id.MergeFrom(offer_id)
+        msg.offer_ids.add().MergeFrom(offer_id)
         if filters:
              msg.filters.MergeFrom(filters)
         self.send(self.master, msg)
