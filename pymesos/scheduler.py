@@ -9,7 +9,8 @@ from .messages_pb2 import (
     RegisterFrameworkMessage, ReregisterFrameworkMessage,
     DeactivateFrameworkMessage, UnregisterFrameworkMessage,
     ResourceRequestMessage, ReviveOffersMessage, LaunchTasksMessage, KillTaskMessage,
-    StatusUpdate, StatusUpdateAcknowledgementMessage, FrameworkToExecutorMessage
+    StatusUpdate, StatusUpdateAcknowledgementMessage, FrameworkToExecutorMessage,
+    ReconcileTasksMessage
 )
 from .process import UPID, Process, async
 
@@ -162,6 +163,16 @@ class MesosSchedulerDriver(Process):
             return
         msg = ReviveOffersMessage()
         msg.framework_id.MergeFrom(self.framework_id)
+        self.send(self.master, msg)
+
+    @async
+    def reconcileTasks(self, statuses=None):
+        if not self.connected:
+            return
+        msg = ReconcileTasksMessage()
+        msg.framework_id.MergeFrom(self.framework_id)
+        if statuses is not None:
+            msg.statuses = statuses
         self.send(self.master, msg)
 
     def launchTasks(self, offer_id, tasks, filters):
