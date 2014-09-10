@@ -7,7 +7,8 @@ from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 
-import mesos_pb2
+from mesos.interface import mesos_pb2
+
 
 DESCRIPTOR = descriptor.FileDescriptor(
   name='messages.proto',
@@ -2438,5 +2439,6 @@ class Archive(message.Message):
   DESCRIPTOR = _ARCHIVE
 
   # @@protoc_insertion_point(class_scope:mesos.internal.Archive)
+
 
 # @@protoc_insertion_point(module_scope)

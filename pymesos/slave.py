@@ -5,11 +5,12 @@ import socket
 import threading
 import signal
 
-from process import UPID, Process
-from launcher import Launcher
+from mesos.interace.mesos_pb2 import *
 
-from mesos_pb2 import *
-from messages_pb2 import *
+from .messages_pb2 import *
+from .process import UPID, Process
+from .launcher import Launcher
+
 
 logger = logging.getLogger(__name__)
 

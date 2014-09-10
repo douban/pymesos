@@ -1,2 +1,2 @@
-from .scheduler import Scheduler, MesosSchedulerDriver
-from .executor import Executor, MesosExecutorDriver
+from .scheduler import MesosSchedulerDriver
+from .executor import MesosExecutorDriver

@@ -1,17 +1,18 @@
-import os, sys
 import time
-import getpass
 import logging
 import struct
 import socket
 
-from process import UPID, Process, async
+from mesos.interface.mesos_pb2 import TASK_LOST, MasterInfo
 
-from mesos_pb2 import TASK_LOST, MasterInfo
-from messages_pb2 import (RegisterFrameworkMessage, ReregisterFrameworkMessage,
-        DeactivateFrameworkMessage, UnregisterFrameworkMessage,
-        ResourceRequestMessage, ReviveOffersMessage, LaunchTasksMessage, KillTaskMessage,
-        StatusUpdate, StatusUpdateAcknowledgementMessage, FrameworkToExecutorMessage)
+from .messages_pb2 import (
+    RegisterFrameworkMessage, ReregisterFrameworkMessage,
+    DeactivateFrameworkMessage, UnregisterFrameworkMessage,
+    ResourceRequestMessage, ReviveOffersMessage, LaunchTasksMessage, KillTaskMessage,
+    StatusUpdate, StatusUpdateAcknowledgementMessage, FrameworkToExecutorMessage
+)
+from .process import UPID, Process, async
+
 
 logger = logging.getLogger(__name__)
 

@@ -65,7 +65,7 @@ class Launcher(object):
             logger.error("failed to swith to user %s: %s", self.user, e)
 
 def main():
-    from mesos_pb2 import FrameworkID, ExecutorID, CommandInfo
+    from mesos.interace.mesos_pb2 import FrameworkID, ExecutorID, CommandInfo
     fid = FrameworkID()
     fid.value = os.environ.get('MESOS_FRAMEWORK_ID', 'fid')
     eid = ExecutorID()

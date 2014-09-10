@@ -1,10 +1,12 @@
-import os, sys
+import os
+import sys
 import time
 
-from process import UPID, Process, async
+from mesos.interface.mesos_pb2 import FrameworkID, ExecutorID
 
-from mesos_pb2 import FrameworkID, ExecutorID
-from messages_pb2 import RegisterExecutorMessage, ExecutorToFrameworkMessage, StatusUpdateMessage
+from .messages_pb2 import RegisterExecutorMessage, \
+    ExecutorToFrameworkMessage, StatusUpdateMessage
+from .process import UPID, Process, async
 
 class Executor(object):
     #def disconnected(self, driver): pass

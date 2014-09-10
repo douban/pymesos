@@ -1,4 +1,3 @@
-import sys, os
 import socket
 import time
 import threading
@@ -6,8 +5,8 @@ import logging
 import Queue
 import select
 
-from mesos_pb2 import *
-from messages_pb2 import *
+from mesos.interface.mesos_pb2 import *
+from .messages_pb2 import *
 
 logger = logging.getLogger(__name__)
 
