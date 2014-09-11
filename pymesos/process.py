@@ -143,7 +143,7 @@ class Process(UPID):
         self.listen_sock.close()
 
     def stop(self):
-        self.abort()
+        Process.abort(self)
         self.join()
         for addr in self.conn_pool:
             self.conn_pool[addr].close()
