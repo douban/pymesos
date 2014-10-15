@@ -133,14 +133,14 @@ class MesosSchedulerDriver(Process):
 
     def abort(self):
         if self.connected:
-            msg = UnregisterFrameworkMessage()
+            msg = DeactivateFrameworkMessage()
             msg.framework_id.MergeFrom(self.framework_id)
             self.send(self.master, msg)
         Process.abort(self)
 
     def stop(self, failover=False):
         if self.connected and not failover:
-            msg = DeactivateFrameworkMessage()
+            msg = UnregisterFrameworkMessage()
             msg.framework_id.MergeFrom(self.framework_id)
             self.send(self.master, msg)
         if self.detector:
