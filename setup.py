@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+version = '0.0.2'
+
 setup(
     name='pymesos',
-    version='0.0.1',
+    version=version,
     description="A pure python implementation of Mesos scheduler and executor",
     packages=find_packages(),
     install_requires=['mesos.interface'],
@@ -16,5 +18,5 @@ setup(
     author="Zhongbo Tian",
     author_email="tianzhongbo@douban.com",
     url="https://github.com/douban/pymesos",
-    download_url = 'https://github.com/douban/pymesos/archive/0.0.1.tar.gz',
+    download_url = 'https://github.com/douban/pymesos/archive/%s.tar.gz' % version,
 )
