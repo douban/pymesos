@@ -97,18 +97,23 @@ class MesosSchedulerDriver(Process):
         self.sched.offerRescinded(self, offer_id)
 
     def onStatusUpdateMessage(self, update, pid=''):
+        if self.sender.addr != self.master.addr:
+            logger.warning("ignore status update message from %s instead of leader %s", self.sender, self.master)
+            return
+
         assert self.framework_id == update.framework_id
 
-        if pid and not pid.endswith('0.0.0.0:0'):
+        self.sched.statusUpdate(self, update.status)
+        
+        if not self.aborted and self.sender.addr and pid:
             reply = StatusUpdateAcknowledgementMessage()
             reply.framework_id.MergeFrom(self.framework_id)
             reply.slave_id.MergeFrom(update.slave_id)
             reply.task_id.MergeFrom(update.status.task_id)
             reply.uuid = update.uuid
-            try: self.send(UPID(pid), reply)
+            try: self.send(self.master, reply)
             except IOError: pass
 
-        self.sched.statusUpdate(self, update.status)
 
     def onLostSlaveMessage(self, slave_id):
         self.sched.slaveLost(self, slave_id)
