@@ -41,23 +41,23 @@ class MesosSchedulerDriver(Process):
             info = MasterInfo()
             info.ParseFromString(data)
             ip = socket.inet_ntoa(struct.pack('<I', info.ip))
-            self.master = UPID('master@%s:%s' % (ip, info.port))
+            master = UPID('master@%s:%s' % (ip, info.port))
         except:
-            self.master = UPID(data)
+            master = UPID(data)
 
         self.connected = False
-        self.register()
+        self.register(master)
 
     @async # called by detector
     def onNoMasterDetectedMessage(self):
         self.connected = False
         self.master = None
 
-    def register(self):
+    def register(self, master):
         if self.connected or self.aborted:
             return
 
-        if self.master:
+        if master:
             if not self.framework_id.value:
                 msg = RegisterFrameworkMessage()
                 msg.framework.MergeFrom(self.framework)
@@ -65,27 +65,29 @@ class MesosSchedulerDriver(Process):
                 msg = ReregisterFrameworkMessage()
                 msg.framework.MergeFrom(self.framework)
                 msg.failover = True
-            self.send(self.master, msg)
+            self.send(master, msg)
 
-        self.delay(2, self.register)
+        self.delay(2, lambda:self.register(master))
 
     def onFrameworkRegisteredMessage(self, framework_id, master_info):
         self.framework_id = framework_id
         self.framework.id.MergeFrom(framework_id)
         self.connected = True
+        self.master = UPID('master@%s:%s' % (socket.inet_ntoa(struct.pack('<I', master_info.ip)), master_info.port))
         self.link(self.master, self.onDisconnected)
         self.sched.registered(self, framework_id, master_info)
 
     def onFrameworkReregisteredMessage(self, framework_id, master_info):
         assert self.framework_id == framework_id
         self.connected = True
+        self.master = UPID('master@%s:%s' % (socket.inet_ntoa(struct.pack('<I', master_info.ip)), master_info.port))
         self.link(self.master, self.onDisconnected)
         self.sched.reregistered(self, master_info)
 
     def onDisconnected(self):
         self.connected = False
         logger.warning("disconnected from master")
-        self.delay(5, self.register)
+        self.delay(5, lambda:self.register(self.master))
 
     def onResourceOffersMessage(self, offers, pids):
         for offer, pid in zip(offers, pids):
