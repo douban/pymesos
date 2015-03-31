@@ -124,7 +124,7 @@ class MesosSchedulerDriver(Process):
         self.sched.frameworkMessage(self, executor_id, slave_id, data)
 
     def onFrameworkErrorMessage(self, message, code=0):
-        self.sched.error(self, code, message)
+        self.sched.error(self, message)
 
     def start(self):
         Process.start(self)
