@@ -5,7 +5,7 @@ import socket
 import threading
 import signal
 
-from mesos.interace.mesos_pb2 import *
+from mesos.interface.mesos_pb2 import *
 
 from .messages_pb2 import *
 from .process import UPID, Process
