@@ -69,8 +69,7 @@ class Process(UPID):
                 func(*args, **kw)
                 #logger.debug("run job %s comeplete", func.__name__)
             except Exception, e:
-                logger.error("error while call %s (tried %d times)", func, tried)
-                import traceback; traceback.print_exc()
+                logger.exception("error while call %s (tried %d times)", func, tried)
                 if tried < 4:
                     self.jobs.put((t + 3 ** tried, tried + 1, func, args, kw))
 
