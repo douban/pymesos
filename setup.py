@@ -7,7 +7,7 @@ setup(
     version=version,
     description="A pure python implementation of Mesos scheduler and executor",
     packages=find_packages(),
-    install_requires=['mesos.interface'],
+    install_requires=['mesos.interface==0.22.0'],
     platforms=['POSIX'],
     classifiers=[
         'Intended Audience :: Developers',
