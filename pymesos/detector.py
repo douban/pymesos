@@ -21,6 +21,7 @@ class MasterDetector(object):
         self.masterSeq = None
 
     def choose(self, children):
+        children = [child for child in children if child != 'log_replicas']
         if not children:
             self.agent.onNoMasterDetectedMessage()
             return True
