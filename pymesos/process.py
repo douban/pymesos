@@ -147,9 +147,9 @@ class Process(UPID):
 
     def stop(self):
         Process.abort(self)
-        if threading.current_thread() != self.accept_t:
-            logger.debug("join ioloop thread.")
-            self.accept_t.join()
+        assert (threading.current_thread() != self.accept_t), "Can't call stop in accept_t thread."
+        logger.debug("join ioloop thread.")
+        self.accept_t.join()
         if threading.current_thread() != self.delay_t:
             logger.debug("join runjob thread..")
             self.delay_t.join()
