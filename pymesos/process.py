@@ -73,6 +73,10 @@ class Process(UPID):
                 if tried < 4:
                     self.jobs.put((t + 3 ** tried, tried + 1, func, args, kw))
 
+        for addr in self.conn_pool:
+            self.conn_pool[addr].close()
+        self.conn_pool.clear()
+
     @async
     def link(self, upid, callback):
         self._get_conn(upid.addr)
@@ -144,13 +148,10 @@ class Process(UPID):
     def stop(self):
         Process.abort(self)
         self.join()
-        for addr in self.conn_pool:
-            self.conn_pool[addr].close()
-        self.conn_pool.clear()
 
     def join(self):
-        self.delay_t.join()
-        return self.accept_t.join()
+        self.accept_t.join()
+        return self.delay_t.join()
 
     def run(self):
         self.start()
