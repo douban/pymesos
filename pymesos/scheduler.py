@@ -126,6 +126,10 @@ class MesosSchedulerDriver(Process):
     def onFrameworkErrorMessage(self, message, code=0):
         self.sched.error(self, message)
 
+    def onExitedExecutorMessage(self, slave_id, framework_id, executor_id, status):
+        logger.warning("Executor %s exited with status %s.", executor_id.value, status)
+        self.sched.executorLost(self, executor_id, slave_id, status)
+
     def start(self):
         Process.start(self)
         uri = self.master_uri
