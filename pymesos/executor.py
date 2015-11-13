@@ -47,7 +47,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         if not self.local:
             sys.exit(0)
         else:
-            self.stop()
+            self.abort()
 
     def onStatusUpdateAcknowledgementMessage(self, slave_id, framework_id, task_id, uuid):
         pass
