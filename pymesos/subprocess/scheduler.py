@@ -15,6 +15,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 CONFIG = {}
 FOREVER = 0xFFFFFFFF
+_TYPE_SIGNAL, = range(1)
 
 
 class ProcScheduler(Scheduler):
@@ -75,6 +76,11 @@ class ProcScheduler(Scheduler):
         f.refuse_seconds = seconds
         return f
 
+    def __repr__(self):
+        return "%s[%s]: %s" % (
+            self.__class__.__name__,
+            os.getpid(), ' '.join(sys.argv))
+
     def registered(self, driver, framework_id, master_info):
         with self._lock:
             logger.info('Framework registered with id=%s, master=%s' % (
@@ -124,6 +130,19 @@ class ProcScheduler(Scheduler):
                                 'filter_time=%s' % (
                                     offer, seconds))
 
+    def _call_finished(self, proc_id, success, message, data, slave_id=None):
+        with self._lock:
+            proc = self.procs_launched.pop(proc_id)
+            if slave_id is not None:
+                if slave_id in self.slave_to_proc:
+                    self.slave_to_proc[slave_id].remove(proc_id)
+            else:
+                for slave_id, procs in self.slave_to_proc.iteritems():
+                    if proc_id in procs:
+                        procs.remove(proc_id)
+
+            proc._finished(success, message, data)
+
     def statusUpdate(self, driver, update):
         with self._lock:
             proc_id = int(update.task_id.value)
@@ -139,14 +158,11 @@ class ProcScheduler(Scheduler):
                 proc._started()
 
             elif update.state >= mesos_pb2.TASK_FINISHED:
-                proc = self.procs_launched.pop(proc_id)
-                if update.slave_id.value in self.slave_to_proc:
-                    self.slave_to_proc[update.slave_id.value].remove(proc_id)
-
+                slave_id = update.slave_id.value
                 success = (update.state == mesos_pb2.TASK_FINISHED)
                 message = update.message
                 data = update.data and pickle.loads(update.data)
-                proc._finished(success, message, data)
+                self._call_finished(proc_id, success, message, data, slave_id)
                 driver.reviveOffers()
 
     def offerRescinded(self, driver, offer_id):
@@ -155,13 +171,33 @@ class ProcScheduler(Scheduler):
                 logger.info('Revive offers for pending procs')
                 driver.reviveOffers()
 
+    def slaveLost(self, driver, slave_id):
+        with self._lock:
+            for proc_id in self.slave_to_proc.pop(slave_id, []):
+                self._call_finished(
+                    proc_id, False, 'Slave lost', None, slave_id)
+
+    def error(self, driver, message):
+        with self._lock:
+            for proc in self.procs_pending.values():
+                self._call_finished(proc.id, False, 'Stopped', None)
+
+            for proc in self.procs_launched.values():
+                self._call_finished(proc.id, False, 'Stopped', None)
+
+        self.stop()
+
     def start(self):
         self.driver.start()
 
     def stop(self):
+        assert not self.driver.aborted
         self.driver.stop()
 
     def submit(self, proc):
+        if self.driver.aborted:
+            raise RuntimeError('driver already aborted')
+
         with self._lock:
             if proc.id not in self.procs_pending:
                 logger.info('Try submit proc, id=%s', (proc.id,))
@@ -171,3 +207,34 @@ class ProcScheduler(Scheduler):
                     self.driver.reviveOffers()
             else:
                 raise ValueError('Proc with same id already submitted')
+
+    def cancel(self, proc):
+        if self.driver.aborted:
+            raise RuntimeError('driver already aborted')
+
+        with self._lock:
+            if proc.id in self.procs_pending:
+                del self.procs_pending[proc.id]
+            elif proc.id in self.procs_launched:
+                del self.procs_launched[proc.id]
+                self.driver.killTask(mesos_pb2.TaskID(value=proc.id))
+
+            for slave_id, procs in self.slave_to_proc.items():
+                procs.pop(proc.id)
+                if not procs:
+                    del self.slave_to_proc[slave_id]
+
+    def send_data(self, pid, type, data):
+        if self.driver.aborted:
+            raise RuntimeError('driver already aborted')
+
+        msg = pickle.dumps((pid, type, data))
+        for slave_id, procs in self.slave_to_proc.iteritems():
+            if pid in procs:
+                self.driver.sendFrameworkMessage(
+                    self.executor.executor_id,
+                    mesos_pb2.SlaveID(value=slave_id),
+                    msg)
+                return
+
+        raise RuntimeError('Cannot find slave for pid %s' % (pid,))

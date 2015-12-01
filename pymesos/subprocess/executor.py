@@ -6,9 +6,10 @@ import socket
 import logging
 import traceback
 import subprocess
-from pymesos import MesosExecutorDriver
 from mesos.interface import mesos_pb2, Executor
 from threading import Condition
+from pymesos import MesosExecutorDriver
+from .scheduler import _TYPE_SIGNAL
 try:
     import cPickle as pickle
 except ImportError:
@@ -24,6 +25,12 @@ class ProcExecutor(Executor):
         self.pid_to_proc = {}
         self.cond = Condition()
 
+    def registered(self, driver, executor_info, framework_info, slave_info):
+        self.slave_id = slave_info.id
+
+    def reregistered(self, driver, slave_info):
+        self.slave_id = slave_info.id
+
     def abort(self):
         Executor.abort(self)
         self.cond.notify()
@@ -31,6 +38,8 @@ class ProcExecutor(Executor):
     def reply_status(self, driver, proc_id, status, message='', data=tuple()):
         update = mesos_pb2.TaskStatus()
         update.task_id.value = str(proc_id)
+        update.slave_id.MergeFrom(self.slave_id)
+        update.timestamp = time.time()
         update.state = status
         update.timestamp = time.time()
         if message:
@@ -53,11 +62,9 @@ class ProcExecutor(Executor):
         hostname = params['hostname']
 
         for i, key in enumerate(['stdin', 'stdout', 'stderr']):
-            s = socket.socket()
+            kw[key] = s = socket.socket()
             logger.info('Connect %s:%s for %s' % (hostname, handlers[i], key))
             s.connect((hostname, handlers[i]))
-            kw[key] = s.makefile()
-            s.close()
 
         preexec_fn = kw.pop('preexec_fn', None)
         kw.pop('close_fds', None)
@@ -85,8 +92,9 @@ class ProcExecutor(Executor):
             logger.exception('Exec failed')
             return
         finally:
-            for key in ['stdin', 'stdout', 'stderr']:
-                kw[key].close()
+            kw['stdin'].close()
+            kw['stdout'].close()
+            kw['stderr'].close()
 
         with self.cond:
             self.procs[proc_id] = p
@@ -153,6 +161,21 @@ class ProcExecutor(Executor):
             self.procs.clear()
 
         driver.join()
+
+    def frameworkMessage(self, driver, msg):
+        pid, type, data = pickle.loads(msg)
+        logger.info('Recv framework message pid:%s, type:%s, data:%s',
+                    pid, type, data)
+
+        with self.cond:
+            if pid not in self.procs:
+                logger.error('Cannot find pid:%s to send message', pid)
+                return
+
+            p = self.procs[pid]
+            if type == _TYPE_SIGNAL:
+                sig = int(data)
+                p.send_signal(sig)
 
 
 if __name__ == '__main__':
