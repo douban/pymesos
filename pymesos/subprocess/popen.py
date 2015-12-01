@@ -3,10 +3,11 @@ import sys
 import atexit
 import select
 import socket
+import signal
 import logging
 from threading import RLock, Thread, Condition
 from subprocess import PIPE, STDOUT
-from .scheduler import ProcScheduler, CONFIG
+from .scheduler import ProcScheduler, CONFIG, _TYPE_SIGNAL
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class Redirector(object):
         self._readers = {}
         self._writers = {}
         self._proc_fds = {}
+        self._proc_callback = {}
         self._lock = RLock()
         self._wakeup_fd = wfd
         self._aborted = False
@@ -38,6 +40,10 @@ class Redirector(object):
         self._proc_fds[pid].remove(fd)
         if not self._proc_fds[pid]:
             del self._proc_fds[pid]
+            callback = self._proc_callback.pop(pid, None)
+            if callback:
+                callback()
+
         fd.close()
         f.close()
 
@@ -54,7 +60,7 @@ class Redirector(object):
                 to_write = self._readers.keys()
 
             readable, writeable, _ = select.select(to_read, to_write, [])
-            logger.info('selected: %s, %s', readable, writeable)
+            logger.debug('selected: %s, %s', readable, writeable)
             with self._lock:
                 for fd in readable:
                     if fd in self._listeners:
@@ -71,7 +77,7 @@ class Redirector(object):
 
                     elif fd in self._writers:
                         f, pid = self._writers[fd]
-                        ret = select.select([f], [], [], 0)
+                        ret = select.select([], [f], [], 0)
                         if not ret[1]:
                             continue
 
@@ -154,8 +160,11 @@ class Redirector(object):
 
         self._wakeup()
 
-    def register(self, pid, stdin, stdout, stderr):
-        self._proc_fds[pid] = set()
+    def register(self, pid, stdin, stdout, stderr, callback=None):
+        with self._lock:
+            self._proc_fds[pid] = set()
+            self._proc_callback[pid] = callback
+
         return (self._register(pid, stdin, readonly=True),
                 self._register(pid, stdout),
                 self._register(pid, stderr))
@@ -207,10 +216,12 @@ class Popen(object):
         self.mem = mem or float(CONFIG.get('default_mem', 1024.0))
         self.pid = None
         self.returncode = None
+        self._returncode = None
         self._a = a
         self._kw = kw
         self._exc = None
         self._state = _STARTING
+        self._io_waiting = True
         self._cond = Condition()
 
         self._prepare_handlers(stdin, stdout, stderr)
@@ -218,7 +229,7 @@ class Popen(object):
         with self._cond:
             self._cond.wait(_STARTING_TIMEOUT)
             if self._state == _STARTING:
-                self._kill()
+                self.cancel()
                 raise RuntimeError('Too long to start!')
 
         if self._exc:
@@ -283,11 +294,26 @@ class Popen(object):
             else:
                 _err = _dup_file(sys.stderr, 'wb', 0)
 
-        self._handlers = cls._redirector.register(self.id, _in, _out, _err)
+        self._handlers = cls._redirector.register(
+            self.id, _in, _out, _err, self._io_complete)
+
+    def _io_complete(self):
+        with self._cond:
+            self._io_waiting = False
+            self._cond.notify()
 
     def _kill(self):
         cls = self.__class__
         cls._redirector.unregister(self.id)
+
+    def __repr__(self):
+        args = self._a[0]
+        if isinstance(args, basestring):
+            cmd = args
+        else:
+            cmd = ' '.join(args)
+
+        return '%s: %s' % (self.__class__.__name__, cmd)
 
     @property
     def params(self):
@@ -307,34 +333,40 @@ class Popen(object):
             self._cond.notify()
 
     def _finished(self, success, message, data):
-        logger.info('Success:%s message:%s', success, message)
-        if data:
-            self.returncode, self._exc = data
-        elif not success:
-            self.returncode = UNKNOWN_ERROR
-            self._exc = RuntimeError(message)
+        logger.info('Sucess:%s message:%s', success, message)
+        if success:
+            self._returncode, self._exc = data
         else:
-            self.returncode = 0
-
-        if self.stdin and not self.stdin.closed:
-            self.stdin.close()
-
-        if self.stdout and not self.stdout.closed:
-            self.stdout.close()
-
-        if self.stderr and not self.stderr.closed:
-            self.stderr.close()
+            self._returncode, self._exc = data or (
+                UNKNOWN_ERROR, None)
+            self._kill()
 
         with self._cond:
             self._state = _STOPPED
             self._cond.notify()
 
     def poll(self):
-        return self.returncode
+        with self._cond:
+            if self._state == _STOPPED and not self._io_waiting:
+                if self.stdin and not self.stdin.closed:
+                    self.stdin.close()
+                    self.stdin = None
+
+                if self.stdout and not self.stdout.closed:
+                    self.stdout.close()
+                    self.stdout = None
+
+                if self.stderr and not self.stderr.closed:
+                    self.stderr.close()
+                    self.stderr = None
+
+                self.returncode = self._returncode
+
+            return self.returncode
 
     def wait(self):
         with self._cond:
-            while self._state != _STOPPED:
+            while self.poll() is None:
                 self._cond.wait()
 
         return self.returncode
@@ -376,17 +408,25 @@ class Popen(object):
                         err += self.stdout.read(BUFFER_SIZE)
 
             with self._cond:
-                if self._state != _STOPPED and can_wait:
-                    self._cond.wait(0.1)
+                if self.poll() is None:
+                    if can_wait:
+                        self._cond.wait(0.1)
 
-                if self._state == _STOPPED:
-                    if self.stdin and not self.stdin.closed:
-                        self.stdin.close()
-
-                    if self.stdout and not self.stdout.closed:
-                        self.stdout.close()
-
-                    if self.stderr and not self.stderr.closed:
-                        self.stderr.close()
-
+                else:
                     return (out, err)
+
+    def send_signal(self, signal):
+        cls = self.__class__
+        cls._scheduler.send_data(self.id, _TYPE_SIGNAL, signal)
+
+    def terminate(self):
+        self.send_signal(signal.SIGTERM)
+
+    def kill(self):
+        self.send_signal(signal.SIGKILL)
+
+    def cancel(self):
+        cls = self.__class__
+        cls._scheduler.cancel(self)
+        self._kill()
+        self.returncode = UNKNOWN_ERROR
