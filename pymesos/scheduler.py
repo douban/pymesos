@@ -38,6 +38,7 @@ class MesosSchedulerDriver(Process):
 
     @async # called by detector
     def onNewMasterDetectedMessage(self, data):
+        master = None
         try:
             parsed = json.loads(data)
             if parsed and "address" in parsed:
