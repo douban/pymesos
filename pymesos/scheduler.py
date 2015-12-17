@@ -1,3 +1,4 @@
+import json
 import time
 import logging
 import struct
@@ -37,13 +38,25 @@ class MesosSchedulerDriver(Process):
 
     @async # called by detector
     def onNewMasterDetectedMessage(self, data):
+        master = None
         try:
-            info = MasterInfo()
-            info.ParseFromString(data)
-            ip = socket.inet_ntoa(struct.pack('<I', info.ip))
-            master = UPID('master@%s:%s' % (ip, info.port))
-        except:
-            master = UPID(data)
+            parsed = json.loads(data)
+            if parsed and "address" in parsed:
+                ip = parsed["address"].get("ip")
+                port = parsed["address"].get("port")
+                if ip and port:
+                    master = UPID("master@%s:%s" % (ip, port))
+        except ValueError as parse_error:
+            logger.debug("No JSON content, probably connecting "
+                         "to older Mesos version. Reason: %s", parse_error)
+        if not master:
+            try:
+                info = MasterInfo()
+                info.ParseFromString(data)
+                ip = socket.inet_ntoa(struct.pack('<I', info.ip))
+                master = UPID('master@%s:%s' % (ip, info.port))
+            except:
+                master = UPID(data)
 
         self.connected = False
         self.register(master)
