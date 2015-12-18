@@ -217,7 +217,7 @@ class ProcScheduler(Scheduler):
                 del self.procs_pending[proc.id]
             elif proc.id in self.procs_launched:
                 del self.procs_launched[proc.id]
-                self.driver.killTask(mesos_pb2.TaskID(value=proc.id))
+                self.driver.killTask(mesos_pb2.TaskID(value=str(proc.id)))
 
             for slave_id, procs in self.slave_to_proc.items():
                 procs.pop(proc.id)

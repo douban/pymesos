@@ -1,5 +1,7 @@
+import os
 import json
 import time
+import uuid
 import logging
 import struct
 import socket
@@ -125,7 +127,7 @@ class MesosSchedulerDriver(Process):
             reply.framework_id.MergeFrom(self.framework_id)
             reply.slave_id.MergeFrom(update.slave_id)
             reply.task_id.MergeFrom(update.status.task_id)
-            reply.uuid = update.uuid
+            reply.uuid = update.status.uuid
             try: self.send(self.master, reply)
             except IOError: pass
 
@@ -208,8 +210,9 @@ class MesosSchedulerDriver(Process):
                 update.slave_id.MergeFrom(task.slave_id)
                 update.status.state = TASK_LOST
                 update.status.message = 'Master disconnected' if not self.connected else "invalid offer_id"
+                update.status.uuid = uuid.uuid4().bytes
                 update.timestamp = time.time()
-                update.uuid = ''
+                update.uuid = update.status.uuid
                 self.onStatusUpdateMessage(update)
             return
 

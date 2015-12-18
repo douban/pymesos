@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import uuid
 
 from mesos.interface import ExecutorDriver, mesos_pb2
 
@@ -71,11 +72,14 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
     @async
     def sendStatusUpdate(self, status):
+        if hasattr(status, 'uuid'):
+            status.uuid = uuid.uuid4().bytes
+
         msg = StatusUpdateMessage()
         msg.update.framework_id.MergeFrom(self.framework_id)
         msg.update.executor_id.MergeFrom(self.executor_id)
         msg.update.slave_id.MergeFrom(self.slave_id)
         msg.update.status.MergeFrom(status)
         msg.update.timestamp = time.time()
-        msg.update.uuid = os.urandom(16)
+        msg.update.uuid = status.uuid
         return self.send(self.slave, msg)
