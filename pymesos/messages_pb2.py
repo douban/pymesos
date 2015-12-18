@@ -8,13 +8,13 @@ from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 
-from mesos.interface import mesos_pb2
+import mesos.interface.mesos_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='messages.proto',
   package='mesos.internal',
-  serialized_pb='\n\x0emessages.proto\x12\x0emesos.internal\x1a\x0bmesos.proto\"\x92\x02\n\x04Task\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x1e\n\x07task_id\x18\x02 \x02(\x0b\x32\r.mesos.TaskID\x12(\n\x0c\x66ramework_id\x18\x03 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x04 \x01(\x0b\x32\x11.mesos.ExecutorID\x12 \n\x08slave_id\x18\x05 \x02(\x0b\x32\x0e.mesos.SlaveID\x12\x1f\n\x05state\x18\x06 \x02(\x0e\x32\x10.mesos.TaskState\x12\"\n\tresources\x18\x07 \x03(\x0b\x32\x0f.mesos.Resource\x12#\n\x08statuses\x18\x08 \x03(\x0b\x32\x11.mesos.TaskStatus\"+\n\x08RoleInfo\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\x06weight\x18\x02 \x01(\x01:\x01\x31\"\xc6\x01\n\x0cStatusUpdate\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x02 \x01(\x0b\x32\x11.mesos.ExecutorID\x12 \n\x08slave_id\x18\x03 \x01(\x0b\x32\x0e.mesos.SlaveID\x12!\n\x06status\x18\x04 \x02(\x0b\x32\x11.mesos.TaskStatus\x12\x11\n\ttimestamp\x18\x05 \x02(\x01\x12\x0c\n\x04uuid\x18\x06 \x02(\x0c\"\xa4\x01\n\x12StatusUpdateRecord\x12\x35\n\x04type\x18\x01 \x02(\x0e\x32\'.mesos.internal.StatusUpdateRecord.Type\x12,\n\x06update\x18\x02 \x01(\x0b\x32\x1c.mesos.internal.StatusUpdate\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\x1b\n\x04Type\x12\n\n\x06UPDATE\x10\x00\x12\x07\n\x03\x41\x43K\x10\x01\"&\n\x16SubmitSchedulerRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\"\'\n\x17SubmitSchedulerResponse\x12\x0c\n\x04okay\x18\x01 \x02(\x08\"\x9e\x01\n\x1a\x45xecutorToFrameworkMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0c\n\x04\x64\x61ta\x18\x04 \x02(\x0c\"\x9e\x01\n\x1a\x46rameworkToExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0c\n\x04\x64\x61ta\x18\x04 \x02(\x0c\"C\n\x18RegisterFrameworkMessage\x12\'\n\tframework\x18\x01 \x02(\x0b\x32\x14.mesos.FrameworkInfo\"W\n\x1aReregisterFrameworkMessage\x12\'\n\tframework\x18\x02 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x10\n\x08\x66\x61ilover\x18\x03 \x02(\x08\"n\n\x1a\x46rameworkRegisteredMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0bmaster_info\x18\x02 \x02(\x0b\x32\x11.mesos.MasterInfo\"p\n\x1c\x46rameworkReregisteredMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0bmaster_info\x18\x02 \x02(\x0b\x32\x11.mesos.MasterInfo\"F\n\x1aUnregisterFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"F\n\x1a\x44\x65\x61\x63tivateFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"d\n\x16ResourceRequestMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12 \n\x08requests\x18\x02 \x03(\x0b\x32\x0e.mesos.Request\"C\n\x15ResourceOffersMessage\x12\x1c\n\x06offers\x18\x01 \x03(\x0b\x32\x0c.mesos.Offer\x12\x0c\n\x04pids\x18\x02 \x03(\t\"\xc4\x01\n\x12LaunchTasksMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12 \n\x08offer_id\x18\x02 \x01(\x0b\x32\x0e.mesos.OfferID\x12\x1e\n\x05tasks\x18\x03 \x03(\x0b\x32\x0f.mesos.TaskInfo\x12\x1f\n\x07\x66ilters\x18\x05 \x02(\x0b\x32\x0e.mesos.Filters\x12!\n\toffer_ids\x18\x06 \x03(\x0b\x32\x0e.mesos.OfferID\"?\n\x1bRescindResourceOfferMessage\x12 \n\x08offer_id\x18\x01 \x02(\x0b\x32\x0e.mesos.OfferID\"?\n\x13ReviveOffersMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"\x8f\x01\n\x0eRunTaskMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\'\n\tframework\x18\x02 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x0b\n\x03pid\x18\x03 \x02(\t\x12\x1d\n\x04task\x18\x04 \x02(\x0b\x32\x0f.mesos.TaskInfo\"[\n\x0fKillTaskMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x07task_id\x18\x02 \x02(\x0b\x32\r.mesos.TaskID\"P\n\x13StatusUpdateMessage\x12,\n\x06update\x18\x01 \x02(\x0b\x32\x1c.mesos.internal.StatusUpdate\x12\x0b\n\x03pid\x18\x02 \x01(\t\"\x9e\x01\n\"StatusUpdateAcknowledgementMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x07task_id\x18\x03 \x02(\x0b\x32\r.mesos.TaskID\x12\x0c\n\x04uuid\x18\x04 \x02(\x0c\"4\n\x10LostSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"f\n\x15ReconcileTasksMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12#\n\x08statuses\x18\x02 \x03(\x0b\x32\x11.mesos.TaskStatus\"(\n\x15\x46rameworkErrorMessage\x12\x0f\n\x07message\x18\x02 \x02(\t\"7\n\x14RegisterSlaveMessage\x12\x1f\n\x05slave\x18\x01 \x02(\x0b\x32\x10.mesos.SlaveInfo\"\xee\x01\n\x16ReregisterSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12\x1f\n\x05slave\x18\x02 \x02(\x0b\x32\x10.mesos.SlaveInfo\x12+\n\x0e\x65xecutor_infos\x18\x04 \x03(\x0b\x32\x13.mesos.ExecutorInfo\x12#\n\x05tasks\x18\x03 \x03(\x0b\x32\x14.mesos.internal.Task\x12?\n\x14\x63ompleted_frameworks\x18\x05 \x03(\x0b\x32!.mesos.internal.Archive.Framework\":\n\x16SlaveRegisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"<\n\x18SlaveReregisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\":\n\x16UnregisterSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"4\n\x10HeartbeatMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"D\n\x18ShutdownFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"\x19\n\x17ShutdownExecutorMessage\"O\n\x16UpdateFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x0b\n\x03pid\x18\x02 \x02(\t\"k\n\x17RegisterExecutorMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x02 \x02(\x0b\x32\x11.mesos.ExecutorID\"\xe7\x01\n\x19\x45xecutorRegisteredMessage\x12*\n\rexecutor_info\x18\x02 \x02(\x0b\x32\x13.mesos.ExecutorInfo\x12(\n\x0c\x66ramework_id\x18\x03 \x02(\x0b\x32\x12.mesos.FrameworkID\x12,\n\x0e\x66ramework_info\x18\x04 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12 \n\x08slave_id\x18\x05 \x02(\x0b\x32\x0e.mesos.SlaveID\x12$\n\nslave_info\x18\x06 \x02(\x0b\x32\x10.mesos.SlaveInfo\"e\n\x1b\x45xecutorReregisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12$\n\nslave_info\x18\x02 \x02(\x0b\x32\x10.mesos.SlaveInfo\"\x9b\x01\n\x15\x45xitedExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0e\n\x06status\x18\x04 \x02(\x05\"<\n\x18ReconnectExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"\xbc\x01\n\x19ReregisterExecutorMessage\x12&\n\x0b\x65xecutor_id\x18\x01 \x02(\x0b\x32\x11.mesos.ExecutorID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x05tasks\x18\x03 \x03(\x0b\x32\x0f.mesos.TaskInfo\x12-\n\x07updates\x18\x04 \x03(\x0b\x32\x1c.mesos.internal.StatusUpdate\"\'\n\x14RegisterProjdMessage\x12\x0f\n\x07project\x18\x01 \x02(\t\"$\n\x11ProjdReadyMessage\x12\x0f\n\x07project\x18\x01 \x02(\t\"D\n\x1bProjdUpdateResourcesMessage\x12%\n\nparameters\x18\x01 \x01(\x0b\x32\x11.mesos.Parameters\"C\n\x17\x46rameworkExpiredMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"\"\n\x0fShutdownMessage\x12\x0f\n\x07message\x18\x01 \x01(\t\"\"\n\x13\x41uthenticateMessage\x12\x0b\n\x03pid\x18\x01 \x02(\t\"5\n\x1f\x41uthenticationMechanismsMessage\x12\x12\n\nmechanisms\x18\x01 \x03(\t\"=\n\x1a\x41uthenticationStartMessage\x12\x11\n\tmechanism\x18\x01 \x02(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\t\")\n\x19\x41uthenticationStepMessage\x12\x0c\n\x04\x64\x61ta\x18\x01 \x02(\x0c\" \n\x1e\x41uthenticationCompletedMessage\"\x1d\n\x1b\x41uthenticationFailedMessage\"+\n\x1a\x41uthenticationErrorMessage\x12\r\n\x05\x65rror\x18\x01 \x01(\t\"\xad\x01\n\x07\x41rchive\x12\x35\n\nframeworks\x18\x01 \x03(\x0b\x32!.mesos.internal.Archive.Framework\x1ak\n\tFramework\x12,\n\x0e\x66ramework_info\x18\x01 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x0b\n\x03pid\x18\x02 \x01(\t\x12#\n\x05tasks\x18\x03 \x03(\x0b\x32\x14.mesos.internal.Task')
+  serialized_pb='\n\x0emessages.proto\x12\x0emesos.internal\x1a\x1bmesos/interface/mesos.proto\"\xa5\x03\n\x04Task\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x1e\n\x07task_id\x18\x02 \x02(\x0b\x32\r.mesos.TaskID\x12(\n\x0c\x66ramework_id\x18\x03 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x04 \x01(\x0b\x32\x11.mesos.ExecutorID\x12 \n\x08slave_id\x18\x05 \x02(\x0b\x32\x0e.mesos.SlaveID\x12\x1f\n\x05state\x18\x06 \x02(\x0e\x32\x10.mesos.TaskState\x12\"\n\tresources\x18\x07 \x03(\x0b\x32\x0f.mesos.Resource\x12#\n\x08statuses\x18\x08 \x03(\x0b\x32\x11.mesos.TaskStatus\x12-\n\x13status_update_state\x18\t \x01(\x0e\x32\x10.mesos.TaskState\x12\x1a\n\x12status_update_uuid\x18\n \x01(\x0c\x12\x1d\n\x06labels\x18\x0b \x01(\x0b\x32\r.mesos.Labels\x12\'\n\tdiscovery\x18\x0c \x01(\x0b\x32\x14.mesos.DiscoveryInfo\"\xee\x01\n\x0cStatusUpdate\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x02 \x01(\x0b\x32\x11.mesos.ExecutorID\x12 \n\x08slave_id\x18\x03 \x01(\x0b\x32\x0e.mesos.SlaveID\x12!\n\x06status\x18\x04 \x02(\x0b\x32\x11.mesos.TaskStatus\x12\x11\n\ttimestamp\x18\x05 \x02(\x01\x12\x0c\n\x04uuid\x18\x06 \x01(\x0c\x12&\n\x0clatest_state\x18\x07 \x01(\x0e\x32\x10.mesos.TaskState\"\xa4\x01\n\x12StatusUpdateRecord\x12\x35\n\x04type\x18\x01 \x02(\x0e\x32\'.mesos.internal.StatusUpdateRecord.Type\x12,\n\x06update\x18\x02 \x01(\x0b\x32\x1c.mesos.internal.StatusUpdate\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\x1b\n\x04Type\x12\n\n\x06UPDATE\x10\x00\x12\x07\n\x03\x41\x43K\x10\x01\"&\n\x16SubmitSchedulerRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\"\'\n\x17SubmitSchedulerResponse\x12\x0c\n\x04okay\x18\x01 \x02(\x08\"\x9e\x01\n\x1a\x45xecutorToFrameworkMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0c\n\x04\x64\x61ta\x18\x04 \x02(\x0c\"\x9e\x01\n\x1a\x46rameworkToExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0c\n\x04\x64\x61ta\x18\x04 \x02(\x0c\"C\n\x18RegisterFrameworkMessage\x12\'\n\tframework\x18\x01 \x02(\x0b\x32\x14.mesos.FrameworkInfo\"W\n\x1aReregisterFrameworkMessage\x12\'\n\tframework\x18\x02 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x10\n\x08\x66\x61ilover\x18\x03 \x02(\x08\"n\n\x1a\x46rameworkRegisteredMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0bmaster_info\x18\x02 \x02(\x0b\x32\x11.mesos.MasterInfo\"p\n\x1c\x46rameworkReregisteredMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0bmaster_info\x18\x02 \x02(\x0b\x32\x11.mesos.MasterInfo\"F\n\x1aUnregisterFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"F\n\x1a\x44\x65\x61\x63tivateFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"d\n\x16ResourceRequestMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12 \n\x08requests\x18\x02 \x03(\x0b\x32\x0e.mesos.Request\"p\n\x15ResourceOffersMessage\x12\x1c\n\x06offers\x18\x01 \x03(\x0b\x32\x0c.mesos.Offer\x12\x0c\n\x04pids\x18\x02 \x03(\t\x12+\n\x0einverse_offers\x18\x03 \x03(\x0b\x32\x13.mesos.InverseOffer\"\xa2\x01\n\x12LaunchTasksMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x05tasks\x18\x03 \x03(\x0b\x32\x0f.mesos.TaskInfo\x12\x1f\n\x07\x66ilters\x18\x05 \x02(\x0b\x32\x0e.mesos.Filters\x12!\n\toffer_ids\x18\x06 \x03(\x0b\x32\x0e.mesos.OfferID\"?\n\x1bRescindResourceOfferMessage\x12 \n\x08offer_id\x18\x01 \x02(\x0b\x32\x0e.mesos.OfferID\"?\n\x13ReviveOffersMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"\x93\x01\n\x0eRunTaskMessage\x12,\n\x0c\x66ramework_id\x18\x01 \x01(\x0b\x32\x12.mesos.FrameworkIDB\x02\x18\x01\x12\'\n\tframework\x18\x02 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x1d\n\x04task\x18\x04 \x02(\x0b\x32\x0f.mesos.TaskInfo\x12\x0b\n\x03pid\x18\x03 \x01(\t\"[\n\x0fKillTaskMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x07task_id\x18\x02 \x02(\x0b\x32\r.mesos.TaskID\"P\n\x13StatusUpdateMessage\x12,\n\x06update\x18\x01 \x02(\x0b\x32\x1c.mesos.internal.StatusUpdate\x12\x0b\n\x03pid\x18\x02 \x01(\t\"\x9e\x01\n\"StatusUpdateAcknowledgementMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x07task_id\x18\x03 \x02(\x0b\x32\r.mesos.TaskID\x12\x0c\n\x04uuid\x18\x04 \x02(\x0c\"4\n\x10LostSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"f\n\x15ReconcileTasksMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12#\n\x08statuses\x18\x02 \x03(\x0b\x32\x11.mesos.TaskStatus\"(\n\x15\x46rameworkErrorMessage\x12\x0f\n\x07message\x18\x02 \x02(\t\"y\n\x14RegisterSlaveMessage\x12\x1f\n\x05slave\x18\x01 \x02(\x0b\x32\x10.mesos.SlaveInfo\x12/\n\x16\x63heckpointed_resources\x18\x03 \x03(\x0b\x32\x0f.mesos.Resource\x12\x0f\n\x07version\x18\x02 \x01(\t\"\x8e\x02\n\x16ReregisterSlaveMessage\x12\x1f\n\x05slave\x18\x02 \x02(\x0b\x32\x10.mesos.SlaveInfo\x12/\n\x16\x63heckpointed_resources\x18\x07 \x03(\x0b\x32\x0f.mesos.Resource\x12+\n\x0e\x65xecutor_infos\x18\x04 \x03(\x0b\x32\x13.mesos.ExecutorInfo\x12#\n\x05tasks\x18\x03 \x03(\x0b\x32\x14.mesos.internal.Task\x12?\n\x14\x63ompleted_frameworks\x18\x05 \x03(\x0b\x32!.mesos.internal.Archive.Framework\x12\x0f\n\x07version\x18\x06 \x01(\t\"u\n\x16SlaveRegisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12\x39\n\nconnection\x18\x02 \x01(\x0b\x32%.mesos.internal.MasterSlaveConnection\"\xb7\x01\n\x18SlaveReregisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12>\n\x0freconciliations\x18\x02 \x03(\x0b\x32%.mesos.internal.ReconcileTasksMessage\x12\x39\n\nconnection\x18\x03 \x01(\x0b\x32%.mesos.internal.MasterSlaveConnection\":\n\x16UnregisterSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\";\n\x15MasterSlaveConnection\x12\"\n\x1atotal_ping_timeout_seconds\x18\x01 \x01(\x01\"%\n\x10PingSlaveMessage\x12\x11\n\tconnected\x18\x01 \x02(\x08\"\x12\n\x10PongSlaveMessage\"D\n\x18ShutdownFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\"k\n\x17ShutdownExecutorMessage\x12&\n\x0b\x65xecutor_id\x18\x01 \x01(\x0b\x32\x11.mesos.ExecutorID\x12(\n\x0c\x66ramework_id\x18\x02 \x01(\x0b\x32\x12.mesos.FrameworkID\"O\n\x16UpdateFrameworkMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x0b\n\x03pid\x18\x02 \x01(\t\"@\n\x1a\x43heckpointResourcesMessage\x12\"\n\tresources\x18\x01 \x03(\x0b\x32\x0f.mesos.Resource\"i\n\x12UpdateSlaveMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12\x31\n\x18oversubscribed_resources\x18\x02 \x03(\x0b\x32\x0f.mesos.Resource\"k\n\x17RegisterExecutorMessage\x12(\n\x0c\x66ramework_id\x18\x01 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x02 \x02(\x0b\x32\x11.mesos.ExecutorID\"\xe7\x01\n\x19\x45xecutorRegisteredMessage\x12*\n\rexecutor_info\x18\x02 \x02(\x0b\x32\x13.mesos.ExecutorInfo\x12(\n\x0c\x66ramework_id\x18\x03 \x02(\x0b\x32\x12.mesos.FrameworkID\x12,\n\x0e\x66ramework_info\x18\x04 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12 \n\x08slave_id\x18\x05 \x02(\x0b\x32\x0e.mesos.SlaveID\x12$\n\nslave_info\x18\x06 \x02(\x0b\x32\x10.mesos.SlaveInfo\"e\n\x1b\x45xecutorReregisteredMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12$\n\nslave_info\x18\x02 \x02(\x0b\x32\x10.mesos.SlaveInfo\"\x9b\x01\n\x15\x45xitedExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12&\n\x0b\x65xecutor_id\x18\x03 \x02(\x0b\x32\x11.mesos.ExecutorID\x12\x0e\n\x06status\x18\x04 \x02(\x05\"<\n\x18ReconnectExecutorMessage\x12 \n\x08slave_id\x18\x01 \x02(\x0b\x32\x0e.mesos.SlaveID\"\xbc\x01\n\x19ReregisterExecutorMessage\x12&\n\x0b\x65xecutor_id\x18\x01 \x02(\x0b\x32\x11.mesos.ExecutorID\x12(\n\x0c\x66ramework_id\x18\x02 \x02(\x0b\x32\x12.mesos.FrameworkID\x12\x1e\n\x05tasks\x18\x03 \x03(\x0b\x32\x0f.mesos.TaskInfo\x12-\n\x07updates\x18\x04 \x03(\x0b\x32\x1c.mesos.internal.StatusUpdate\"\"\n\x0fShutdownMessage\x12\x0f\n\x07message\x18\x01 \x01(\t\"\xad\x01\n\x07\x41rchive\x12\x35\n\nframeworks\x18\x01 \x03(\x0b\x32!.mesos.internal.Archive.Framework\x1ak\n\tFramework\x12,\n\x0e\x66ramework_info\x18\x01 \x02(\x0b\x32\x14.mesos.FrameworkInfo\x12\x0b\n\x03pid\x18\x02 \x01(\t\x12#\n\x05tasks\x18\x03 \x03(\x0b\x32\x14.mesos.internal.Task\"{\n\x10TaskHealthStatus\x12\x1e\n\x07task_id\x18\x01 \x02(\x0b\x32\r.mesos.TaskID\x12\x0f\n\x07healthy\x18\x02 \x02(\x08\x12\x18\n\tkill_task\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1c\n\x14\x63onsecutive_failures\x18\x04 \x01(\x05\"\x1e\n\x0cHookExecuted\x12\x0e\n\x06module\x18\x01 \x01(\t')
 
 
 
@@ -35,8 +35,8 @@ _STATUSUPDATERECORD_TYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=708,
-  serialized_end=735,
+  serialized_start=866,
+  serialized_end=893,
 )
 
 
@@ -103,38 +103,31 @@ _TASK = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=48,
-  serialized_end=322,
-)
-
-
-_ROLEINFO = _descriptor.Descriptor(
-  name='RoleInfo',
-  full_name='mesos.internal.RoleInfo',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='mesos.internal.RoleInfo.name', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      name='status_update_state', full_name='mesos.internal.Task.status_update_state', index=8,
+      number=9, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=6,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='weight', full_name='mesos.internal.RoleInfo.weight', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=True, default_value=1,
+      name='status_update_uuid', full_name='mesos.internal.Task.status_update_uuid', index=9,
+      number=10, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='labels', full_name='mesos.internal.Task.labels', index=10,
+      number=11, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='discovery', full_name='mesos.internal.Task.discovery', index=11,
+      number=12, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -147,8 +140,8 @@ _ROLEINFO = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=324,
-  serialized_end=367,
+  serialized_start=64,
+  serialized_end=485,
 )
 
 
@@ -196,8 +189,15 @@ _STATUSUPDATE = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='uuid', full_name='mesos.internal.StatusUpdate.uuid', index=5,
-      number=6, type=12, cpp_type=9, label=2,
+      number=6, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='latest_state', full_name='mesos.internal.StatusUpdate.latest_state', index=6,
+      number=7, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=6,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -210,8 +210,8 @@ _STATUSUPDATE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=370,
-  serialized_end=568,
+  serialized_start=488,
+  serialized_end=726,
 )
 
 
@@ -253,8 +253,8 @@ _STATUSUPDATERECORD = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=571,
-  serialized_end=735,
+  serialized_start=729,
+  serialized_end=893,
 )
 
 
@@ -281,8 +281,8 @@ _SUBMITSCHEDULERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=737,
-  serialized_end=775,
+  serialized_start=895,
+  serialized_end=933,
 )
 
 
@@ -309,8 +309,8 @@ _SUBMITSCHEDULERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=777,
-  serialized_end=816,
+  serialized_start=935,
+  serialized_end=974,
 )
 
 
@@ -358,8 +358,8 @@ _EXECUTORTOFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=819,
-  serialized_end=977,
+  serialized_start=977,
+  serialized_end=1135,
 )
 
 
@@ -407,8 +407,8 @@ _FRAMEWORKTOEXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=980,
-  serialized_end=1138,
+  serialized_start=1138,
+  serialized_end=1296,
 )
 
 
@@ -435,8 +435,8 @@ _REGISTERFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1140,
-  serialized_end=1207,
+  serialized_start=1298,
+  serialized_end=1365,
 )
 
 
@@ -470,8 +470,8 @@ _REREGISTERFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1209,
-  serialized_end=1296,
+  serialized_start=1367,
+  serialized_end=1454,
 )
 
 
@@ -505,8 +505,8 @@ _FRAMEWORKREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1298,
-  serialized_end=1408,
+  serialized_start=1456,
+  serialized_end=1566,
 )
 
 
@@ -540,8 +540,8 @@ _FRAMEWORKREREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1410,
-  serialized_end=1522,
+  serialized_start=1568,
+  serialized_end=1680,
 )
 
 
@@ -568,8 +568,8 @@ _UNREGISTERFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1524,
-  serialized_end=1594,
+  serialized_start=1682,
+  serialized_end=1752,
 )
 
 
@@ -596,8 +596,8 @@ _DEACTIVATEFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1596,
-  serialized_end=1666,
+  serialized_start=1754,
+  serialized_end=1824,
 )
 
 
@@ -631,8 +631,8 @@ _RESOURCEREQUESTMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1668,
-  serialized_end=1768,
+  serialized_start=1826,
+  serialized_end=1926,
 )
 
 
@@ -657,6 +657,13 @@ _RESOURCEOFFERSMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='inverse_offers', full_name='mesos.internal.ResourceOffersMessage.inverse_offers', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -666,8 +673,8 @@ _RESOURCEOFFERSMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1770,
-  serialized_end=1837,
+  serialized_start=1928,
+  serialized_end=2040,
 )
 
 
@@ -686,28 +693,21 @@ _LAUNCHTASKSMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='offer_id', full_name='mesos.internal.LaunchTasksMessage.offer_id', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='tasks', full_name='mesos.internal.LaunchTasksMessage.tasks', index=2,
+      name='tasks', full_name='mesos.internal.LaunchTasksMessage.tasks', index=1,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='filters', full_name='mesos.internal.LaunchTasksMessage.filters', index=3,
+      name='filters', full_name='mesos.internal.LaunchTasksMessage.filters', index=2,
       number=5, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='offer_ids', full_name='mesos.internal.LaunchTasksMessage.offer_ids', index=4,
+      name='offer_ids', full_name='mesos.internal.LaunchTasksMessage.offer_ids', index=3,
       number=6, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -722,8 +722,8 @@ _LAUNCHTASKSMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1840,
-  serialized_end=2036,
+  serialized_start=2043,
+  serialized_end=2205,
 )
 
 
@@ -750,8 +750,8 @@ _RESCINDRESOURCEOFFERMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2038,
-  serialized_end=2101,
+  serialized_start=2207,
+  serialized_end=2270,
 )
 
 
@@ -778,8 +778,8 @@ _REVIVEOFFERSMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2103,
-  serialized_end=2166,
+  serialized_start=2272,
+  serialized_end=2335,
 )
 
 
@@ -792,11 +792,11 @@ _RUNTASKMESSAGE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='framework_id', full_name='mesos.internal.RunTaskMessage.framework_id', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), '\030\001')),
     _descriptor.FieldDescriptor(
       name='framework', full_name='mesos.internal.RunTaskMessage.framework', index=1,
       number=2, type=11, cpp_type=10, label=2,
@@ -805,16 +805,16 @@ _RUNTASKMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='pid', full_name='mesos.internal.RunTaskMessage.pid', index=2,
-      number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      name='task', full_name='mesos.internal.RunTaskMessage.task', index=2,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='task', full_name='mesos.internal.RunTaskMessage.task', index=3,
-      number=4, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
+      name='pid', full_name='mesos.internal.RunTaskMessage.pid', index=3,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -827,8 +827,8 @@ _RUNTASKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2169,
-  serialized_end=2312,
+  serialized_start=2338,
+  serialized_end=2485,
 )
 
 
@@ -862,8 +862,8 @@ _KILLTASKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2314,
-  serialized_end=2405,
+  serialized_start=2487,
+  serialized_end=2578,
 )
 
 
@@ -897,8 +897,8 @@ _STATUSUPDATEMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2407,
-  serialized_end=2487,
+  serialized_start=2580,
+  serialized_end=2660,
 )
 
 
@@ -946,8 +946,8 @@ _STATUSUPDATEACKNOWLEDGEMENTMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2490,
-  serialized_end=2648,
+  serialized_start=2663,
+  serialized_end=2821,
 )
 
 
@@ -974,8 +974,8 @@ _LOSTSLAVEMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2650,
-  serialized_end=2702,
+  serialized_start=2823,
+  serialized_end=2875,
 )
 
 
@@ -1009,8 +1009,8 @@ _RECONCILETASKSMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2704,
-  serialized_end=2806,
+  serialized_start=2877,
+  serialized_end=2979,
 )
 
 
@@ -1037,8 +1037,8 @@ _FRAMEWORKERRORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2808,
-  serialized_end=2848,
+  serialized_start=2981,
+  serialized_end=3021,
 )
 
 
@@ -1056,6 +1056,20 @@ _REGISTERSLAVEMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='checkpointed_resources', full_name='mesos.internal.RegisterSlaveMessage.checkpointed_resources', index=1,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='version', full_name='mesos.internal.RegisterSlaveMessage.version', index=2,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1065,8 +1079,8 @@ _REGISTERSLAVEMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2850,
-  serialized_end=2905,
+  serialized_start=3023,
+  serialized_end=3144,
 )
 
 
@@ -1078,16 +1092,16 @@ _REREGISTERSLAVEMESSAGE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='slave_id', full_name='mesos.internal.ReregisterSlaveMessage.slave_id', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      name='slave', full_name='mesos.internal.ReregisterSlaveMessage.slave', index=0,
+      number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='slave', full_name='mesos.internal.ReregisterSlaveMessage.slave', index=1,
-      number=2, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
+      name='checkpointed_resources', full_name='mesos.internal.ReregisterSlaveMessage.checkpointed_resources', index=1,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -1112,6 +1126,13 @@ _REREGISTERSLAVEMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='version', full_name='mesos.internal.ReregisterSlaveMessage.version', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1121,8 +1142,8 @@ _REREGISTERSLAVEMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2908,
-  serialized_end=3146,
+  serialized_start=3147,
+  serialized_end=3417,
 )
 
 
@@ -1140,6 +1161,13 @@ _SLAVEREGISTEREDMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='connection', full_name='mesos.internal.SlaveRegisteredMessage.connection', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1149,8 +1177,8 @@ _SLAVEREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3148,
-  serialized_end=3206,
+  serialized_start=3419,
+  serialized_end=3536,
 )
 
 
@@ -1168,6 +1196,20 @@ _SLAVEREREGISTEREDMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='reconciliations', full_name='mesos.internal.SlaveReregisteredMessage.reconciliations', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='connection', full_name='mesos.internal.SlaveReregisteredMessage.connection', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1177,8 +1219,8 @@ _SLAVEREREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3208,
-  serialized_end=3268,
+  serialized_start=3539,
+  serialized_end=3722,
 )
 
 
@@ -1205,22 +1247,22 @@ _UNREGISTERSLAVEMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3270,
-  serialized_end=3328,
+  serialized_start=3724,
+  serialized_end=3782,
 )
 
 
-_HEARTBEATMESSAGE = _descriptor.Descriptor(
-  name='HeartbeatMessage',
-  full_name='mesos.internal.HeartbeatMessage',
+_MASTERSLAVECONNECTION = _descriptor.Descriptor(
+  name='MasterSlaveConnection',
+  full_name='mesos.internal.MasterSlaveConnection',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='slave_id', full_name='mesos.internal.HeartbeatMessage.slave_id', index=0,
-      number=1, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
+      name='total_ping_timeout_seconds', full_name='mesos.internal.MasterSlaveConnection.total_ping_timeout_seconds', index=0,
+      number=1, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -1233,8 +1275,57 @@ _HEARTBEATMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3330,
-  serialized_end=3382,
+  serialized_start=3784,
+  serialized_end=3843,
+)
+
+
+_PINGSLAVEMESSAGE = _descriptor.Descriptor(
+  name='PingSlaveMessage',
+  full_name='mesos.internal.PingSlaveMessage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='connected', full_name='mesos.internal.PingSlaveMessage.connected', index=0,
+      number=1, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=3845,
+  serialized_end=3882,
+)
+
+
+_PONGSLAVEMESSAGE = _descriptor.Descriptor(
+  name='PongSlaveMessage',
+  full_name='mesos.internal.PongSlaveMessage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=3884,
+  serialized_end=3902,
 )
 
 
@@ -1261,8 +1352,8 @@ _SHUTDOWNFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3384,
-  serialized_end=3452,
+  serialized_start=3904,
+  serialized_end=3972,
 )
 
 
@@ -1273,6 +1364,20 @@ _SHUTDOWNEXECUTORMESSAGE = _descriptor.Descriptor(
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
+    _descriptor.FieldDescriptor(
+      name='executor_id', full_name='mesos.internal.ShutdownExecutorMessage.executor_id', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='framework_id', full_name='mesos.internal.ShutdownExecutorMessage.framework_id', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1282,8 +1387,8 @@ _SHUTDOWNEXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3454,
-  serialized_end=3479,
+  serialized_start=3974,
+  serialized_end=4081,
 )
 
 
@@ -1303,7 +1408,7 @@ _UPDATEFRAMEWORKMESSAGE = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='pid', full_name='mesos.internal.UpdateFrameworkMessage.pid', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1317,8 +1422,71 @@ _UPDATEFRAMEWORKMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3481,
-  serialized_end=3560,
+  serialized_start=4083,
+  serialized_end=4162,
+)
+
+
+_CHECKPOINTRESOURCESMESSAGE = _descriptor.Descriptor(
+  name='CheckpointResourcesMessage',
+  full_name='mesos.internal.CheckpointResourcesMessage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='resources', full_name='mesos.internal.CheckpointResourcesMessage.resources', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=4164,
+  serialized_end=4228,
+)
+
+
+_UPDATESLAVEMESSAGE = _descriptor.Descriptor(
+  name='UpdateSlaveMessage',
+  full_name='mesos.internal.UpdateSlaveMessage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='slave_id', full_name='mesos.internal.UpdateSlaveMessage.slave_id', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='oversubscribed_resources', full_name='mesos.internal.UpdateSlaveMessage.oversubscribed_resources', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=4230,
+  serialized_end=4335,
 )
 
 
@@ -1352,8 +1520,8 @@ _REGISTEREXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3562,
-  serialized_end=3669,
+  serialized_start=4337,
+  serialized_end=4444,
 )
 
 
@@ -1408,8 +1576,8 @@ _EXECUTORREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3672,
-  serialized_end=3903,
+  serialized_start=4447,
+  serialized_end=4678,
 )
 
 
@@ -1443,8 +1611,8 @@ _EXECUTORREREGISTEREDMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=3905,
-  serialized_end=4006,
+  serialized_start=4680,
+  serialized_end=4781,
 )
 
 
@@ -1492,8 +1660,8 @@ _EXITEDEXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=4009,
-  serialized_end=4164,
+  serialized_start=4784,
+  serialized_end=4939,
 )
 
 
@@ -1520,8 +1688,8 @@ _RECONNECTEXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=4166,
-  serialized_end=4226,
+  serialized_start=4941,
+  serialized_end=5001,
 )
 
 
@@ -1569,120 +1737,8 @@ _REREGISTEREXECUTORMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=4229,
-  serialized_end=4417,
-)
-
-
-_REGISTERPROJDMESSAGE = _descriptor.Descriptor(
-  name='RegisterProjdMessage',
-  full_name='mesos.internal.RegisterProjdMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='project', full_name='mesos.internal.RegisterProjdMessage.project', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4419,
-  serialized_end=4458,
-)
-
-
-_PROJDREADYMESSAGE = _descriptor.Descriptor(
-  name='ProjdReadyMessage',
-  full_name='mesos.internal.ProjdReadyMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='project', full_name='mesos.internal.ProjdReadyMessage.project', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4460,
-  serialized_end=4496,
-)
-
-
-_PROJDUPDATERESOURCESMESSAGE = _descriptor.Descriptor(
-  name='ProjdUpdateResourcesMessage',
-  full_name='mesos.internal.ProjdUpdateResourcesMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='parameters', full_name='mesos.internal.ProjdUpdateResourcesMessage.parameters', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4498,
-  serialized_end=4566,
-)
-
-
-_FRAMEWORKEXPIREDMESSAGE = _descriptor.Descriptor(
-  name='FrameworkExpiredMessage',
-  full_name='mesos.internal.FrameworkExpiredMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='framework_id', full_name='mesos.internal.FrameworkExpiredMessage.framework_id', index=0,
-      number=1, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4568,
-  serialized_end=4635,
+  serialized_start=5004,
+  serialized_end=5192,
 )
 
 
@@ -1709,197 +1765,8 @@ _SHUTDOWNMESSAGE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=4637,
-  serialized_end=4671,
-)
-
-
-_AUTHENTICATEMESSAGE = _descriptor.Descriptor(
-  name='AuthenticateMessage',
-  full_name='mesos.internal.AuthenticateMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pid', full_name='mesos.internal.AuthenticateMessage.pid', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4673,
-  serialized_end=4707,
-)
-
-
-_AUTHENTICATIONMECHANISMSMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationMechanismsMessage',
-  full_name='mesos.internal.AuthenticationMechanismsMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mechanisms', full_name='mesos.internal.AuthenticationMechanismsMessage.mechanisms', index=0,
-      number=1, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4709,
-  serialized_end=4762,
-)
-
-
-_AUTHENTICATIONSTARTMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationStartMessage',
-  full_name='mesos.internal.AuthenticationStartMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mechanism', full_name='mesos.internal.AuthenticationStartMessage.mechanism', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='mesos.internal.AuthenticationStartMessage.data', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4764,
-  serialized_end=4825,
-)
-
-
-_AUTHENTICATIONSTEPMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationStepMessage',
-  full_name='mesos.internal.AuthenticationStepMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='data', full_name='mesos.internal.AuthenticationStepMessage.data', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4827,
-  serialized_end=4868,
-)
-
-
-_AUTHENTICATIONCOMPLETEDMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationCompletedMessage',
-  full_name='mesos.internal.AuthenticationCompletedMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4870,
-  serialized_end=4902,
-)
-
-
-_AUTHENTICATIONFAILEDMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationFailedMessage',
-  full_name='mesos.internal.AuthenticationFailedMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4904,
-  serialized_end=4933,
-)
-
-
-_AUTHENTICATIONERRORMESSAGE = _descriptor.Descriptor(
-  name='AuthenticationErrorMessage',
-  full_name='mesos.internal.AuthenticationErrorMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='error', full_name='mesos.internal.AuthenticationErrorMessage.error', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=4935,
-  serialized_end=4978,
+  serialized_start=5194,
+  serialized_end=5228,
 )
 
 
@@ -1940,8 +1807,8 @@ _ARCHIVE_FRAMEWORK = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=5047,
-  serialized_end=5154,
+  serialized_start=5297,
+  serialized_end=5404,
 )
 
 _ARCHIVE = _descriptor.Descriptor(
@@ -1967,97 +1834,184 @@ _ARCHIVE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=4981,
-  serialized_end=5154,
+  serialized_start=5231,
+  serialized_end=5404,
 )
 
-_TASK.fields_by_name['task_id'].message_type = mesos_pb2._TASKID
-_TASK.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_TASK.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_TASK.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_TASK.fields_by_name['state'].enum_type = mesos_pb2._TASKSTATE
-_TASK.fields_by_name['resources'].message_type = mesos_pb2._RESOURCE
-_TASK.fields_by_name['statuses'].message_type = mesos_pb2._TASKSTATUS
-_STATUSUPDATE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_STATUSUPDATE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_STATUSUPDATE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_STATUSUPDATE.fields_by_name['status'].message_type = mesos_pb2._TASKSTATUS
+
+_TASKHEALTHSTATUS = _descriptor.Descriptor(
+  name='TaskHealthStatus',
+  full_name='mesos.internal.TaskHealthStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='task_id', full_name='mesos.internal.TaskHealthStatus.task_id', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='healthy', full_name='mesos.internal.TaskHealthStatus.healthy', index=1,
+      number=2, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='kill_task', full_name='mesos.internal.TaskHealthStatus.kill_task', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='consecutive_failures', full_name='mesos.internal.TaskHealthStatus.consecutive_failures', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=5406,
+  serialized_end=5529,
+)
+
+
+_HOOKEXECUTED = _descriptor.Descriptor(
+  name='HookExecuted',
+  full_name='mesos.internal.HookExecuted',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='module', full_name='mesos.internal.HookExecuted.module', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=5531,
+  serialized_end=5561,
+)
+
+_TASK.fields_by_name['task_id'].message_type = mesos.interface.mesos_pb2._TASKID
+_TASK.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_TASK.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_TASK.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_TASK.fields_by_name['state'].enum_type = mesos.interface.mesos_pb2._TASKSTATE
+_TASK.fields_by_name['resources'].message_type = mesos.interface.mesos_pb2._RESOURCE
+_TASK.fields_by_name['statuses'].message_type = mesos.interface.mesos_pb2._TASKSTATUS
+_TASK.fields_by_name['status_update_state'].enum_type = mesos.interface.mesos_pb2._TASKSTATE
+_TASK.fields_by_name['labels'].message_type = mesos.interface.mesos_pb2._LABELS
+_TASK.fields_by_name['discovery'].message_type = mesos.interface.mesos_pb2._DISCOVERYINFO
+_STATUSUPDATE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_STATUSUPDATE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_STATUSUPDATE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_STATUSUPDATE.fields_by_name['status'].message_type = mesos.interface.mesos_pb2._TASKSTATUS
+_STATUSUPDATE.fields_by_name['latest_state'].enum_type = mesos.interface.mesos_pb2._TASKSTATE
 _STATUSUPDATERECORD.fields_by_name['type'].enum_type = _STATUSUPDATERECORD_TYPE
 _STATUSUPDATERECORD.fields_by_name['update'].message_type = _STATUSUPDATE
 _STATUSUPDATERECORD_TYPE.containing_type = _STATUSUPDATERECORD;
-_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_REGISTERFRAMEWORKMESSAGE.fields_by_name['framework'].message_type = mesos_pb2._FRAMEWORKINFO
-_REREGISTERFRAMEWORKMESSAGE.fields_by_name['framework'].message_type = mesos_pb2._FRAMEWORKINFO
-_FRAMEWORKREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_FRAMEWORKREGISTEREDMESSAGE.fields_by_name['master_info'].message_type = mesos_pb2._MASTERINFO
-_FRAMEWORKREREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_FRAMEWORKREREGISTEREDMESSAGE.fields_by_name['master_info'].message_type = mesos_pb2._MASTERINFO
-_UNREGISTERFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_DEACTIVATEFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_RESOURCEREQUESTMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_RESOURCEREQUESTMESSAGE.fields_by_name['requests'].message_type = mesos_pb2._REQUEST
-_RESOURCEOFFERSMESSAGE.fields_by_name['offers'].message_type = mesos_pb2._OFFER
-_LAUNCHTASKSMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_LAUNCHTASKSMESSAGE.fields_by_name['offer_id'].message_type = mesos_pb2._OFFERID
-_LAUNCHTASKSMESSAGE.fields_by_name['tasks'].message_type = mesos_pb2._TASKINFO
-_LAUNCHTASKSMESSAGE.fields_by_name['filters'].message_type = mesos_pb2._FILTERS
-_LAUNCHTASKSMESSAGE.fields_by_name['offer_ids'].message_type = mesos_pb2._OFFERID
-_RESCINDRESOURCEOFFERMESSAGE.fields_by_name['offer_id'].message_type = mesos_pb2._OFFERID
-_REVIVEOFFERSMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_RUNTASKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_RUNTASKMESSAGE.fields_by_name['framework'].message_type = mesos_pb2._FRAMEWORKINFO
-_RUNTASKMESSAGE.fields_by_name['task'].message_type = mesos_pb2._TASKINFO
-_KILLTASKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_KILLTASKMESSAGE.fields_by_name['task_id'].message_type = mesos_pb2._TASKID
+_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_EXECUTORTOFRAMEWORKMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_FRAMEWORKTOEXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_REGISTERFRAMEWORKMESSAGE.fields_by_name['framework'].message_type = mesos.interface.mesos_pb2._FRAMEWORKINFO
+_REREGISTERFRAMEWORKMESSAGE.fields_by_name['framework'].message_type = mesos.interface.mesos_pb2._FRAMEWORKINFO
+_FRAMEWORKREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_FRAMEWORKREGISTEREDMESSAGE.fields_by_name['master_info'].message_type = mesos.interface.mesos_pb2._MASTERINFO
+_FRAMEWORKREREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_FRAMEWORKREREGISTEREDMESSAGE.fields_by_name['master_info'].message_type = mesos.interface.mesos_pb2._MASTERINFO
+_UNREGISTERFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_DEACTIVATEFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_RESOURCEREQUESTMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_RESOURCEREQUESTMESSAGE.fields_by_name['requests'].message_type = mesos.interface.mesos_pb2._REQUEST
+_RESOURCEOFFERSMESSAGE.fields_by_name['offers'].message_type = mesos.interface.mesos_pb2._OFFER
+_RESOURCEOFFERSMESSAGE.fields_by_name['inverse_offers'].message_type = mesos.interface.mesos_pb2._INVERSEOFFER
+_LAUNCHTASKSMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_LAUNCHTASKSMESSAGE.fields_by_name['tasks'].message_type = mesos.interface.mesos_pb2._TASKINFO
+_LAUNCHTASKSMESSAGE.fields_by_name['filters'].message_type = mesos.interface.mesos_pb2._FILTERS
+_LAUNCHTASKSMESSAGE.fields_by_name['offer_ids'].message_type = mesos.interface.mesos_pb2._OFFERID
+_RESCINDRESOURCEOFFERMESSAGE.fields_by_name['offer_id'].message_type = mesos.interface.mesos_pb2._OFFERID
+_REVIVEOFFERSMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_RUNTASKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_RUNTASKMESSAGE.fields_by_name['framework'].message_type = mesos.interface.mesos_pb2._FRAMEWORKINFO
+_RUNTASKMESSAGE.fields_by_name['task'].message_type = mesos.interface.mesos_pb2._TASKINFO
+_KILLTASKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_KILLTASKMESSAGE.fields_by_name['task_id'].message_type = mesos.interface.mesos_pb2._TASKID
 _STATUSUPDATEMESSAGE.fields_by_name['update'].message_type = _STATUSUPDATE
-_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['task_id'].message_type = mesos_pb2._TASKID
-_LOSTSLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_RECONCILETASKSMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_RECONCILETASKSMESSAGE.fields_by_name['statuses'].message_type = mesos_pb2._TASKSTATUS
-_REGISTERSLAVEMESSAGE.fields_by_name['slave'].message_type = mesos_pb2._SLAVEINFO
-_REREGISTERSLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_REREGISTERSLAVEMESSAGE.fields_by_name['slave'].message_type = mesos_pb2._SLAVEINFO
-_REREGISTERSLAVEMESSAGE.fields_by_name['executor_infos'].message_type = mesos_pb2._EXECUTORINFO
+_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_STATUSUPDATEACKNOWLEDGEMENTMESSAGE.fields_by_name['task_id'].message_type = mesos.interface.mesos_pb2._TASKID
+_LOSTSLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_RECONCILETASKSMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_RECONCILETASKSMESSAGE.fields_by_name['statuses'].message_type = mesos.interface.mesos_pb2._TASKSTATUS
+_REGISTERSLAVEMESSAGE.fields_by_name['slave'].message_type = mesos.interface.mesos_pb2._SLAVEINFO
+_REGISTERSLAVEMESSAGE.fields_by_name['checkpointed_resources'].message_type = mesos.interface.mesos_pb2._RESOURCE
+_REREGISTERSLAVEMESSAGE.fields_by_name['slave'].message_type = mesos.interface.mesos_pb2._SLAVEINFO
+_REREGISTERSLAVEMESSAGE.fields_by_name['checkpointed_resources'].message_type = mesos.interface.mesos_pb2._RESOURCE
+_REREGISTERSLAVEMESSAGE.fields_by_name['executor_infos'].message_type = mesos.interface.mesos_pb2._EXECUTORINFO
 _REREGISTERSLAVEMESSAGE.fields_by_name['tasks'].message_type = _TASK
 _REREGISTERSLAVEMESSAGE.fields_by_name['completed_frameworks'].message_type = _ARCHIVE_FRAMEWORK
-_SLAVEREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_SLAVEREREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_UNREGISTERSLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_HEARTBEATMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_SHUTDOWNFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_UPDATEFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_REGISTEREXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_REGISTEREXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_EXECUTORREGISTEREDMESSAGE.fields_by_name['executor_info'].message_type = mesos_pb2._EXECUTORINFO
-_EXECUTORREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_EXECUTORREGISTEREDMESSAGE.fields_by_name['framework_info'].message_type = mesos_pb2._FRAMEWORKINFO
-_EXECUTORREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_EXECUTORREGISTEREDMESSAGE.fields_by_name['slave_info'].message_type = mesos_pb2._SLAVEINFO
-_EXECUTORREREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_EXECUTORREREGISTEREDMESSAGE.fields_by_name['slave_info'].message_type = mesos_pb2._SLAVEINFO
-_EXITEDEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_EXITEDEXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_EXITEDEXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_RECONNECTEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos_pb2._SLAVEID
-_REREGISTEREXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos_pb2._EXECUTORID
-_REREGISTEREXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_REREGISTEREXECUTORMESSAGE.fields_by_name['tasks'].message_type = mesos_pb2._TASKINFO
+_SLAVEREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_SLAVEREGISTEREDMESSAGE.fields_by_name['connection'].message_type = _MASTERSLAVECONNECTION
+_SLAVEREREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_SLAVEREREGISTEREDMESSAGE.fields_by_name['reconciliations'].message_type = _RECONCILETASKSMESSAGE
+_SLAVEREREGISTEREDMESSAGE.fields_by_name['connection'].message_type = _MASTERSLAVECONNECTION
+_UNREGISTERSLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_SHUTDOWNFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_SHUTDOWNEXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_SHUTDOWNEXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_UPDATEFRAMEWORKMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_CHECKPOINTRESOURCESMESSAGE.fields_by_name['resources'].message_type = mesos.interface.mesos_pb2._RESOURCE
+_UPDATESLAVEMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_UPDATESLAVEMESSAGE.fields_by_name['oversubscribed_resources'].message_type = mesos.interface.mesos_pb2._RESOURCE
+_REGISTEREXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_REGISTEREXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_EXECUTORREGISTEREDMESSAGE.fields_by_name['executor_info'].message_type = mesos.interface.mesos_pb2._EXECUTORINFO
+_EXECUTORREGISTEREDMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_EXECUTORREGISTEREDMESSAGE.fields_by_name['framework_info'].message_type = mesos.interface.mesos_pb2._FRAMEWORKINFO
+_EXECUTORREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_EXECUTORREGISTEREDMESSAGE.fields_by_name['slave_info'].message_type = mesos.interface.mesos_pb2._SLAVEINFO
+_EXECUTORREREGISTEREDMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_EXECUTORREREGISTEREDMESSAGE.fields_by_name['slave_info'].message_type = mesos.interface.mesos_pb2._SLAVEINFO
+_EXITEDEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_EXITEDEXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_EXITEDEXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_RECONNECTEXECUTORMESSAGE.fields_by_name['slave_id'].message_type = mesos.interface.mesos_pb2._SLAVEID
+_REREGISTEREXECUTORMESSAGE.fields_by_name['executor_id'].message_type = mesos.interface.mesos_pb2._EXECUTORID
+_REREGISTEREXECUTORMESSAGE.fields_by_name['framework_id'].message_type = mesos.interface.mesos_pb2._FRAMEWORKID
+_REREGISTEREXECUTORMESSAGE.fields_by_name['tasks'].message_type = mesos.interface.mesos_pb2._TASKINFO
 _REREGISTEREXECUTORMESSAGE.fields_by_name['updates'].message_type = _STATUSUPDATE
-_PROJDUPDATERESOURCESMESSAGE.fields_by_name['parameters'].message_type = mesos_pb2._PARAMETERS
-_FRAMEWORKEXPIREDMESSAGE.fields_by_name['framework_id'].message_type = mesos_pb2._FRAMEWORKID
-_ARCHIVE_FRAMEWORK.fields_by_name['framework_info'].message_type = mesos_pb2._FRAMEWORKINFO
+_ARCHIVE_FRAMEWORK.fields_by_name['framework_info'].message_type = mesos.interface.mesos_pb2._FRAMEWORKINFO
 _ARCHIVE_FRAMEWORK.fields_by_name['tasks'].message_type = _TASK
 _ARCHIVE_FRAMEWORK.containing_type = _ARCHIVE;
 _ARCHIVE.fields_by_name['frameworks'].message_type = _ARCHIVE_FRAMEWORK
+_TASKHEALTHSTATUS.fields_by_name['task_id'].message_type = mesos.interface.mesos_pb2._TASKID
 DESCRIPTOR.message_types_by_name['Task'] = _TASK
-DESCRIPTOR.message_types_by_name['RoleInfo'] = _ROLEINFO
 DESCRIPTOR.message_types_by_name['StatusUpdate'] = _STATUSUPDATE
 DESCRIPTOR.message_types_by_name['StatusUpdateRecord'] = _STATUSUPDATERECORD
 DESCRIPTOR.message_types_by_name['SubmitSchedulerRequest'] = _SUBMITSCHEDULERREQUEST
@@ -2087,41 +2041,30 @@ DESCRIPTOR.message_types_by_name['ReregisterSlaveMessage'] = _REREGISTERSLAVEMES
 DESCRIPTOR.message_types_by_name['SlaveRegisteredMessage'] = _SLAVEREGISTEREDMESSAGE
 DESCRIPTOR.message_types_by_name['SlaveReregisteredMessage'] = _SLAVEREREGISTEREDMESSAGE
 DESCRIPTOR.message_types_by_name['UnregisterSlaveMessage'] = _UNREGISTERSLAVEMESSAGE
-DESCRIPTOR.message_types_by_name['HeartbeatMessage'] = _HEARTBEATMESSAGE
+DESCRIPTOR.message_types_by_name['MasterSlaveConnection'] = _MASTERSLAVECONNECTION
+DESCRIPTOR.message_types_by_name['PingSlaveMessage'] = _PINGSLAVEMESSAGE
+DESCRIPTOR.message_types_by_name['PongSlaveMessage'] = _PONGSLAVEMESSAGE
 DESCRIPTOR.message_types_by_name['ShutdownFrameworkMessage'] = _SHUTDOWNFRAMEWORKMESSAGE
 DESCRIPTOR.message_types_by_name['ShutdownExecutorMessage'] = _SHUTDOWNEXECUTORMESSAGE
 DESCRIPTOR.message_types_by_name['UpdateFrameworkMessage'] = _UPDATEFRAMEWORKMESSAGE
+DESCRIPTOR.message_types_by_name['CheckpointResourcesMessage'] = _CHECKPOINTRESOURCESMESSAGE
+DESCRIPTOR.message_types_by_name['UpdateSlaveMessage'] = _UPDATESLAVEMESSAGE
 DESCRIPTOR.message_types_by_name['RegisterExecutorMessage'] = _REGISTEREXECUTORMESSAGE
 DESCRIPTOR.message_types_by_name['ExecutorRegisteredMessage'] = _EXECUTORREGISTEREDMESSAGE
 DESCRIPTOR.message_types_by_name['ExecutorReregisteredMessage'] = _EXECUTORREREGISTEREDMESSAGE
 DESCRIPTOR.message_types_by_name['ExitedExecutorMessage'] = _EXITEDEXECUTORMESSAGE
 DESCRIPTOR.message_types_by_name['ReconnectExecutorMessage'] = _RECONNECTEXECUTORMESSAGE
 DESCRIPTOR.message_types_by_name['ReregisterExecutorMessage'] = _REREGISTEREXECUTORMESSAGE
-DESCRIPTOR.message_types_by_name['RegisterProjdMessage'] = _REGISTERPROJDMESSAGE
-DESCRIPTOR.message_types_by_name['ProjdReadyMessage'] = _PROJDREADYMESSAGE
-DESCRIPTOR.message_types_by_name['ProjdUpdateResourcesMessage'] = _PROJDUPDATERESOURCESMESSAGE
-DESCRIPTOR.message_types_by_name['FrameworkExpiredMessage'] = _FRAMEWORKEXPIREDMESSAGE
 DESCRIPTOR.message_types_by_name['ShutdownMessage'] = _SHUTDOWNMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticateMessage'] = _AUTHENTICATEMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationMechanismsMessage'] = _AUTHENTICATIONMECHANISMSMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationStartMessage'] = _AUTHENTICATIONSTARTMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationStepMessage'] = _AUTHENTICATIONSTEPMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationCompletedMessage'] = _AUTHENTICATIONCOMPLETEDMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationFailedMessage'] = _AUTHENTICATIONFAILEDMESSAGE
-DESCRIPTOR.message_types_by_name['AuthenticationErrorMessage'] = _AUTHENTICATIONERRORMESSAGE
 DESCRIPTOR.message_types_by_name['Archive'] = _ARCHIVE
+DESCRIPTOR.message_types_by_name['TaskHealthStatus'] = _TASKHEALTHSTATUS
+DESCRIPTOR.message_types_by_name['HookExecuted'] = _HOOKEXECUTED
 
 class Task(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _TASK
 
   # @@protoc_insertion_point(class_scope:mesos.internal.Task)
-
-class RoleInfo(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _ROLEINFO
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.RoleInfo)
 
 class StatusUpdate(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -2297,11 +2240,23 @@ class UnregisterSlaveMessage(_message.Message):
 
   # @@protoc_insertion_point(class_scope:mesos.internal.UnregisterSlaveMessage)
 
-class HeartbeatMessage(_message.Message):
+class MasterSlaveConnection(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _HEARTBEATMESSAGE
+  DESCRIPTOR = _MASTERSLAVECONNECTION
 
-  # @@protoc_insertion_point(class_scope:mesos.internal.HeartbeatMessage)
+  # @@protoc_insertion_point(class_scope:mesos.internal.MasterSlaveConnection)
+
+class PingSlaveMessage(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PINGSLAVEMESSAGE
+
+  # @@protoc_insertion_point(class_scope:mesos.internal.PingSlaveMessage)
+
+class PongSlaveMessage(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PONGSLAVEMESSAGE
+
+  # @@protoc_insertion_point(class_scope:mesos.internal.PongSlaveMessage)
 
 class ShutdownFrameworkMessage(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -2320,6 +2275,18 @@ class UpdateFrameworkMessage(_message.Message):
   DESCRIPTOR = _UPDATEFRAMEWORKMESSAGE
 
   # @@protoc_insertion_point(class_scope:mesos.internal.UpdateFrameworkMessage)
+
+class CheckpointResourcesMessage(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _CHECKPOINTRESOURCESMESSAGE
+
+  # @@protoc_insertion_point(class_scope:mesos.internal.CheckpointResourcesMessage)
+
+class UpdateSlaveMessage(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _UPDATESLAVEMESSAGE
+
+  # @@protoc_insertion_point(class_scope:mesos.internal.UpdateSlaveMessage)
 
 class RegisterExecutorMessage(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -2357,77 +2324,11 @@ class ReregisterExecutorMessage(_message.Message):
 
   # @@protoc_insertion_point(class_scope:mesos.internal.ReregisterExecutorMessage)
 
-class RegisterProjdMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _REGISTERPROJDMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.RegisterProjdMessage)
-
-class ProjdReadyMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PROJDREADYMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.ProjdReadyMessage)
-
-class ProjdUpdateResourcesMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PROJDUPDATERESOURCESMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.ProjdUpdateResourcesMessage)
-
-class FrameworkExpiredMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _FRAMEWORKEXPIREDMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.FrameworkExpiredMessage)
-
 class ShutdownMessage(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SHUTDOWNMESSAGE
 
   # @@protoc_insertion_point(class_scope:mesos.internal.ShutdownMessage)
-
-class AuthenticateMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATEMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticateMessage)
-
-class AuthenticationMechanismsMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONMECHANISMSMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationMechanismsMessage)
-
-class AuthenticationStartMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONSTARTMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationStartMessage)
-
-class AuthenticationStepMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONSTEPMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationStepMessage)
-
-class AuthenticationCompletedMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONCOMPLETEDMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationCompletedMessage)
-
-class AuthenticationFailedMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONFAILEDMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationFailedMessage)
-
-class AuthenticationErrorMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _AUTHENTICATIONERRORMESSAGE
-
-  # @@protoc_insertion_point(class_scope:mesos.internal.AuthenticationErrorMessage)
 
 class Archive(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -2441,5 +2342,19 @@ class Archive(_message.Message):
 
   # @@protoc_insertion_point(class_scope:mesos.internal.Archive)
 
+class TaskHealthStatus(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _TASKHEALTHSTATUS
 
+  # @@protoc_insertion_point(class_scope:mesos.internal.TaskHealthStatus)
+
+class HookExecuted(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _HOOKEXECUTED
+
+  # @@protoc_insertion_point(class_scope:mesos.internal.HookExecuted)
+
+
+_RUNTASKMESSAGE.fields_by_name['framework_id'].has_options = True
+_RUNTASKMESSAGE.fields_by_name['framework_id']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), '\030\001')
 # @@protoc_insertion_point(module_scope)
