@@ -119,7 +119,7 @@ class MesosSchedulerDriver(Process):
         assert self.framework_id == update.framework_id
 
         self.sched.statusUpdate(self, update.status)
-        
+
         if not self.aborted and self.sender.addr and pid:
             reply = StatusUpdateAcknowledgementMessage()
             reply.framework_id.MergeFrom(self.framework_id)
@@ -205,6 +205,7 @@ class MesosSchedulerDriver(Process):
                 update = StatusUpdate()
                 update.framework_id.MergeFrom(self.framework_id)
                 update.status.task_id.MergeFrom(task.task_id)
+                update.slave_id.MergeFrom(task.slave_id)
                 update.status.state = TASK_LOST
                 update.status.message = 'Master disconnected' if not self.connected else "invalid offer_id"
                 update.timestamp = time.time()
