@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 CONFIG = {}
 FOREVER = 0xFFFFFFFF
 _TYPE_SIGNAL, = range(1)
+MIN_CPUS = 0.01
+MIN_MEMORY = 32
 
 
 class ProcScheduler(Scheduler):
@@ -43,6 +45,17 @@ class ProcScheduler(Scheduler):
         executor.executor_id.value = 'default'
         executor.command.value = '%s -m %s.executor' % (
             sys.executable, __package__)
+
+        mem = executor.resources.add()
+        mem.name = 'mem'
+        mem.type = mesos_pb2.Value.SCALAR
+        mem.scalar.value = MIN_MEMORY
+
+        cpus = executor.resources.add()
+        cpus.name = 'cpus'
+        cpus.type = mesos_pb2.Value.SCALAR
+        cpus.scalar.value = MIN_CPUS
+
         if 'PYTHONPATH' in os.environ:
             var = executor.command.environment.variables.add()
             var.name = 'PYTHONPATH'
