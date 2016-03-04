@@ -198,20 +198,23 @@ class Process(UPID):
             self.onPing()
             return True
 
-        size = rf.readline()
-        if size:
-            size = int(size, 16)
-            body = rf.read(size+2)[:-2]
-            rf.read(5)  # ending
-        else:
-            body = ''
-
         sname = mname.split('.')[2]
         if sname not in globals():
             logger.error("unknown messages: %s", sname)
             return True
 
         try:
+            if sname == 'ShutdownExecutorMessage':
+                body = ''
+            else:
+                size = rf.readline()
+                if size:
+                    size = int(size, 16)
+                    body = rf.read(size+2)[:-2]
+                    rf.read(5)  # ending
+                else:
+                    body = ''
+
             msg = globals()[sname].FromString(body)
             self.handle(msg)
         except Exception, e:

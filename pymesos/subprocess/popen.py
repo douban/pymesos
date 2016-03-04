@@ -60,7 +60,6 @@ class Redirector(object):
                 to_write = self._readers.keys()
 
             readable, writeable, _ = select.select(to_read, to_write, [])
-            logger.debug('selected: %s, %s', readable, writeable)
             with self._lock:
                 for fd in readable:
                     if fd in self._listeners:
