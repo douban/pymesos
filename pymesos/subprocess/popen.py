@@ -402,9 +402,9 @@ class Popen(object):
 
                 if self.stderr in readable:
                     if err is None:
-                        err = self.stdout.read(BUFFER_SIZE)
+                        err = self.stderr.read(BUFFER_SIZE)
                     else:
-                        err += self.stdout.read(BUFFER_SIZE)
+                        err += self.stderr.read(BUFFER_SIZE)
 
             with self._cond:
                 if self.poll() is None:
