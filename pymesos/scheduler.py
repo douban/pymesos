@@ -123,6 +123,10 @@ class MesosSchedulerDriver(Process):
         self.sched.statusUpdate(self, update.status)
 
         if not self.aborted and self.sender.addr and pid:
+            if not reply.slave_id.value:
+                logger.warning("StatusUpdate without slave id, pid=%s, update=%s", pid, update)
+                return
+
             reply = StatusUpdateAcknowledgementMessage()
             reply.framework_id.MergeFrom(self.framework_id)
             reply.slave_id.MergeFrom(update.slave_id)
