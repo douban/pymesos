@@ -114,19 +114,24 @@ class MesosSchedulerDriver(Process):
         self.sched.offerRescinded(self, offer_id)
 
     def onStatusUpdateMessage(self, update, pid=''):
+        if self.aborted:
+            return
+
         if self.sender.addr != self.master.addr:
             logger.warning("ignore status update message from %s instead of leader %s", self.sender, self.master)
             return
 
         assert self.framework_id == update.framework_id
 
+        if self.sender.addr and pid:
+            update.status.uuid = update.uuid
+        else:
+            update.status.uuid = ''
+
+
         self.sched.statusUpdate(self, update.status)
 
-        if not self.aborted and self.sender.addr and pid:
-            if not reply.slave_id.value:
-                logger.warning("StatusUpdate without slave id, pid=%s, update=%s", pid, update)
-                return
-
+        if not self.aborted and update.uuid and update.slave_id:
             reply = StatusUpdateAcknowledgementMessage()
             reply.framework_id.MergeFrom(self.framework_id)
             reply.slave_id.MergeFrom(update.slave_id)
@@ -214,9 +219,7 @@ class MesosSchedulerDriver(Process):
                 update.slave_id.MergeFrom(task.slave_id)
                 update.status.state = TASK_LOST
                 update.status.message = 'Master disconnected' if not self.connected else "invalid offer_id"
-                update.status.uuid = uuid.uuid4().bytes
                 update.timestamp = time.time()
-                update.uuid = update.status.uuid
                 self.onStatusUpdateMessage(update)
             return
 
