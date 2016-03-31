@@ -138,8 +138,8 @@ class Process(UPID):
         name = msg.__class__.__name__
         f = getattr(self, 'on' + name, None)
         assert f, 'should have on%s()' % name
-        args = [v for (_,v) in msg.ListFields()]
-        f(*args)
+        args = {f.name: getattr(msg, f.name) for f in msg.DESCRIPTOR.fields}
+        f(**args)
 
     def abort(self):
         self.aborted = True
