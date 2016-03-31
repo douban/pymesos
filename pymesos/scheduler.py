@@ -104,7 +104,7 @@ class MesosSchedulerDriver(Process):
         logger.warning("disconnected from master")
         self.delay(5, lambda:self.register(self.master))
 
-    def onResourceOffersMessage(self, offers, pids):
+    def onResourceOffersMessage(self, offers, pids, inverse_offers=None):
         for offer, pid in zip(offers, pids):
             self.savedOffers.setdefault(offer.id.value, {})[offer.slave_id.value] = UPID(pid)
         self.sched.resourceOffers(self, list(offers))
