@@ -33,8 +33,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         return self.executor.registered(self, executor_info, framework_info,
             slave_info)
 
-    def onRunTaskMessage(self, *args):
-        task = args[-1]
+    def onRunTaskMessage(self, framework, task, framework_id='', pid=''):
         return self.executor.launchTask(self, task)
 
     def onKillTaskMessage(self, framework_id, task_id):
