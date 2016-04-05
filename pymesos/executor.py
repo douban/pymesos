@@ -43,7 +43,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             executor_id, data):
         return self.executor.frameworkMessage(self, data)
 
-    def onShutdownExecutorMessage(self):
+    def onShutdownExecutorMessage(self, **kw):
         self.executor.shutdown(self)
         if not self.local:
             sys.exit(0)
