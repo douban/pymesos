@@ -45,7 +45,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
     def onShutdownExecutorMessage(self, **kw):
         self.executor.shutdown(self)
-        if not self.local:
+        if self.local:
             sys.exit(0)
         else:
             self.abort()
