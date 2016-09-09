@@ -13,19 +13,6 @@ from six import reraise
 from threading import Thread, RLock
 from http_parser.http import HttpParser
 
-logger = logging.getLogger(__name__)
-
-_exc_info = None
-
-
-def _raise(e):
-    global _exc_info
-    try:
-        raise e
-    except Exception:
-        _exc_info = sys.exc_info()
-        thread.interrupt_main()
-
 
 def _handle_sigint(signum, frame):
     global _prev_handler, _exc_info
@@ -39,10 +26,10 @@ def _handle_sigint(signum, frame):
 
     raise KeyboardInterrupt
 
+_exc_info = None
 _prev_handler = signal.signal(signal.SIGINT, _handle_sigint)
-
-
 LENGTH_PATTERN = re.compile(br'\d+\n')
+logger = logging.getLogger(__name__)
 
 
 class Connection(object):
@@ -52,8 +39,13 @@ class Connection(object):
         port = int(port)
         self._addr = (host, port)
         self._sock = socket.socket()
-        self._sock.setblocking(True)
-        self._sock.connect(self._addr)
+        self._sock.setblocking(0)
+        try:
+            self._sock.connect(self._addr)
+        except socket.error as e:
+            if e.errno != errno.EAGAIN and e.errno != errno.EINPROGRESS:
+                raise
+
         self._parser = HttpParser()
         self._callback = callback
         self._stream_id = None
@@ -129,7 +121,6 @@ class Connection(object):
                             return False
 
             if self._parser.is_message_complete():
-                logger.error('Response EOF')
                 return False
 
             return True
@@ -228,6 +219,7 @@ class Process(object):
                     if (conn is None and self._master is not None and
                             time.time() > next_connect_deadline):
                         conn = Connection(self._master, self)
+                        next_connect_deadline = time.time()
 
                 if conn is not None:
                     if conn.want_write():
@@ -280,11 +272,14 @@ class Process(object):
                         time.time() + CONNECT_RETRY_INTERVAL
                     )
 
-        except Exception as e:
+        except Exception:
+            logger.exception('Thread abort:')
             with self._lock:
                 self._stop = True
 
-            _raise(e)
+            global _exc_info
+            _exc_info = sys.exc_info()
+            thread.interrupt_main()
 
         finally:
             with self._lock:
