@@ -40,4 +40,5 @@ setup(
     author_email="tianzhongbo@douban.com",
     url="https://github.com/douban/pymesos",
     download_url = 'https://github.com/douban/pymesos/archive/%s.tar.gz' % version,
+    install_requires=['six', 'http-parser'],
 )

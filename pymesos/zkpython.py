@@ -7,7 +7,6 @@ logger.setLevel(logging.WARNING)
 zookeeper.set_debug_level(zookeeper.LOG_LEVEL_WARN)
 
 
-
 # Mapping of connection state values to human strings.
 STATE_NAME_MAPPING = {
     zookeeper.ASSOCIATING_STATE: "associating",
@@ -26,24 +25,36 @@ TYPE_NAME_MAPPING = {
     zookeeper.CHANGED_EVENT: "changed",
     zookeeper.CHILD_EVENT: "child",
 }
-class TimeoutException( zookeeper.ZooKeeperException):
+
+
+class TimeoutException(zookeeper.ZooKeeperException):
     pass
 
-def logevent(h,typ, state, path):
-    logger.debug("event,handle:%d, type:%s, state:%s, path:%s", h, TYPE_NAME_MAPPING.get(typ, "unknown"), STATE_NAME_MAPPING.get(state, "unknown"), path)
+
+def logevent(h, typ, state, path):
+    logger.debug(
+        "event,handle:%d, type:%s, state:%s, path:%s",
+        h, TYPE_NAME_MAPPING.get(
+            typ, "unknown"), STATE_NAME_MAPPING.get(
+            state, "unknown"), path)
+
 
 class ZKClient:
-    def __init__(self, servers, timeout= 10):
+
+    def __init__(self, servers, timeout=10):
         self.timeout = timeout
         self.connected = False
         self.handle = -1
         self.servers = servers
-        self.watchers  = set()
+        self.watchers = set()
         self._lock = threading.Lock()
         self.conn_cv = threading.Condition()
 
     def start(self):
-        self.handle = zookeeper.init(self.servers, self.connection_watcher, self.timeout * 1000)
+        self.handle = zookeeper.init(
+            self.servers,
+            self.connection_watcher,
+            self.timeout * 1000)
         self.conn_cv.acquire()
         self.conn_cv.wait(self.timeout)
         self.conn_cv.release()
@@ -55,7 +66,7 @@ class ZKClient:
 
     def connection_watcher(self, h, typ, state, path):
         logevent(h, typ, state, path)
-        if  typ == zookeeper.SESSION_EVENT:
+        if typ == zookeeper.SESSION_EVENT:
             if state == zookeeper.CONNECTED_STATE:
                 self.handle = h
                 with self._lock:
@@ -78,7 +89,9 @@ class ZKClient:
         if self.connected:
             watcher.watch()
 
+
 class DataWatch:
+
     def __init__(self, client, path, func):
         self._client = client
         self._path = path
@@ -91,7 +104,8 @@ class DataWatch:
         self.watch()
 
     def _do(self):
-        data, stat = zookeeper.get(self._client.handle, self._path, self.watcher)
+        data, stat = zookeeper.get(
+            self._client.handle, self._path, self.watcher)
         return self._func(data, stat)
 
     def watch(self):
@@ -108,8 +122,8 @@ class DataWatch:
 
 
 class ChildrenWatch(DataWatch):
+
     def _do(self):
-        children = zookeeper.get_children(self._client.handle, self._path, self.watcher)
+        children = zookeeper.get_children(
+            self._client.handle, self._path, self.watcher)
         return self._func(children)
-
-

@@ -3,19 +3,23 @@ from __future__ import print_function
 try:
     from zookeeper import ZooKeeperException as ZookeeperError
     from .zkpython import ZKClient, ChildrenWatch, DataWatch
+
     def adjust_zk_logging_level():
         pass
 except ImportError:
     from kazoo.client import KazooClient as ZKClient
     from kazoo.recipe.watchers import ChildrenWatch, DataWatch
     from kazoo.exceptions import ZookeeperError
+
     def adjust_zk_logging_level():
         import logging
         import kazoo
         kazoo.client.log.setLevel(logging.WARNING)
         kazoo.protocol.connection.log.setLevel(logging.WARNING)
 
+
 class MasterDetector(object):
+
     def __init__(self, uri, agent):
         self.uri = uri
         self.agent = agent
@@ -48,17 +52,22 @@ class MasterDetector(object):
             self.stop()
 
     def stop(self):
-        try: self.zk.stop()
-        except: pass
+        try:
+            self.zk.stop()
+        except:
+            pass
 
 
 def test():
     import time
     import logging
     logging.basicConfig()
+
     class Agent:
+
         def onNewMasterDetectedMessage(self, addr):
             print(('got', addr))
+
         def onNoMasterDetectedMessage(self):
             print('no master')
     d = MasterDetector('zk1:2181/mesos_master2', Agent())
