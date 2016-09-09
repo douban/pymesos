@@ -148,6 +148,7 @@ class Connection(object):
         self._parser = None
         self._request = None
         self._response = None
+        self._callback.on_close()
 
 
 class Process(object):

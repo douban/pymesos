@@ -92,8 +92,14 @@ class MesosSchedulerDriver(Process):
         if stream_id:
             headers['Mesos-Stream-Id'] = stream_id
 
-        conn.request(method, path, body=data, headers=headers)
-        resp = conn.getresponse()
+        try:
+            conn.request(method, path, body=data, headers=headers)
+            resp = conn.getresponse()
+        except Exception:
+            self._conn.close()
+            self._conn = None
+            raise
+
         if resp.status < 200 or resp.status >= 300:
             raise RuntimeError('Failed to send request %s' % (data,))
 
@@ -315,6 +321,14 @@ class MesosSchedulerDriver(Process):
             self.master, len(data), data
         )
         return request
+
+    def on_close(self):
+        if self._conn is not None:
+            self._conn.close()
+            self._conn = None
+            self.version = None
+
+        self.sched.disconnected(self)
 
     def on_subscribed(self, info):
         self.version = self._send('', path='/version', method='GET')['version']
