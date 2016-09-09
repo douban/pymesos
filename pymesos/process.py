@@ -115,9 +115,14 @@ class Connection(object):
                             len(captured) + length:]
                         try:
                             event = json.loads(data.decode('utf-8'))
+                        except Exception:
+                            logger.exception('Failed parse json %s', data)
+                            return False
+
+                        try:
                             self._callback.on_event(event)
                         except Exception:
-                            logger.error('Failed parse json')
+                            logger.exception('Failed to process event')
                             return False
 
             if self._parser.is_message_complete():
@@ -289,12 +294,22 @@ class Process(object):
                 self._wakeup_fds = None
 
     def start(self):
-        self._io_thread = Thread(target=self._run)
-        self._io_thread.daemon = True
-        self._io_thread.start()
+        if not self._io_thread:
+            self._io_thread = Thread(target=self._run)
+            self._io_thread.daemon = True
+            self._io_thread.start()
 
     def stop(self):
         with self._lock:
             self._stop = True
 
         self._notify()
+
+    def join(self):
+        if self._io_thread:
+            self._io_thread.join()
+            self._io_thread = None
+
+    def run(self):
+        self.start()
+        self.join()
