@@ -50,9 +50,6 @@ class MesosSchedulerDriver(Process):
                 uri += ':5050'
             self.change_master(uri)
 
-    def abort(self):
-        self.stop()
-
     def stop(self, failover=False):
         if not failover:
             try:
@@ -314,12 +311,12 @@ class MesosSchedulerDriver(Process):
                 framework_info=self.framework
             ),
         ))
-        request = ('POST /api/v1/scheduler  HTTP/1.1\r\nHost: %s\r\n'
+        request = ('POST /api/v1/scheduler HTTP/1.1\r\nHost: %s\r\n'
                    'Content-Type: application/json\r\n'
                    'Accept: application/json\r\n'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
-            self.master, len(data), data
-        )
+                       self.master, len(data), data
+                   )
         return request
 
     def on_close(self):
@@ -349,19 +346,21 @@ class MesosSchedulerDriver(Process):
             )
             self.sched.registered(self, framework_id, master_info)
 
-    def on_offers(self, offers):
+    def on_offers(self, event):
+        offers = event['offers']
         for offer in offers:
             agent_id = offer.get('agent_id', offer['slave_id'])['value']
             self.savedOffers[offer['id']['value']] = agent_id
 
         self.sched.resourceOffers(self, offers)
 
-    def on_rescind(self, offer_id):
+    def on_rescind(self, event):
+        offer_id = event['offer_id']
         self.savedOffers.pop(offer_id['value'], None)
         self.sched.offerRescinded(self, offer_id)
 
-    def on_update(self, update):
-        status = update['status']
+    def on_update(self, event):
+        status = event['status']
         self.sched.statusUpdate(self, status)
         self.acknowledgeStatusUpdate(status)
 
@@ -380,35 +379,27 @@ class MesosSchedulerDriver(Process):
                 self, failure['executor_id'], agent_id, failure['status']
             )
 
-    def on_error(self, message):
+    def on_error(self, event):
+        message = event['message']
         self.sched.error(self, message)
+
+    def on_heartbeat(self, _):
+        pass
 
     def on_event(self, event):
         if 'type' in event:
-            _type = event['type']
-            if _type.lower() not in event:
+            _type = event['type'].lower()
+            if _type not in event:
                 logger.error(
                     'Missing `%s` in event %s' %
-                    (_type.lower(), event))
+                    (_type, event))
                 return
 
-            event = event[_type.lower()]
-            if _type == 'SUBSCRIBED':
-                self.on_subscribed(event)
-            elif _type == 'OFFERS':
-                self.on_offers(event)
-            elif _type == 'RESCIND':
-                self.on_rescind(event)
-            elif _type == 'UPDATE':
-                self.on_update(event)
-            elif _type == 'MESSAGE':
-                self.on_message(event)
-            elif _type == 'FAILURE':
-                self.on_failure(event)
-            elif _type == 'ERROR':
-                self.on_error(event)
-            elif _type == 'HEARTBEAT':
-                pass
+            event = event[_type]
+            func_name = 'on_%s' % (_type,)
+            func = getattr(self, func_name, None)
+            if fun is not None:
+                func(event)
             else:
                 logger.error('Unknown type:%s, event:%s' % (_type, event))
         else:

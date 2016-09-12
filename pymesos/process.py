@@ -183,6 +183,9 @@ class Process(object):
     def on_event(self, event):
         raise NotImplementedError
 
+    def on_close(self):
+        raise NotImplementedError
+
     def change_master(self, new_master):
         with self._lock:
             self._new_master = new_master
@@ -299,6 +302,9 @@ class Process(object):
             self._io_thread = Thread(target=self._run)
             self._io_thread.daemon = True
             self._io_thread.start()
+
+    def abort(self):
+        self.stop(failover=False)
 
     def stop(self):
         with self._lock:
