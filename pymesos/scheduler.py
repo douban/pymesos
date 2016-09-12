@@ -1,13 +1,14 @@
 import json
 import logging
-from six.moves.http_client import HTTPConnection
 from binascii import a2b_base64
+from six.moves.http_client import HTTPConnection
 from .process import Process
+from .interface import SchedulerDriver
 
 logger = logging.getLogger(__name__)
 
 
-class MesosSchedulerDriver(Process):
+class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def __init__(self, sched, framework, master_uri):
         super(MesosSchedulerDriver, self).__init__()
@@ -316,7 +317,7 @@ class MesosSchedulerDriver(Process):
                    'Accept: application/json\r\n'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
                        self.master, len(data), data
-                   )
+        )
         return request
 
     def on_close(self):
@@ -398,7 +399,7 @@ class MesosSchedulerDriver(Process):
             event = event[_type]
             func_name = 'on_%s' % (_type,)
             func = getattr(self, func_name, None)
-            if fun is not None:
+            if func is not None:
                 func(event)
             else:
                 logger.error('Unknown type:%s, event:%s' % (_type, event))

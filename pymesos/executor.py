@@ -6,11 +6,15 @@ import signal
 import logging
 from threading import Thread
 from binascii import b2a_base64, a2b_base64
+from six.moves.http_client import HTTPConnection
 from .process import Process
+from .interface import ExecutorDriver
 
 logger = logging.getLogger(__name__)
 
-class MesosExecutorDriver(Process):
+
+class MesosExecutorDriver(Process, ExecutorDriver):
+
     def __init__(self, executor):
         env = os.environ
         self.local = bool(env.get('MESOS_LOCAL'))
@@ -38,7 +42,6 @@ class MesosExecutorDriver(Process):
         self.updates = {}
         self._conn = None
         super(MesosExecutorDriver, self).__init__(master=addr)
-
 
     def _delay_kill(self):
         def _():
@@ -68,7 +71,7 @@ class MesosExecutorDriver(Process):
                    'Accept: application/json\r\n'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
                        self.master, len(body), body
-                   )
+        )
         return request
 
     def on_close(self):
@@ -78,10 +81,9 @@ class MesosExecutorDriver(Process):
             self.version = None
 
         self.executor.disconnected(self)
-        if not checkpoint:
+        if not self.checkpoint:
             self.executor.shutdown(self)
             self.abort()
-
 
     def on_event(self, event):
         if 'type' in event:
@@ -99,7 +101,7 @@ class MesosExecutorDriver(Process):
             event = event[_type]
             func_name = 'on_%s' % (_type,)
             func = getattr(self, func_name, None)
-            if fun is not None:
+            if func is not None:
                 func(event)
             else:
                 logger.error('Unknown type:%s, event:%s' % (_type, event))
@@ -109,18 +111,18 @@ class MesosExecutorDriver(Process):
     def on_heartbeat(self, _):
         pass
 
-
     def on_subscribed(self, info):
         executor_info = info['executor_info']
         framework_info = info['framework_info']
         agent_info = info.get('agent_info'. info['slave_info'])
         assert executor_info['id'] == self.executor_id
         assert framework_info['id'] == self.framework_id
-        
+
         if self.executor_info is None or self.framework_info is None:
             self.executor_info = executor_info
             self.framework_info = framework_info
-            self.executor.registered(self, executor_info, framework_info, agent_info)
+            self.executor.registered(
+                self, executor_info, framework_info, agent_info)
         else:
             self.executor.reregistered(self, agent_info)
 
@@ -137,8 +139,8 @@ class MesosExecutorDriver(Process):
 
     def on_acknowledged(self, event):
         task_id = event['task_id']['value']
-        uuid = uuid.UUID(bytes=a2b_base64(event['uuid']))
-        self.updates.pop(uuid, None)
+        uuid_ = uuid.UUID(bytes=a2b_base64(event['uuid']))
+        self.updates.pop(uuid_, None)
         self.tasks.pop(task_id, None)
 
     def on_message(self, event):

@@ -163,6 +163,11 @@ class Process(object):
         self._stream_id = None
 
     @property
+    def aborted(self):
+        with self._lock:
+            return self._stop
+
+    @property
     def master(self):
         with self._lock:
             return self._master

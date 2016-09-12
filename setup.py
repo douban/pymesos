@@ -2,6 +2,7 @@ import os
 import re
 from setuptools import setup, find_packages
 
+
 def find_version(*paths):
     fname = os.path.join(*paths)
     with open(fname) as fhandler:
@@ -15,6 +16,7 @@ def find_version(*paths):
     version = version_match.group(1)
 
     return version
+
 
 def find_long_description(*paths):
     fname = os.path.join(*paths)
@@ -39,6 +41,8 @@ setup(
     author="Zhongbo Tian",
     author_email="tianzhongbo@douban.com",
     url="https://github.com/douban/pymesos",
-    download_url = 'https://github.com/douban/pymesos/archive/%s.tar.gz' % version,
+    download_url=(
+        'https://github.com/douban/pymesos/archive/%s.tar.gz' % version
+    ),
     install_requires=['six', 'http-parser'],
 )
