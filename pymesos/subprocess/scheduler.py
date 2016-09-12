@@ -30,7 +30,7 @@ class ProcScheduler(Scheduler):
         self.driver = MesosSchedulerDriver(self, self.framework, self.master)
         self.procs_pending = {}
         self.procs_launched = {}
-        self.slave_to_proc = {}
+        self.agent_to_proc = {}
         self._lock = RLock()
 
     def _init_framework(self):
@@ -96,10 +96,7 @@ class ProcScheduler(Scheduler):
             ],
         )
 
-        if 'agent_id' in offer:
-            task['agent_id'] = offer['agent_id']
-        else:
-            task['slave_id'] = offer['slave_id']
+        task['agent_id'] = offer['agent_id']
 
         return task
 
@@ -123,9 +120,9 @@ class ProcScheduler(Scheduler):
         def get_resources(offer):
             cpus, mem = 0.0, 0.0
             for r in offer['resources']:
-                if r.name == 'cpus':
+                if r['name'] == 'cpus':
                     cpus = float(r['scalar']['value'])
-                elif r.name == 'mem':
+                elif r['name'] == 'mem':
                     mem = float(r['scalar']['value'])
             return cpus, mem
 
@@ -136,7 +133,7 @@ class ProcScheduler(Scheduler):
                     logger.debug('Reject offers forever for no pending procs, '
                                  'offers=%s' % (offers, ))
                     driver.declineOffer(
-                        offer['id'], [], self._filters(FOREVER))
+                        offer['id'], self._filters(FOREVER))
                     continue
 
                 cpus, mem = get_resources(offer)
@@ -154,7 +151,8 @@ class ProcScheduler(Scheduler):
                     logger.info('Accept offer for procs, offer=%s, '
                                 'procs=%s, filter_time=%s' % (
                                     offer,
-                                    [int(t.task_id.value) for t in tasks],
+                                    [int(t['task_id']['value'])
+                                     for t in tasks],
                                     seconds))
                     driver.launchTasks(
                         offer['id'], tasks, self._filters(seconds))
@@ -164,14 +162,14 @@ class ProcScheduler(Scheduler):
                                     offer, seconds))
                     driver.declineOffer(offer['id'], self._filters(seconds))
 
-    def _call_finished(self, proc_id, success, message, data, slave_id=None):
+    def _call_finished(self, proc_id, success, message, data, agent_id=None):
         with self._lock:
             proc = self.procs_launched.pop(proc_id)
-            if slave_id is not None:
-                if slave_id in self.slave_to_proc:
-                    self.slave_to_proc[slave_id].remove(proc_id)
+            if agent_id is not None:
+                if agent_id in self.agent_to_proc:
+                    self.agent_to_proc[agent_id].remove(proc_id)
             else:
-                for slave_id, procs in self.slave_to_proc.iteritems():
+                for agent_id, procs in self.agent_to_proc.iteritems():
                     if proc_id in procs:
                         procs.remove(proc_id)
 
@@ -182,12 +180,12 @@ class ProcScheduler(Scheduler):
             proc_id = int(update['task_id']['value'])
             logger.info('Status update for proc, id=%s, state=%s' % (
                 proc_id, update['state']))
-            agent_id = update.get('agent_id', update['slave_id'])['value']
+            agent_id = update['agent_id']['value']
             if update['state'] == 'TASK_RUNNING':
-                if agent_id in self.slave_to_proc:
-                    self.slave_to_proc[agent_id].add(proc_id)
+                if agent_id in self.agent_to_proc:
+                    self.agent_to_proc[agent_id].add(proc_id)
                 else:
-                    self.slave_to_proc[agent_id] = set([proc_id])
+                    self.agent_to_proc[agent_id] = set([proc_id])
 
                 proc = self.procs_launched[proc_id]
                 proc._started()
@@ -196,7 +194,7 @@ class ProcScheduler(Scheduler):
                 'TASK_STAGING', 'TASK_STARTING', 'TASK_RUNNING'
             }:
                 success = (update['state'] == 'TASK_FINISHED')
-                message = update['message']
+                message = update.get('message')
                 data = update.get('data')
                 if data:
                     data = pickle.loads(a2b_base64(data))
@@ -213,9 +211,9 @@ class ProcScheduler(Scheduler):
     def slaveLost(self, driver, agent_id):
         agent_id = agent_id['value']
         with self._lock:
-            for proc_id in self.slave_to_proc.pop(agent_id, []):
+            for proc_id in self.agent_to_proc.pop(agent_id, []):
                 self._call_finished(
-                    proc_id, False, 'Slave lost', None, agent_id)
+                    proc_id, False, 'Agent lost', None, agent_id)
 
     def error(self, driver, message):
         with self._lock:
@@ -259,22 +257,22 @@ class ProcScheduler(Scheduler):
                 del self.procs_launched[proc.id]
                 self.driver.killTask(dict(value=str(proc.id)))
 
-            for slave_id, procs in self.slave_to_proc.items():
+            for agent_id, procs in self.agent_to_proc.items():
                 procs.pop(proc.id)
                 if not procs:
-                    del self.slave_to_proc[slave_id]
+                    del self.agent_to_proc[agent_id]
 
     def send_data(self, pid, type, data):
         if self.driver.aborted:
             raise RuntimeError('driver already aborted')
 
         msg = b2a_base64(pickle.dumps((pid, type, data)))
-        for slave_id, procs in self.slave_to_proc.iteritems():
+        for agent_id, procs in self.agent_to_proc.iteritems():
             if pid in procs:
                 self.driver.sendFrameworkMessage(
                     self.executor['executor_id'],
-                    dict(value=slave_id),
+                    dict(value=agent_id),
                     msg)
                 return
 
-        raise RuntimeError('Cannot find slave for pid %s' % (pid,))
+        raise RuntimeError('Cannot find agent for pid %s' % (pid,))

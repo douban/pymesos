@@ -21,10 +21,6 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.version = None
 
     @property
-    def connected(self):
-        return self.stream_id is not None
-
-    @property
     def framework_id(self):
         return self.framework.get('id')
 
@@ -192,6 +188,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def reviveOffers(self):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         body = dict(
@@ -220,11 +219,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         framework_id = self.framework_id
         assert framework_id
         acknowledge = dict()
-        if 'agent_id' in status:
-            acknowledge['agent_id'] = status['agent_id']
-        else:
-            acknowledge['slave_id'] = status['slave_id']
-
+        acknowledge['agent_id'] = status['agent_id']
         acknowledge['task_id'] = status['task_id']
         acknowledge['uuid'] = status['uuid']
         body = dict(
@@ -260,10 +255,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             data=a2b_base64(data),
         )
         version = map(int, version.split('.')[:2])
-        if version >= (1, 0):
-            message['agent_id'] = agent_id
-        else:
-            message['slave_id'] = agent_id
+        message['agent_id'] = agent_id
 
         body = dict(
             type='MESSAGE',
@@ -350,7 +342,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def on_offers(self, event):
         offers = event['offers']
         for offer in offers:
-            agent_id = offer.get('agent_id', offer['slave_id'])['value']
+            agent_id = offer['agent_id']['value']
             self.savedOffers[offer['id']['value']] = agent_id
 
         self.sched.resourceOffers(self, offers)
@@ -367,12 +359,12 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def on_message(self, message):
         executor_id = message['executor_id']
-        agent_id = message.get('agent_id', message['slave_id'])
+        agent_id = message['agent_id']
         data = message['data']
         self.sched.frameworkMessage(self, executor_id, agent_id, data)
 
     def on_failure(self, failure):
-        agent_id = failure.get('agent_id', failure['slave_id'])
+        agent_id = failure['agent_id']
         if 'executor_id' not in failure:
             self.sched.slaveLost(self, agent_id)
         else:
@@ -384,12 +376,12 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         message = event['message']
         self.sched.error(self, message)
 
-    def on_heartbeat(self, _):
-        pass
-
     def on_event(self, event):
         if 'type' in event:
             _type = event['type'].lower()
+            if _type == 'heartbeat':
+                return
+
             if _type not in event:
                 logger.error(
                     'Missing `%s` in event %s' %

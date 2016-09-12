@@ -35,13 +35,12 @@ class ProcExecutor(Executor):
         Executor.abort(self)
         self.cond.notify()
 
-    def reply_status(self, driver, proc_id, status, message='', data=tuple()):
+    def reply_status(self, driver, proc_id, state, message='', data=tuple()):
         update = dict(
             task_id=dict(value=str(proc_id)),
             agent_id=self.agent_id,
-            slave_id=self.agent_id,
             timestamp=time.time(),
-            status=status,
+            state=state,
         )
 
         if message:

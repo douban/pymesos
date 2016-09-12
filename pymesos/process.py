@@ -108,22 +108,24 @@ class Connection(object):
 
                     captured = m.group(0)
                     length = int(captured.strip())
-                    if len(self._response) >= len(captured) + length:
-                        data = self._response[
-                            len(captured):len(captured) + length]
-                        self._response = self._response[
-                            len(captured) + length:]
-                        try:
-                            event = json.loads(data.decode('utf-8'))
-                        except Exception:
-                            logger.exception('Failed parse json %s', data)
-                            return False
+                    if len(self._response) < len(captured) + length:
+                        break
 
-                        try:
-                            self._callback.on_event(event)
-                        except Exception:
-                            logger.exception('Failed to process event')
-                            return False
+                    data = self._response[
+                        len(captured):len(captured) + length]
+                    self._response = self._response[
+                        len(captured) + length:]
+                    try:
+                        event = json.loads(data.decode('utf-8'))
+                    except Exception:
+                        logger.exception('Failed parse json %s', data)
+                        return False
+
+                    try:
+                        self._callback.on_event(event)
+                    except Exception:
+                        logger.exception('Failed to process event')
+                        return False
 
             if self._parser.is_message_complete():
                 return False
@@ -181,6 +183,10 @@ class Process(object):
     def stream_id(self, _stream_id):
         with self._lock:
             self._stream_id = _stream_id
+
+    @property
+    def connected(self):
+        return self.stream_id is not None
 
     def gen_request(self):
         raise NotImplementedError
@@ -309,7 +315,7 @@ class Process(object):
             self._io_thread.start()
 
     def abort(self):
-        self.stop(failover=False)
+        self.stop()
 
     def stop(self):
         with self._lock:

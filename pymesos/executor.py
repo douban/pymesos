@@ -18,9 +18,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
     def __init__(self, executor):
         env = os.environ
         self.local = bool(env.get('MESOS_LOCAL'))
-        slave_pid = env.get('MESOS_SLAVE_PID')
-        assert '@' in slave_pid
-        addr = slave_pid.split('@', 2)[1]
+        agent_endpoint = env['MESOS_AGENT_ENDPOINT']
         framework_id = env['MESOS_FRAMEWORK_ID']
         assert framework_id
         self.framework_id = dict(value=framework_id)
@@ -41,7 +39,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.tasks = {}
         self.updates = {}
         self._conn = None
-        super(MesosExecutorDriver, self).__init__(master=addr)
+        super(MesosExecutorDriver, self).__init__(master=agent_endpoint)
 
     def _delay_kill(self):
         def _():
@@ -86,10 +84,15 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             self.abort()
 
     def on_event(self, event):
+        logging.error('event:%s', event)
+
         if 'type' in event:
             _type = event['type'].lower()
             if _type == 'shutdown':
                 self.on_shutdown()
+                return
+
+            if _type == 'heartbeat':
                 return
 
             if _type not in event:
@@ -108,14 +111,11 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         else:
             logger.error('Unknown event:%s' % (event,))
 
-    def on_heartbeat(self, _):
-        pass
-
     def on_subscribed(self, info):
         executor_info = info['executor_info']
         framework_info = info['framework_info']
-        agent_info = info.get('agent_info'. info['slave_info'])
-        assert executor_info['id'] == self.executor_id
+        agent_info = info['agent_info']
+        assert executor_info['executor_id'] == self.executor_id
         assert framework_info['id'] == self.framework_id
 
         if self.executor_info is None or self.framework_info is None:
@@ -128,7 +128,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
     def on_launch(self, event):
         task_info = event['task']
-        task_id = task_info['id']['value']
+        task_id = task_info['task_id']['value']
         assert task_id not in self.tasks
         self.tasks[task_id] = task_info
         self.executor.launchTask(self, task_info)
@@ -191,7 +191,9 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             raise
 
         if resp.status < 200 or resp.status >= 300:
-            raise RuntimeError('Failed to send request %s' % (data,))
+            raise RuntimeError('Failed to send request code=%s, message=%s' % (
+                resp.status, resp.read()
+            ))
 
         result = resp.read()
         if not result:
@@ -208,6 +210,9 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
         if 'uuid' not in status:
             status['uuid'] = b2a_base64(uuid.uuid4().bytes)
+
+        if 'source' not in status:
+            status['source'] = 'SOURCE_EXECUTOR'
 
         body = dict(
             type='UPDATE',
