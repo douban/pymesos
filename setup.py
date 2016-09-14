@@ -1,7 +1,10 @@
 import os
 import re
+import sys
 from setuptools import setup, find_packages
 
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 def find_version(*paths):
     fname = os.path.join(*paths)
@@ -45,4 +48,10 @@ setup(
         'https://github.com/douban/pymesos/archive/%s.tar.gz' % version
     ),
     install_requires=['six', 'http-parser'],
+    setup_requires=pytest_runner,
+    tests_require=[
+        'pytest-cov',
+        'pytest-randomly',
+        'pytest-mock',
+        'pytest'],
 )

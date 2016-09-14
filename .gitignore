@@ -1,4 +1,8 @@
 *.py[co]
-/venv/
-/*.egg/
 /*.egg-info/
+/*.egg/
+/.cache/
+/.coverage
+/.eggs/
+/.tox/
+/venv/

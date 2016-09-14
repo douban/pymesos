@@ -1,6 +1,6 @@
 import json
 import logging
-from binascii import a2b_base64
+from binascii import b2a_base64
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import SchedulerDriver
@@ -16,7 +16,6 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.master_uri = master_uri
         self.framework = framework
         self.detector = None
-        self.savedOffers = {}
         self._conn = None
         self.version = None
 
@@ -76,7 +75,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         if conn is None:
             raise RuntimeError('Not connected yet')
 
-        if body:
+        if body != '':
             data = json.dumps(body).encode('utf-8')
             headers['Content-Type'] = 'application/json'
         else:
@@ -146,27 +145,16 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
         framework_id = self.framework_id
         assert framework_id
-        accept = dict(
-            offer_ids=offer_ids,
-            operations=[dict(
-                type='LAUNCH',
-                launch=dict(
-                    task_infos=tasks
-                ),
-            )]
-        )
 
-        if filters is not None:
-            accept['filters'] = filters
-
-        body = dict(
-            type='ACCEPT',
-            framework_id=dict(
-                value=framework_id,
+        operations=[dict(
+            type='LAUNCH',
+            launch=dict(
+                task_infos=tasks
             ),
-            accept=accept,
-        )
-        self._send(body)
+        )]
+
+        self.acceptOffers(offer_ids, operations, filters=filters)
+
 
     def declineOffer(self, offer_ids, filters=None):
         framework_id = self.framework_id
@@ -249,13 +237,11 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         framework_id = self.framework_id
         version = self.version
         assert framework_id
-        assert version
         message = dict(
+            agent_id=agent_id,
             executor_id=executor_id,
-            data=a2b_base64(data),
+            data=b2a_base64(data.encode('utf-8')).rstrip(),
         )
-        version = map(int, version.split('.')[:2])
-        message['agent_id'] = agent_id
 
         body = dict(
             type='MESSAGE',
@@ -274,7 +260,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             framework_id=dict(
                 value=framework_id,
             ),
-            requests=requests,
+            request=dict(
+                requests=requests,
+            ),
         )
         self._send(body)
 
@@ -310,7 +298,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
                        self.master, len(data), data
         )
-        return request
+        return request.encode('utf-8')
 
     def on_close(self):
         if self._conn is not None:
@@ -341,15 +329,10 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def on_offers(self, event):
         offers = event['offers']
-        for offer in offers:
-            agent_id = offer['agent_id']['value']
-            self.savedOffers[offer['id']['value']] = agent_id
-
         self.sched.resourceOffers(self, offers)
 
     def on_rescind(self, event):
         offer_id = event['offer_id']
-        self.savedOffers.pop(offer_id['value'], None)
         self.sched.offerRescinded(self, offer_id)
 
     def on_update(self, event):

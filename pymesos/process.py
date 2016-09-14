@@ -7,9 +7,9 @@ import errno
 import select
 import signal
 import socket
-import thread
 import logging
 from six import reraise
+from six.moves import _thread as thread
 from threading import Thread, RLock
 from http_parser.http import HttpParser
 
@@ -94,8 +94,9 @@ class Connection(object):
                     logger.error('Response is not chunked')
                     return False
 
-                self._stream_id = self._parser.get_headers().get(
-                    'Mesos-Stream-Id', ''
+                headers = {k.upper(): v for k, v in self._parser.get_headers().items()}
+                self._stream_id = headers.get(
+                    'MESOS-STREAM-ID', ''
                 )
                 self._callback.stream_id = self._stream_id
 
