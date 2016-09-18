@@ -1,4 +1,3 @@
-import os
 import json
 import uuid
 import random
@@ -6,6 +5,7 @@ import string
 from binascii import b2a_base64
 from http_parser.http import HttpParser
 from pymesos import MesosExecutorDriver
+
 
 def test_gen_request(mocker):
     agent_addr = 'mock_addr:12345'
@@ -94,6 +94,7 @@ def test_send(mocker):
         }
     )
 
+
 def test_send_status_update(mocker):
     agent_addr = 'mock_addr:12345'
     framework_id = str(uuid.uuid4())
@@ -126,7 +127,8 @@ def test_send_status_update(mocker):
             }
         }
     })
-    
+
+
 def test_send_message(mocker):
     agent_addr = 'mock_addr:12345'
     framework_id = str(uuid.uuid4())
@@ -156,6 +158,7 @@ def test_send_message(mocker):
             'data': message,
         }
     })
+
 
 def test_on_subscribed(mocker):
     agent_addr = 'mock_addr:12345'
@@ -192,7 +195,9 @@ def test_on_subscribed(mocker):
         }
     }
     driver.on_event(event)
-    exc.registered.assert_called_once_with(driver, executor_info, framework_info, {})
+    exc.registered.assert_called_once_with(
+        driver, executor_info, framework_info, {})
+
 
 def test_on_launch(mocker):
     agent_addr = 'mock_addr:12345'
@@ -217,7 +222,7 @@ def test_on_launch(mocker):
         "task_id": {
             "value": task_id
         },
-    }   
+    }
     event = {
         'type': 'LAUNCH',
         'launch': {
@@ -227,6 +232,7 @@ def test_on_launch(mocker):
     }
     driver.on_event(event)
     exc.launchTask.assert_called_once_with(driver, task_info)
+
 
 def test_on_kill(mocker):
     agent_addr = 'mock_addr:12345'
@@ -252,6 +258,7 @@ def test_on_kill(mocker):
     }
     driver.on_event(event)
     exc.killTask.assert_called_once_with(driver, task_id)
+
 
 def test_on_acknowledged(mocker):
     agent_addr = 'mock_addr:12345'
@@ -285,6 +292,7 @@ def test_on_acknowledged(mocker):
     assert driver.updates == {}
     assert driver.tasks == {}
 
+
 def test_on_message(mocker):
     agent_addr = 'mock_addr:12345'
     framework_id = str(uuid.uuid4())
@@ -309,6 +317,7 @@ def test_on_message(mocker):
     driver.on_event(event)
     exc.frameworkMessage.assert_called_once_with(driver, message)
 
+
 def test_on_error(mocker):
     agent_addr = 'mock_addr:12345'
     framework_id = str(uuid.uuid4())
@@ -332,6 +341,7 @@ def test_on_error(mocker):
     }
     driver.on_event(event)
     exc.error.assert_called_once_with(driver, message)
+
 
 def test_on_shutdown(mocker):
     agent_addr = 'mock_addr:12345'

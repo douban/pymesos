@@ -6,6 +6,7 @@ from setuptools import setup, find_packages
 needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 pytest_runner = ['pytest-runner'] if needs_pytest else []
 
+
 def find_version(*paths):
     fname = os.path.join(*paths)
     with open(fname) as fhandler:

@@ -57,7 +57,8 @@ class Redirector(object):
                 if self._aborted:
                     break
                 to_read = [rfd] + list(self._listeners.keys())
-                to_read += list(self._writers.keys()) + list(self._readers.keys())
+                to_read += list(self._writers.keys()) + \
+                    list(self._readers.keys())
                 to_write = list(self._readers.keys())
 
             readable, writeable, _ = select.select(to_read, to_write, [])

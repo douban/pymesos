@@ -41,8 +41,8 @@ def test_gen_request(mocker):
 
     assert parser.is_message_complete()
 
+
 def test_send(mocker):
-    ID = str(uuid.uuid4())
     sched = mocker.Mock()
     framework = mocker.Mock()
     master = mocker.Mock()
@@ -67,7 +67,6 @@ def test_send(mocker):
     )
 
 
-
 def test_teardown(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -82,6 +81,7 @@ def test_teardown(mocker):
             'value': ID
         },
     })
+
 
 def test_accept_offers(mocker):
     ID = str(uuid.uuid4())
@@ -116,7 +116,8 @@ def test_accept_offers(mocker):
         }
     })
 
-def test_launch_tasks(mocker): 
+
+def test_launch_tasks(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
     framework = {'id': ID}
@@ -142,12 +143,13 @@ def test_launch_tasks(mocker):
             'offer_ids': offer_ids,
             'operations': [{
                 'type': 'LAUNCH',
-                'launch':{
+                'launch': {
                     'task_infos': tasks,
                 }
             }]
         }
     })
+
 
 def test_decline_offer(mocker):
     ID = str(uuid.uuid4())
@@ -168,6 +170,7 @@ def test_decline_offer(mocker):
         }
     })
 
+
 def test_revive_offers(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -183,6 +186,7 @@ def test_revive_offers(mocker):
             'value': ID
         },
     })
+
 
 def test_acknowledge_status_update(mocker):
     ID = str(uuid.uuid4())
@@ -212,6 +216,7 @@ def test_acknowledge_status_update(mocker):
         }
     })
 
+
 def test_reconcile_tasks(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -219,10 +224,10 @@ def test_reconcile_tasks(mocker):
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
-    task_ids = [str(uuid.uuid4()) for  _ in range(random.randint(1, 10))]
+    task_ids = [str(uuid.uuid4()) for _ in range(random.randint(1, 10))]
     tasks = [
         {
-            'task_id':{
+            'task_id': {
                 'value': id
             }
         }
@@ -234,10 +239,11 @@ def test_reconcile_tasks(mocker):
         'framework_id': {
             'value': ID
         },
-        'reconcile': {  
+        'reconcile': {
             'tasks': tasks
         }
     })
+
 
 def test_send_framework_message(mocker):
     ID = str(uuid.uuid4())
@@ -263,6 +269,7 @@ def test_send_framework_message(mocker):
         }
     })
 
+
 def test_request_resources(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -285,12 +292,13 @@ def test_request_resources(mocker):
         }
     })
 
+
 def test_on_subscribed(mocker):
     sched = mocker.Mock()
     framework = {}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
-    driver._send = mocker.Mock(return_value={'version':'1.0.0'})
+    driver._send = mocker.Mock(return_value={'version': '1.0.0'})
     driver._master = 'mock_addr:12345'
     framework_id = {
         'value': str(uuid.uuid4())
@@ -310,6 +318,7 @@ def test_on_subscribed(mocker):
         'version': '1.0.0'
     })
 
+
 def test_on_offers(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -317,7 +326,7 @@ def test_on_offers(mocker):
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     offers = [{
-        'offer_id':{'value': str(uuid.uuid4())}
+        'offer_id': {'value': str(uuid.uuid4())}
     } for _ in range(random.randint(1, 10))]
     event = {
         'type': 'OFFERS',
@@ -345,6 +354,7 @@ def test_on_rescind(mocker):
     driver.on_event(event)
     sched.offerRescinded.assert_called_once_with(driver, offer_id)
 
+
 def test_on_message(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -368,6 +378,7 @@ def test_on_message(mocker):
     driver.on_event(event)
     sched.frameworkMessage.assert_called_once_with(driver, executor_id,
                                                    agent_id, data)
+
 
 def test_on_failure(mocker):
     ID = str(uuid.uuid4())
@@ -415,4 +426,3 @@ def test_on_error(mocker):
     }
     driver.on_event(event)
     sched.error.assert_called_once_with(driver, msg)
-    

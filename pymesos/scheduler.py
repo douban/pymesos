@@ -147,7 +147,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         framework_id = self.framework_id
         assert framework_id
 
-        operations=[dict(
+        operations = [dict(
             type='LAUNCH',
             launch=dict(
                 task_infos=tasks
@@ -155,7 +155,6 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         )]
 
         self.acceptOffers(offer_ids, operations, filters=filters)
-
 
     def declineOffer(self, offer_ids, filters=None):
         framework_id = self.framework_id
@@ -236,7 +235,6 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def sendFrameworkMessage(self, executor_id, agent_id, data):
         framework_id = self.framework_id
-        version = self.version
         assert framework_id
         message = dict(
             agent_id=agent_id,

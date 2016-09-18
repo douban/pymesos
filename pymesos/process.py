@@ -94,7 +94,9 @@ class Connection(object):
                     logger.error('Response is not chunked')
                     return False
 
-                headers = {k.upper(): v for k, v in list(self._parser.get_headers().items())}
+                headers = {
+                    k.upper(): v for k, v in list(
+                        self._parser.get_headers().items())}
                 self._stream_id = headers.get(
                     'MESOS-STREAM-ID', ''
                 )

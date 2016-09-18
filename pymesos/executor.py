@@ -68,7 +68,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
                    'Accept: application/json\r\n'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
                        self.master, len(body), body
-                   )
+        )
         return request.encode('utf-8')
 
     def on_close(self):
