@@ -5,4 +5,6 @@
 /.coverage
 /.eggs/
 /.tox/
+/build/
+/dist/
 /venv/

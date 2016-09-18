@@ -205,6 +205,13 @@ class ProcScheduler(Scheduler):
                 logger.info('Revive offers for pending procs')
                 driver.reviveOffers()
 
+    def executorLost(self, driver, executor_id, agent_id, status):
+        agent_id = agent_id['value']
+        with self._lock:
+            for proc_id in self.agent_to_proc.pop(agent_id, []):
+                self._call_finished(
+                    proc_id, False, 'Executor lost', None, agent_id)
+
     def slaveLost(self, driver, agent_id):
         agent_id = agent_id['value']
         with self._lock:
