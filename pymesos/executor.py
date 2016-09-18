@@ -17,14 +17,12 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
     def __init__(self, executor):
         env = os.environ
-        self.local = bool(env.get('MESOS_LOCAL'))
         agent_endpoint = env['MESOS_AGENT_ENDPOINT']
         framework_id = env['MESOS_FRAMEWORK_ID']
         assert framework_id
         self.framework_id = dict(value=framework_id)
         executor_id = env['MESOS_EXECUTOR_ID']
         self.executor_id = dict(value=executor_id)
-        self.work_dir = env['MESOS_DIRECTORY']
         grace_shutdown_period = env.get('MESOS_EXECUTOR_SHUTDOWN_GRACE_PERIOD')
         if grace_shutdown_period:
             self.grace_shutdown_period = float(grace_shutdown_period)
@@ -32,6 +30,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             self.grace_shutdown_period = 0.0
 
         self.checkpoint = bool(env.get('MESOS_CHECKPOINT'))
+        self.local = bool(env.get('MESOS_LOCAL'))
 
         self.executor = executor
         self.framework_info = None
@@ -59,8 +58,8 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             framework_id=self.framework_id,
             executor_id=self.executor_id,
             subscribe=dict(
-                unacknowledged_tasks=self.tasks.values(),
-                unacknowledged_updates=self.updates.values(),
+                unacknowledged_tasks=list(self.tasks.values()),
+                unacknowledged_updates=list(self.updates.values()),
             ),
         ))
 
@@ -69,8 +68,8 @@ class MesosExecutorDriver(Process, ExecutorDriver):
                    'Accept: application/json\r\n'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
                        self.master, len(body), body
-        )
-        return request
+                   )
+        return request.encode('utf-8')
 
     def on_close(self):
         if self._conn is not None:
@@ -80,6 +79,8 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
         self.executor.disconnected(self)
         if not self.checkpoint:
+            if not self.local:
+                self._delay_kill()
             self.executor.shutdown(self)
             self.abort()
 
@@ -152,6 +153,8 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.executor.error(self, message)
 
     def on_shutdown(self):
+        if not self.local:
+            self._delay_kill()
         self.executor.shutdown(self)
         self.abort()
 
@@ -172,7 +175,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         if conn is None:
             raise RuntimeError('Not connected yet')
 
-        if body:
+        if body != '':
             data = json.dumps(body).encode('utf-8')
             headers['Content-Type'] = 'application/json'
         else:

@@ -5,6 +5,7 @@ import select
 import socket
 import signal
 import logging
+from six import string_types
 from threading import RLock, Thread, Condition
 from subprocess import PIPE, STDOUT
 from .scheduler import ProcScheduler, CONFIG, _TYPE_SIGNAL
@@ -55,9 +56,9 @@ class Redirector(object):
             with self._lock:
                 if self._aborted:
                     break
-                to_read = [rfd] + self._listeners.keys()
-                to_read += self._writers.keys() + self._readers.keys()
-                to_write = self._readers.keys()
+                to_read = [rfd] + list(self._listeners.keys())
+                to_read += list(self._writers.keys()) + list(self._readers.keys())
+                to_write = list(self._readers.keys())
 
             readable, writeable, _ = select.select(to_read, to_write, [])
             with self._lock:
@@ -124,11 +125,11 @@ class Redirector(object):
 
             if not more_to_read:
                 with self._lock:
-                    to_read = [rfd] + self._listeners.keys()
+                    to_read = [rfd] + list(self._listeners.keys())
 
                 select.select(to_read, [], [], MINIMAL_INTERVAL)
 
-        for pid in self._proc_fds.keys():
+        for pid in list(self._proc_fds.keys()):
             for fd in list(self._proc_fds.get(pid, [])):
                 self._clear(fd)
 
@@ -174,7 +175,7 @@ class Redirector(object):
         os.close(self._wakeup_fd)
 
 
-_STARTING, _RUNNING, _STOPPED = range(3)
+_STARTING, _RUNNING, _STOPPED = list(range(3))
 _STARTING_TIMEOUT = 5 * 60
 UNKNOWN_ERROR = -255
 
@@ -191,7 +192,7 @@ class Popen(object):
                  startupinfo=None, creationflags=0,
                  cpus=None, mem=None):
 
-        kw = dict(locals().items())
+        kw = dict(list(locals().items()))
         a = (args,)
 
         kw.pop('self')
@@ -208,7 +209,7 @@ class Popen(object):
         mem = kw.pop('mem', None)
 
         kw['cwd'] = kw.get('cwd') or os.getcwd()
-        kw['env'] = kw.get('env') or dict(os.environ.items())
+        kw['env'] = kw.get('env') or dict(list(os.environ.items()))
 
         self.id = self._new_id()
         self.cpus = cpus or float(CONFIG.get('default_cpus', 1.0))
@@ -307,7 +308,7 @@ class Popen(object):
 
     def __repr__(self):
         args = self._a[0]
-        if isinstance(args, basestring):
+        if isinstance(args, string_types):
             cmd = args
         else:
             cmd = ' '.join(args)
@@ -375,8 +376,8 @@ class Popen(object):
         buf = input and input[:]
         out = None
         err = None
-        to_write = filter(None, [self.stdin])
-        to_read = filter(None, [self.stdout, self.stderr])
+        to_write = [_f for _f in [self.stdin] if _f]
+        to_read = [_f for _f in [self.stdout, self.stderr] if _f]
 
         while True:
             can_wait = True

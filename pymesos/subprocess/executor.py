@@ -8,12 +8,9 @@ import traceback
 import subprocess
 from threading import Condition
 from binascii import b2a_base64, a2b_base64
+from six.moves import cPickle as pickle
 from pymesos import Executor, MesosExecutorDriver
 from .scheduler import _TYPE_SIGNAL
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +109,7 @@ class ProcExecutor(Executor):
     def shutdown(self, driver):
         logger.info('Executor shutdown')
         with self.cond:
-            for proc in self.procs.values():
+            for proc in list(self.procs.values()):
                 proc.kill()
 
     def run(self, driver):
@@ -154,7 +151,7 @@ class ProcExecutor(Executor):
                         logger.debug('stop waiting procs...')
 
         with self.cond:
-            for proc in self.procs.values():
+            for proc in list(self.procs.values()):
                 proc.kill()
                 self.reply_status(driver, proc_id,
                                   'TASK_KILLED')

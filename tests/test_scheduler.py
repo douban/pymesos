@@ -8,7 +8,7 @@ from http_parser.http import HttpParser
 from pymesos.scheduler import MesosSchedulerDriver
 
 
-def test_gen_reguest(mocker):
+def test_gen_request(mocker):
     mock_addr = 'mock_addr:1234'
     sched = mocker.Mock()
     framework = {}
@@ -398,3 +398,21 @@ def test_on_failure(mocker):
     }
     driver.on_event(event)
     sched.slaveLost.assert_called_once_with(driver, agent_id)
+
+
+def test_on_error(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': ID}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    msg = 'error message'
+    event = {
+        'type': 'ERROR',
+        'error': {
+            'message': msg
+        }
+    }
+    driver.on_event(event)
+    sched.error.assert_called_once_with(driver, msg)
+    

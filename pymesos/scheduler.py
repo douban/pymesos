@@ -94,7 +94,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             raise
 
         if resp.status < 200 or resp.status >= 300:
-            raise RuntimeError('Failed to send request %s' % (data,))
+            raise RuntimeError('Failed to send request %s: %s\n%s' % (
+                resp.status, resp.read(), data))
 
         result = resp.read()
         if not result:

@@ -5,17 +5,14 @@ import socket
 import getpass
 import logging
 from threading import RLock
+from six.moves import cPickle as pickle
 from binascii import b2a_base64, a2b_base64
 from pymesos import Scheduler, MesosSchedulerDriver
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 logger = logging.getLogger(__name__)
 CONFIG = {}
 FOREVER = 0xFFFFFFFF
-_TYPE_SIGNAL, = range(1)
+_TYPE_SIGNAL, = list(range(1))
 MIN_CPUS = 0.01
 MIN_MEMORY = 32
 
@@ -81,7 +78,7 @@ class ProcScheduler(Scheduler):
             task_id=dict(value=str(proc.id)),
             name=repr(proc),
             executor=self.executor,
-            data=b2a_base64(pickle.dumps(proc.params)),
+            data=b2a_base64(pickle.dumps(proc.params)).strip(),
             resources=[
                 dict(
                     name='cpus',
@@ -138,7 +135,7 @@ class ProcScheduler(Scheduler):
 
                 cpus, mem = get_resources(offer)
                 tasks = []
-                for proc in self.procs_pending.values():
+                for proc in list(self.procs_pending.values()):
                     if cpus >= proc.cpus and mem >= proc.mem:
                         tasks.append(self._init_task(proc, offer))
                         del self.procs_pending[proc.id]
@@ -169,7 +166,7 @@ class ProcScheduler(Scheduler):
                 if agent_id in self.agent_to_proc:
                     self.agent_to_proc[agent_id].remove(proc_id)
             else:
-                for agent_id, procs in self.agent_to_proc.iteritems():
+                for agent_id, procs in list(self.agent_to_proc.items()):
                     if proc_id in procs:
                         procs.remove(proc_id)
 
@@ -217,10 +214,10 @@ class ProcScheduler(Scheduler):
 
     def error(self, driver, message):
         with self._lock:
-            for proc in self.procs_pending.values():
+            for proc in list(self.procs_pending.values()):
                 self._call_finished(proc.id, False, message, None)
 
-            for proc in self.procs_launched.values():
+            for proc in list(self.procs_launched.values()):
                 self._call_finished(proc.id, False, message, None)
 
         self.stop()
@@ -257,7 +254,7 @@ class ProcScheduler(Scheduler):
                 del self.procs_launched[proc.id]
                 self.driver.killTask(dict(value=str(proc.id)))
 
-            for agent_id, procs in self.agent_to_proc.items():
+            for agent_id, procs in list(self.agent_to_proc.items()):
                 procs.pop(proc.id)
                 if not procs:
                     del self.agent_to_proc[agent_id]
@@ -267,7 +264,7 @@ class ProcScheduler(Scheduler):
             raise RuntimeError('driver already aborted')
 
         msg = b2a_base64(pickle.dumps((pid, type, data)))
-        for agent_id, procs in self.agent_to_proc.iteritems():
+        for agent_id, procs in list(self.agent_to_proc.items()):
             if pid in procs:
                 self.driver.sendFrameworkMessage(
                     self.executor['executor_id'],
