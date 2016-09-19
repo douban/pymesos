@@ -27,12 +27,32 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def framework_id(self, id):
         self.framework['id'] = id
 
+    def _get_version(self, master):
+        if master is not None:
+            conn = None
+            host, port = master.split(':', 2)
+            port = int(port)
+            try:
+                conn = HTTPConnection(host, port, timeout=1)
+                conn.request('GET', '/version')
+                resp = conn.getresponse()
+                if resp.status < 200 or resp.status >= 300:
+                    return
+
+                return json.loads(resp.read())['version']
+            except Exception:
+                logger.exception('Error')
+                pass
+            finally:
+                if conn:
+                    conn.close()
+
     def change_master(self, master):
+        self.version = self._get_version(master)
         super(MesosSchedulerDriver, self).change_master(master)
         if self._conn is not None:
             self._conn.close()
             self._conn = None
-            self.version = None
 
     def start(self):
         super(MesosSchedulerDriver, self).start()
@@ -303,12 +323,10 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         if self._conn is not None:
             self._conn.close()
             self._conn = None
-            self.version = None
 
         self.sched.disconnected(self)
 
     def on_subscribed(self, info):
-        self.version = self._send('', path='/version', method='GET')['version']
         reregistered = (self.framework_id is not None)
         self.framework_id = info['framework_id']['value']
         hostname, port = self.master.split(':', 2)
@@ -316,8 +334,10 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         master_info = dict(
             hostname=hostname,
             port=port,
-            version=self.version
         )
+        if self.version:
+            master_info['version'] = self.version
+
         if reregistered:
             self.sched.reregistered(self, master_info)
         else:

@@ -298,7 +298,7 @@ def test_on_subscribed(mocker):
     framework = {}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
-    driver._send = mocker.Mock(return_value={'version': '1.0.0'})
+    driver.version = '1.0.0'
     driver._master = 'mock_addr:12345'
     framework_id = {
         'value': str(uuid.uuid4())
@@ -311,7 +311,6 @@ def test_on_subscribed(mocker):
         }
     }
     driver.on_event(event)
-    driver._send.assert_called_once_with('', path='/version', method='GET')
     sched.registered.assert_called_once_with(driver, framework_id, {
         'hostname': 'mock_addr',
         'port': 12345,
