@@ -112,6 +112,11 @@ class ProcExecutor(Executor):
             for proc in list(self.procs.values()):
                 proc.kill()
 
+    def disconnected(self, driver):
+        with self.cond:
+            if driver.aborted:
+                self.cond.notify()
+
     def run(self, driver):
         driver.start()
         while not driver.aborted:

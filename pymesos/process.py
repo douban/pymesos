@@ -82,17 +82,18 @@ class Connection(object):
 
             n_parsed = self._parser.execute(buf, n_recv)
             if n_parsed != n_recv:
-                logger.error('Failed to parse')
-                return False
+                raise RuntimeError('Failed to parse')
 
             if self._stream_id is None and self._parser.is_headers_complete():
                 code = self._parser.get_status_code()
                 if code != 200:
-                    logger.error('Failed with HTTP %s', code)
-                    return False
+                    msg = self._parser.recv_body()
+                    if not self._parser.is_message_complete():
+                        msg += ' ...'
+
+                    raise RuntimeError('Failed with HTTP %s: %s' % (code, msg))
                 if not self._parser.is_chunked():
-                    logger.error('Response is not chunked')
-                    return False
+                    raise RuntimeError('Response is not chunked')
 
                 headers = {
                     k.upper(): v for k, v in list(
@@ -122,15 +123,16 @@ class Connection(object):
                         event = json.loads(data.decode('utf-8'))
                     except Exception:
                         logger.exception('Failed parse json %s', data)
-                        return False
+                        raise
 
                     try:
                         self._callback.on_event(event)
                     except Exception:
                         logger.exception('Failed to process event')
-                        return False
+                        raise
 
             if self._parser.is_message_complete():
+                logger.debug('Event stream ended')
                 return False
 
             return True
@@ -305,6 +307,10 @@ class Process(object):
             thread.interrupt_main()
 
         finally:
+            if conn:
+                conn.close()
+                conn = None
+
             with self._lock:
                 r, w = self._wakeup_fds
                 os.close(r)
