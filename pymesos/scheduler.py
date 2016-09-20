@@ -14,18 +14,40 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         super(MesosSchedulerDriver, self).__init__()
         self.sched = sched
         self.master_uri = master_uri
-        self.framework = framework
+        self._framework = framework
         self.detector = None
         self._conn = None
         self.version = None
 
     @property
+    def framework(self):
+        framework = dict(self._framework)
+        version = self.version and tuple(
+            int(n) for n in self.version.split('.')
+        )
+
+        capabilities = [
+            c for c in framework.get('capabilities', [])
+            if c['type'] != 'GPU_RESOURCES'
+        ]
+
+        if version and version >= (1, 0, 0):
+            capabilities.append(dict(type='GPU_RESOURCES'))
+
+        if capabilities:
+            framework['capabilities'] = capabilities
+        else:
+            framework.pop('capabilities', None)
+
+        return framework
+
+    @property
     def framework_id(self):
-        return self.framework.get('id')
+        return self._framework.get('id')
 
     @framework_id.setter
     def framework_id(self, id):
-        self.framework['id'] = id
+        self._framework['id'] = id
 
     def _get_version(self, master):
         if master is not None:
