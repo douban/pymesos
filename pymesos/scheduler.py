@@ -246,20 +246,21 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def acknowledgeStatusUpdate(self, status):
-        framework_id = self.framework_id
-        assert framework_id
-        acknowledge = dict()
-        acknowledge['agent_id'] = status['agent_id']
-        acknowledge['task_id'] = status['task_id']
-        acknowledge['uuid'] = status['uuid']
-        body = dict(
-            type='ACKNOWLEDGE',
-            framework_id=dict(
-                value=framework_id,
-            ),
-            acknowledge=acknowledge,
-        )
-        self._send(body)
+        if 'uuid' in status:
+            framework_id = self.framework_id
+            assert framework_id
+            acknowledge = dict()
+            acknowledge['agent_id'] = status['agent_id']
+            acknowledge['task_id'] = status['task_id']
+            acknowledge['uuid'] = status['uuid']
+            body = dict(
+                type='ACKNOWLEDGE',
+                framework_id=dict(
+                    value=framework_id,
+                ),
+                acknowledge=acknowledge,
+            )
+            self._send(body)
 
     def reconcileTasks(self, tasks):
         framework_id = self.framework_id

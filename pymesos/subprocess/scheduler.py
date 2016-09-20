@@ -87,7 +87,7 @@ class ProcScheduler(Scheduler):
             )
         ]
 
-        if proc.gpus > 0.0:
+        if proc.gpus > 0:
             resources.append(
                 dict(
                     name='gpus',
@@ -125,14 +125,14 @@ class ProcScheduler(Scheduler):
 
     def resourceOffers(self, driver, offers):
         def get_resources(offer):
-            cpus, mem, gpus = 0.0, 0.0, 0.0
+            cpus, mem, gpus = 0.0, 0.0, 0
             for r in offer['resources']:
                 if r['name'] == 'cpus':
                     cpus = float(r['scalar']['value'])
                 elif r['name'] == 'mem':
                     mem = float(r['scalar']['value'])
                 elif r['name'] == 'gpus':
-                    gpus = float(r['scalar']['value'])
+                    gpus = int(r['scalar']['value'])
 
             return cpus, mem, gpus
 

@@ -214,9 +214,9 @@ class Popen(object):
         kw['env'] = kw.get('env') or dict(list(os.environ.items()))
 
         self.id = self._new_id()
-        self.cpus = cpus or float(CONFIG.get('default_cpus', 1.0))
-        self.mem = mem or float(CONFIG.get('default_mem', 1024.0))
-        self.gpus = gpus or float(CONFIG.get('default_gpus', 0.0))
+        self.cpus = float(cpus or CONFIG.get('default_cpus', 1.0))
+        self.mem = float(mem or CONFIG.get('default_mem', 1024.0))
+        self.gpus = int(gpus or CONFIG.get('default_gpus', 0))
         self.pid = None
         self.returncode = None
         self._returncode = None
