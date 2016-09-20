@@ -9,6 +9,7 @@ from binascii import b2a_base64, a2b_base64
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import ExecutorDriver
+from .utils import parse_duration
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.executor_id = dict(value=executor_id)
         grace_shutdown_period = env.get('MESOS_EXECUTOR_SHUTDOWN_GRACE_PERIOD')
         if grace_shutdown_period:
-            self.grace_shutdown_period = float(grace_shutdown_period)
+            self.grace_shutdown_period = parse_duration(grace_shutdown_period)
         else:
             self.grace_shutdown_period = 0.0
 
