@@ -86,8 +86,6 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             self.abort()
 
     def on_event(self, event):
-        logging.error('event:%s', event)
-
         if 'type' in event:
             _type = event['type'].lower()
             if _type == 'shutdown':
