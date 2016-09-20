@@ -74,26 +74,36 @@ class ProcScheduler(Scheduler):
         return executor
 
     def _init_task(self, proc, offer):
+        resources = [
+            dict(
+                name='cpus',
+                type='SCALAR',
+                scalar=dict(value=proc.cpus),
+            ),
+            dict(
+                name='mem',
+                type='SCALAR',
+                scalar=dict(value=proc.mem),
+            )
+        ]
+
+        if proc.gpus > 0.0:
+            resources.append(
+                dict(
+                    name='gpus',
+                    type='SCALAR',
+                    scalar=dict(value=proc.gpus),
+                )
+            )
+
         task = dict(
             task_id=dict(value=str(proc.id)),
             name=repr(proc),
             executor=self.executor,
+            agent_id=offer['agent_id'],
             data=b2a_base64(pickle.dumps(proc.params)).strip(),
-            resources=[
-                dict(
-                    name='cpus',
-                    type='SCALAR',
-                    scalar=dict(value=proc.cpus),
-                ),
-                dict(
-                    name='mem',
-                    type='SCALAR',
-                    scalar=dict(value=proc.mem),
-                )
-            ],
+            resources=resources,
         )
-
-        task['agent_id'] = offer['agent_id']
 
         return task
 
@@ -115,13 +125,16 @@ class ProcScheduler(Scheduler):
 
     def resourceOffers(self, driver, offers):
         def get_resources(offer):
-            cpus, mem = 0.0, 0.0
+            cpus, mem, gpus = 0.0, 0.0, 0.0
             for r in offer['resources']:
                 if r['name'] == 'cpus':
                     cpus = float(r['scalar']['value'])
                 elif r['name'] == 'mem':
                     mem = float(r['scalar']['value'])
-            return cpus, mem
+                elif r['name'] == 'gpus':
+                    gpus = float(r['scalar']['value'])
+
+            return cpus, mem, gpus
 
         with self._lock:
             random.shuffle(offers)
@@ -133,15 +146,18 @@ class ProcScheduler(Scheduler):
                         offer['id'], self._filters(FOREVER))
                     continue
 
-                cpus, mem = get_resources(offer)
+                cpus, mem, gpus = get_resources(offer)
                 tasks = []
                 for proc in list(self.procs_pending.values()):
-                    if cpus >= proc.cpus and mem >= proc.mem:
+                    if (cpus >= proc.cpus + MIN_CPUS
+                            and mem >= proc.mem + MIN_MEMORY
+                            and gpus >= proc.gpus):
                         tasks.append(self._init_task(proc, offer))
                         del self.procs_pending[proc.id]
                         self.procs_launched[proc.id] = proc
                         cpus -= proc.cpus
                         mem -= proc.mem
+                        gpus -= proc.gpus
 
                 seconds = 5 + random.random() * 5
                 if tasks:

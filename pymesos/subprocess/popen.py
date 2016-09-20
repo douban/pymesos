@@ -191,7 +191,7 @@ class Popen(object):
                  preexec_fn=None, close_fds=None, shell=False,
                  cwd=None, env=None, universal_newlines=False,
                  startupinfo=None, creationflags=0,
-                 cpus=None, mem=None):
+                 cpus=None, mem=None, gpus=None):
 
         kw = dict(list(locals().items()))
         a = (args,)
@@ -208,6 +208,7 @@ class Popen(object):
         stderr = kw.pop('stderr', None)
         cpus = kw.pop('cpus', None)
         mem = kw.pop('mem', None)
+        gpus = kw.pop('gpus', None)
 
         kw['cwd'] = kw.get('cwd') or os.getcwd()
         kw['env'] = kw.get('env') or dict(list(os.environ.items()))
@@ -215,6 +216,7 @@ class Popen(object):
         self.id = self._new_id()
         self.cpus = cpus or float(CONFIG.get('default_cpus', 1.0))
         self.mem = mem or float(CONFIG.get('default_mem', 1024.0))
+        self.gpus = gpus or float(CONFIG.get('default_gpus', 0.0))
         self.pid = None
         self.returncode = None
         self._returncode = None
@@ -323,6 +325,7 @@ class Popen(object):
             kw=self._kw,
             cpus=self.cpus,
             mem=self.mem,
+            gpus=self.gpus,
             handlers=self._handlers,
             hostname=socket.gethostname(),
         )
