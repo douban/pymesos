@@ -278,7 +278,7 @@ class Process(object):
                 for fd in readable:
                     if fd == _wakeup_fd:
                         os.read(_wakeup_fd, select.PIPE_BUF)
-                    elif fd == conn.fileno():
+                    elif conn and fd == conn.fileno():
                         if not conn.read():
                             conn.close()
                             conn = None
