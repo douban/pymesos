@@ -18,12 +18,12 @@ install:
     - pip install tox
 script:
     - tox -e $TOX_ENV
-
 deploy:
     provider: pypi
     user: windreamer
     password:
-        secure: Qo9ucolE2ajQSbgifbqzfDYD5J09FgYEntXpak1ffPUWxJyeR6H2/uChCGqXC3+ZEkTpzc/MHshHQRRymtPZeHn5etnSHzshWu8njBVLr4I7ft2d5dNGJDxfK2j79HPVnib1MoPNC8kiqP05QD+hyMMQNZDFCHwG1D5bnWNhZYI=
+        secure: oOvA3FYYL518XSnZwbGfykxpcqpEIbDJTAh+sg3WeoIXDZzYG6vHkEDBpUDVZb/QEKQ9SlAiPDkZwT3I0b5IN7+pf//UHrN/By99ENqNpK3W9I1GYIOAO6NUwqM3/hmAROppA7Qs5C7A3b++f+0RCLvuf2xQYjQTttU+QI5zc9U=
     on:
         tags: true
+        distributions: sdist bdist_wheel
         repo: douban/pymesos
