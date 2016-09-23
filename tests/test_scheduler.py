@@ -343,7 +343,7 @@ def test_on_rescind(mocker):
     framework = {'id': ID}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
-    offer_id = str(uuid.uuid4())
+    offer_id = {'value': str(uuid.uuid4())}
     event = {
         'type': 'RESCIND',
         'rescind': {
@@ -360,8 +360,8 @@ def test_on_message(mocker):
     framework = {'id': ID}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
-    executor_id = str(uuid.uuid4())
-    agent_id = str(uuid.uuid4())
+    executor_id = {'value': str(uuid.uuid4())}
+    agent_id = {'value': str(uuid.uuid4())}
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
     data = encode_data(message.encode('utf8'))
@@ -385,8 +385,8 @@ def test_on_failure(mocker):
     framework = {'id': ID}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
-    executor_id = str(uuid.uuid4())
-    agent_id = str(uuid.uuid4())
+    executor_id = dict(value=str(uuid.uuid4()))
+    agent_id = dict(value=str(uuid.uuid4()))
     status = random.randint(0, 256)
     event = {
         'type': 'FAILURE',

@@ -5,6 +5,7 @@ import uuid
 import signal
 import logging
 from threading import Thread
+from addict import Dict
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import ExecutorDriver
@@ -15,9 +16,11 @@ logger = logging.getLogger(__name__)
 
 class MesosExecutorDriver(Process, ExecutorDriver):
 
-    def __init__(self, executor):
+    def __init__(self, executor, use_addict=False):
         env = os.environ
         agent_endpoint = env['MESOS_AGENT_ENDPOINT']
+        super(MesosExecutorDriver, self).__init__(master=agent_endpoint)
+
         framework_id = env['MESOS_FRAMEWORK_ID']
         assert framework_id
         self.framework_id = dict(value=framework_id)
@@ -38,7 +41,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.tasks = {}
         self.updates = {}
         self._conn = None
-        super(MesosExecutorDriver, self).__init__(master=agent_endpoint)
+        self._dict_cls = Dict if use_addict else dict
 
     def _delay_kill(self):
         def _():
@@ -121,20 +124,22 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             self.executor_info = executor_info
             self.framework_info = framework_info
             self.executor.registered(
-                self, executor_info, framework_info, agent_info)
+                self, self._dict_cls(executor_info),
+                self._dict_cls(framework_info), self._dict_cls(agent_info)
+            )
         else:
-            self.executor.reregistered(self, agent_info)
+            self.executor.reregistered(self, self._dict_cls(agent_info))
 
     def on_launch(self, event):
         task_info = event['task']
         task_id = task_info['task_id']['value']
         assert task_id not in self.tasks
         self.tasks[task_id] = task_info
-        self.executor.launchTask(self, task_info)
+        self.executor.launchTask(self, self._dict_cls(task_info))
 
     def on_kill(self, event):
         task_id = event['task_id']
-        self.executor.killTask(self, task_id)
+        self.executor.killTask(self, self._dict_cls(task_id))
 
     def on_acknowledged(self, event):
         task_id = event['task_id']['value']

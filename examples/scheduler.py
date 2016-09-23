@@ -20,6 +20,7 @@ EXECUTOR_MEM = 32
 
 
 class MinimalScheduler(Scheduler):
+
     def __init__(self, executor):
         self.executor = executor
 
@@ -27,10 +28,9 @@ class MinimalScheduler(Scheduler):
         filters = {'refuse_seconds': 5}
 
         for offer in offers:
-            offer = Dict(offer)
             cpus = self.getResource(offer.resources, 'cpus')
             mem = self.getResource(offer.resources, 'mem')
-            if cpus < TASK_CPU  or mem < TASK_MEM:
+            if cpus < TASK_CPU or mem < TASK_MEM:
                 continue
 
             task = Dict()
@@ -55,7 +55,6 @@ class MinimalScheduler(Scheduler):
         return 0.0
 
     def statusUpdate(self, driver, update):
-        update = Dict(update)
         logging.debug('Status update TID %s %s',
                       update.task_id.value,
                       update.state)
@@ -82,7 +81,8 @@ def main(master):
     driver = MesosSchedulerDriver(
         MinimalScheduler(executor),
         framework,
-        master
+        master,
+        use_addict=True,
     )
 
     def signal_handler(signal, frame):

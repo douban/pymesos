@@ -27,12 +27,12 @@ class MinimalExecutor(Executor):
             update.timestamp = time.time()
             driver.sendStatusUpdate(update)
 
-        thread = Thread(target=run_task, args=(Dict(task),))
+        thread = Thread(target=run_task, args=(task,))
         thread.start()
 
 
 if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.DEBUG)
-    driver = MesosExecutorDriver(MinimalExecutor())
+    driver = MesosExecutorDriver(MinimalExecutor(), use_addict=True)
     driver.run()
