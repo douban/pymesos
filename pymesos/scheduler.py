@@ -62,7 +62,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 if resp.status < 200 or resp.status >= 300:
                     return
 
-                return json.loads(resp.read())['version']
+                return json.loads(resp.read().decode('utf-8'))['version']
             except Exception:
                 logger.exception('Error')
                 pass
