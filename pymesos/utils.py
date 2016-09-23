@@ -1,3 +1,5 @@
+from binascii import b2a_base64, a2b_base64
+
 POSTFIX = {
     'ns': 1e-9,
     'us': 1e-6,
@@ -27,3 +29,11 @@ def parse_duration(s):
 
     n = float(s[:-len(postfix)])
     return n * unit
+
+
+def encode_data(data):
+    return b2a_base64(data).strip()
+
+
+def decode_data(data):
+    return a2b_base64(data)
