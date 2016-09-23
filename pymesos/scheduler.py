@@ -1,5 +1,6 @@
 import json
 import logging
+from addict import Dict
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import SchedulerDriver
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class MesosSchedulerDriver(Process, SchedulerDriver):
 
-    def __init__(self, sched, framework, master_uri):
+    def __init__(self, sched, framework, master_uri, use_addict=False):
         super(MesosSchedulerDriver, self).__init__()
         self.sched = sched
         self.master_uri = master_uri
@@ -17,6 +18,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.detector = None
         self._conn = None
         self.version = None
+        self._dict_cls = Dict if use_addict else dict
 
     @property
     def framework(self):
@@ -362,39 +364,47 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             master_info['version'] = self.version
 
         if reregistered:
-            self.sched.reregistered(self, master_info)
+            self.sched.reregistered(self, self._dict_cls(master_info))
         else:
             framework_id = dict(
                 value=self.framework_id
             )
-            self.sched.registered(self, framework_id, master_info)
+            self.sched.registered(
+                self, self._dict_cls(framework_id),
+                self._dict_cls(master_info)
+            )
 
     def on_offers(self, event):
         offers = event['offers']
-        self.sched.resourceOffers(self, offers)
+        self.sched.resourceOffers(
+            self, [self._dict_cls(offer) for offer in offers]
+        )
 
     def on_rescind(self, event):
         offer_id = event['offer_id']
-        self.sched.offerRescinded(self, offer_id)
+        self.sched.offerRescinded(self, self._dict_cls(offer_id))
 
     def on_update(self, event):
         status = event['status']
-        self.sched.statusUpdate(self, status)
+        self.sched.statusUpdate(self, self._dict_cls(status))
         self.acknowledgeStatusUpdate(status)
 
     def on_message(self, message):
         executor_id = message['executor_id']
         agent_id = message['agent_id']
         data = message['data']
-        self.sched.frameworkMessage(self, executor_id, agent_id, data)
+        self.sched.frameworkMessage(
+            self, self._dict_cls(executor_id), self._dict_cls(agent_id), data
+        )
 
     def on_failure(self, failure):
         agent_id = failure['agent_id']
         if 'executor_id' not in failure:
-            self.sched.slaveLost(self, agent_id)
+            self.sched.slaveLost(self, self._dict_cls(agent_id))
         else:
             self.sched.executorLost(
-                self, failure['executor_id'], agent_id, failure['status']
+                self, self._dict_cls(failure['executor_id']),
+                self._dict_cls(agent_id), failure['status']
             )
 
     def on_error(self, event):
