@@ -50,7 +50,7 @@ class Connection(object):
         self._callback = callback
         self._stream_id = None
         self._request = callback.gen_request()
-        self._response = ''
+        self._response = b''
 
     @property
     def addr(self):
