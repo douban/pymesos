@@ -7,9 +7,8 @@ import logging
 import traceback
 import subprocess
 from threading import Condition
-from binascii import b2a_base64, a2b_base64
 from six.moves import cPickle as pickle
-from pymesos import Executor, MesosExecutorDriver
+from .. import Executor, MesosExecutorDriver, encode_data, decode_data
 from .scheduler import _TYPE_SIGNAL
 
 logger = logging.getLogger(__name__)
@@ -44,7 +43,7 @@ class ProcExecutor(Executor):
             update['message'] = message
 
         if data:
-            update['data'] = b2a_base64(pickle.dumps(data))
+            update['data'] = encode_data(pickle.dumps(data))
 
         driver.sendStatusUpdate(update)
 
@@ -52,7 +51,7 @@ class ProcExecutor(Executor):
         logger.info('Launch task')
         proc_id = int(task['task_id']['value'])
         self.reply_status(driver, proc_id, 'TASK_RUNNING')
-        params = pickle.loads(a2b_base64(task['data']))
+        params = pickle.loads(decode_data(task['data']))
         a = params['a']
         kw = params['kw']
         mem = params['mem']
@@ -166,7 +165,7 @@ class ProcExecutor(Executor):
         driver.join()
 
     def frameworkMessage(self, driver, msg):
-        pid, type, data = pickle.loads(a2b_base64(msg))
+        pid, type, data = pickle.loads(decode_data(msg))
         logger.info('Recv framework message pid:%s, type:%s, data:%s',
                     pid, type, data)
 

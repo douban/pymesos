@@ -1,6 +1,5 @@
 import json
 import logging
-from binascii import b2a_base64
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import SchedulerDriver
@@ -283,7 +282,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         message = dict(
             agent_id=agent_id,
             executor_id=executor_id,
-            data=b2a_base64(data.encode('utf-8')).rstrip(),
+            data=data,
         )
 
         body = dict(

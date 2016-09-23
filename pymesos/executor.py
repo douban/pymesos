@@ -5,11 +5,10 @@ import uuid
 import signal
 import logging
 from threading import Thread
-from binascii import b2a_base64, a2b_base64
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import ExecutorDriver
-from .utils import parse_duration
+from .utils import parse_duration, encode_data, decode_data
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +138,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
     def on_acknowledged(self, event):
         task_id = event['task_id']['value']
-        uuid_ = uuid.UUID(bytes=a2b_base64(event['uuid']))
+        uuid_ = uuid.UUID(bytes=decode_data(event['uuid']))
         self.updates.pop(uuid_, None)
         self.tasks.pop(task_id, None)
 
@@ -214,7 +213,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
             status['timestamp'] = int(time.time())
 
         if 'uuid' not in status:
-            status['uuid'] = b2a_base64(uuid.uuid4().bytes)
+            status['uuid'] = encode_data(uuid.uuid4().bytes)
 
         if 'source' not in status:
             status['source'] = 'SOURCE_EXECUTOR'

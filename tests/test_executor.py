@@ -2,9 +2,8 @@ import json
 import uuid
 import random
 import string
-from binascii import b2a_base64
 from http_parser.http import HttpParser
-from pymesos import MesosExecutorDriver
+from pymesos import MesosExecutorDriver, encode_data
 
 
 def test_gen_request(mocker):
@@ -145,6 +144,7 @@ def test_send_message(mocker):
     driver._send = mocker.Mock()
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
+    message = encode_data(message.encode('utf8'))
     driver.sendFrameworkMessage(message)
     driver._send.assert_called_once_with({
         'type': 'MESSAGE',
@@ -285,7 +285,7 @@ def test_on_acknowledged(mocker):
             'task_id': {
                 'value': tid
             },
-            'uuid': b2a_base64(uid.bytes).strip()
+            'uuid': encode_data(uid.bytes)
         }
     }
     driver.on_event(event)

@@ -6,8 +6,7 @@ import getpass
 import logging
 from threading import RLock
 from six.moves import cPickle as pickle
-from binascii import b2a_base64, a2b_base64
-from pymesos import Scheduler, MesosSchedulerDriver
+from .. import Scheduler, MesosSchedulerDriver, encode_data, decode_data
 
 logger = logging.getLogger(__name__)
 CONFIG = {}
@@ -101,7 +100,7 @@ class ProcScheduler(Scheduler):
             name=repr(proc),
             executor=self.executor,
             agent_id=offer['agent_id'],
-            data=b2a_base64(pickle.dumps(proc.params)).strip(),
+            data=encode_data(pickle.dumps(proc.params)),
             resources=resources,
         )
 
@@ -210,7 +209,7 @@ class ProcScheduler(Scheduler):
                 message = update.get('message')
                 data = update.get('data')
                 if data:
-                    data = pickle.loads(a2b_base64(data))
+                    data = pickle.loads(decode_data(data))
 
                 self._call_finished(proc_id, success, message, data, agent_id)
                 driver.reviveOffers()
@@ -286,13 +285,14 @@ class ProcScheduler(Scheduler):
         if self.driver.aborted:
             raise RuntimeError('driver already aborted')
 
-        msg = b2a_base64(pickle.dumps((pid, type, data)))
+        msg = encode_data(pickle.dumps((pid, type, data)))
         for agent_id, procs in list(self.agent_to_proc.items()):
             if pid in procs:
                 self.driver.sendFrameworkMessage(
                     self.executor['executor_id'],
                     dict(value=agent_id),
-                    msg)
+                    msg
+                )
                 return
 
         raise RuntimeError('Cannot find agent for pid %s' % (pid,))

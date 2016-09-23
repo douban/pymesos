@@ -3,9 +3,8 @@ import uuid
 import random
 import string
 from six.moves import range
-from binascii import b2a_base64
 from http_parser.http import HttpParser
-from pymesos.scheduler import MesosSchedulerDriver
+from pymesos import MesosSchedulerDriver, encode_data
 
 
 def test_gen_request(mocker):
@@ -197,7 +196,7 @@ def test_acknowledge_status_update(mocker):
     driver._send = mocker.Mock()
     agent_id = dict(value=str(uuid.uuid4()))
     task_id = dict(value=str(uuid.uuid4()))
-    uid = b2a_base64(uuid.uuid4().bytes)
+    uid = encode_data(uuid.uuid4().bytes)
     status = {
         'agent_id': agent_id,
         'task_id': task_id,
@@ -256,6 +255,7 @@ def test_send_framework_message(mocker):
     agent_id = {'value': str(uuid.uuid4())}
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
+    message = encode_data(message.encode('utf-8'))
     driver.sendFrameworkMessage(executor_id, agent_id, message)
     driver._send.assert_called_once_with({
         'type': 'MESSAGE',
@@ -265,7 +265,7 @@ def test_send_framework_message(mocker):
         'message': {
             'agent_id': agent_id,
             'executor_id': executor_id,
-            'data': b2a_base64(message.encode('utf-8')).rstrip(),
+            'data': message,
         }
     })
 
@@ -364,7 +364,7 @@ def test_on_message(mocker):
     agent_id = str(uuid.uuid4())
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
-    data = b2a_base64(message.encode('utf8'))
+    data = encode_data(message.encode('utf8'))
 
     event = {
         'type': 'MESSAGE',
