@@ -113,40 +113,41 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         return self._conn
 
     def _send(self, body, path='/api/v1/scheduler', method='POST', headers={}):
-        conn = self._get_conn()
-        if conn is None:
-            raise RuntimeError('Not connected yet')
+        with self._lock:
+            conn = self._get_conn()
+            if conn is None:
+                raise RuntimeError('Not connected yet')
 
-        if body != '':
-            data = json.dumps(body).encode('utf-8')
-            headers['Content-Type'] = 'application/json'
-        else:
-            data = ''
+            if body != '':
+                data = json.dumps(body).encode('utf-8')
+                headers['Content-Type'] = 'application/json'
+            else:
+                data = ''
 
-        stream_id = self.stream_id
-        if stream_id:
-            headers['Mesos-Stream-Id'] = stream_id
+            stream_id = self.stream_id
+            if stream_id:
+                headers['Mesos-Stream-Id'] = stream_id
 
-        try:
-            conn.request(method, path, body=data, headers=headers)
-            resp = conn.getresponse()
-        except Exception:
-            self._conn.close()
-            self._conn = None
-            raise
+            try:
+                conn.request(method, path, body=data, headers=headers)
+                resp = conn.getresponse()
+            except Exception:
+                self._conn.close()
+                self._conn = None
+                raise
 
-        if resp.status < 200 or resp.status >= 300:
-            raise RuntimeError('Failed to send request %s: %s\n%s' % (
-                resp.status, resp.read(), data))
+            if resp.status < 200 or resp.status >= 300:
+                raise RuntimeError('Failed to send request %s: %s\n%s' % (
+                    resp.status, resp.read(), data))
 
-        result = resp.read()
-        if not result:
-            return {}
+            result = resp.read()
+            if not result:
+                return {}
 
-        try:
-            return json.loads(result.decode('utf-8'))
-        except Exception:
-            return {}
+            try:
+                return json.loads(result.decode('utf-8'))
+            except Exception:
+                return {}
 
     def _teardown(self):
         framework_id = self.framework_id
