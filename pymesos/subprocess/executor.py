@@ -69,8 +69,9 @@ class ProcExecutor(Executor):
         def _preexec():
             import resource
             (soft, hard) = resource.getrlimit(resource.RLIMIT_AS)
-            soft = min(mem, soft, hard)
-            resource.setrlimit(resource.RLIMIT_AS, (soft, hard))
+            assert mem >= 0, 'Task memory %s should be positive' % (mem,)
+            limit = mem if soft < 0 or mem < soft else soft
+            resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
 
             if preexec_fn is not None:
                 preexec_fn()
