@@ -69,10 +69,12 @@ def test_send(mocker):
 def test_teardown(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
+    driver.stream_id = str(uuid.uuid4())
+    assert driver.connected
     driver._teardown()
     driver._send.assert_called_once_with({
         'type': 'TEARDOWN',
@@ -85,7 +87,7 @@ def test_teardown(mocker):
 def test_accept_offers(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -119,7 +121,7 @@ def test_accept_offers(mocker):
 def test_launch_tasks(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -153,7 +155,7 @@ def test_launch_tasks(mocker):
 def test_decline_offer(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -173,7 +175,7 @@ def test_decline_offer(mocker):
 def test_revive_offers(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -190,7 +192,7 @@ def test_revive_offers(mocker):
 def test_acknowledge_status_update(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -219,7 +221,7 @@ def test_acknowledge_status_update(mocker):
 def test_reconcile_tasks(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -247,7 +249,7 @@ def test_reconcile_tasks(mocker):
 def test_send_framework_message(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -273,7 +275,7 @@ def test_send_framework_message(mocker):
 def test_request_resources(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._send = mocker.Mock()
@@ -321,7 +323,7 @@ def test_on_subscribed(mocker):
 def test_on_offers(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     offers = [{
@@ -340,7 +342,7 @@ def test_on_offers(mocker):
 def test_on_rescind(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     offer_id = {'value': str(uuid.uuid4())}
@@ -357,7 +359,7 @@ def test_on_rescind(mocker):
 def test_on_message(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     executor_id = {'value': str(uuid.uuid4())}
@@ -382,7 +384,7 @@ def test_on_message(mocker):
 def test_on_failure(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     executor_id = dict(value=str(uuid.uuid4()))
@@ -413,7 +415,7 @@ def test_on_failure(mocker):
 def test_on_error(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
-    framework = {'id': ID}
+    framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     msg = 'error message'
