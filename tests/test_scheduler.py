@@ -10,7 +10,9 @@ from pymesos import MesosSchedulerDriver, encode_data
 def test_gen_request(mocker):
     mock_addr = 'mock_addr:1234'
     sched = mocker.Mock()
-    framework = {}
+    framework = {
+        'failover_timeout': 0
+    }
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver._master = mock_addr
@@ -301,6 +303,7 @@ def test_on_subscribed(mocker):
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
     driver.version = '1.0.0'
+    driver._stop = False
     driver._master = 'mock_addr:12345'
     framework_id = {
         'value': str(uuid.uuid4())
@@ -326,6 +329,7 @@ def test_on_offers(mocker):
     framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
+    driver._stop = False
     offers = [{
         'offer_id': {'value': str(uuid.uuid4())}
     } for _ in range(random.randint(1, 10))]
@@ -345,6 +349,7 @@ def test_on_rescind(mocker):
     framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
+    driver._stop = False
     offer_id = {'value': str(uuid.uuid4())}
     event = {
         'type': 'RESCIND',
@@ -362,6 +367,7 @@ def test_on_message(mocker):
     framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
+    driver._stop = False
     executor_id = {'value': str(uuid.uuid4())}
     agent_id = {'value': str(uuid.uuid4())}
     message = ''.join(random.choice(string.printable)
@@ -387,6 +393,7 @@ def test_on_failure(mocker):
     framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
+    driver._stop = False
     executor_id = dict(value=str(uuid.uuid4()))
     agent_id = dict(value=str(uuid.uuid4()))
     status = random.randint(0, 256)
@@ -418,6 +425,7 @@ def test_on_error(mocker):
     framework = {'id': {'value': ID}}
     master = mocker.Mock()
     driver = MesosSchedulerDriver(sched, framework, master)
+    driver._stop = False
     msg = 'error message'
     event = {
         'type': 'ERROR',

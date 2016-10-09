@@ -41,6 +41,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         else:
             framework.pop('capabilities', None)
 
+        if 'failover_timeout' not in framework:
+            framework['failover_timeout'] = 100
+
         return framework
 
     @property
@@ -163,6 +166,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                         value=framework_id,
                     ),
                 ))
+                self._framework.pop('id', None)
 
     def acceptOffers(self, offer_ids, operations, filters=None):
         if not operations:

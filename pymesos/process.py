@@ -162,9 +162,9 @@ class Process(object):
 
     def __init__(self, master=None):
         self._master = None
-        self._stop = False
+        self._stop = True
         self._lock = RLock()
-        self._wakeup_fds = os.pipe()
+        self._wakeup_fds = None
         self._io_thread = None
         self._new_master = master
         self._stream_id = None
@@ -318,10 +318,19 @@ class Process(object):
                 self._wakeup_fds = None
 
     def start(self):
-        if not self._io_thread:
-            self._io_thread = Thread(target=self._run, name='Process IO')
-            self._io_thread.daemon = True
-            self._io_thread.start()
+        with self._lock:
+            if not self._stop:
+                logger.warning('Process already started!')
+                return
+
+        if self._io_thread:
+            self.join()
+
+        self._wakeup_fds = os.pipe()
+        self._stop = False
+        self._io_thread = Thread(target=self._run, name='Process IO')
+        self._io_thread.daemon = True
+        self._io_thread.start()
 
     def abort(self):
         self.stop()
