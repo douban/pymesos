@@ -259,6 +259,7 @@ class ProcScheduler(Scheduler):
     def stop(self):
         assert not self.driver.aborted
         self.driver.stop()
+        self.driver.join()
 
     def submit(self, proc):
         if self.driver.aborted:

@@ -319,7 +319,7 @@ class Process(object):
 
     def start(self):
         if not self._io_thread:
-            self._io_thread = Thread(target=self._run)
+            self._io_thread = Thread(target=self._run, name='Process IO')
             self._io_thread.daemon = True
             self._io_thread.start()
 
