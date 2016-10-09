@@ -92,16 +92,17 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             self.change_master(uri)
 
     def stop(self, failover=False):
-        if not failover:
-            try:
-                self._teardown()
-            except Exception:
-                logger.exception('Failed to Teardown')
+        with self._lock:
+            if not failover:
+                try:
+                    self._teardown()
+                except Exception:
+                    logger.exception('Failed to Teardown')
 
-        if self.detector:
-            self.detector.stop()
+            if self.detector:
+                self.detector.stop()
 
-        super(MesosSchedulerDriver, self).stop()
+            super(MesosSchedulerDriver, self).stop()
 
     def _get_conn(self):
         if not self.connected:
@@ -419,6 +420,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.sched.error(self, message)
 
     def on_event(self, event):
+        if self.aborted:
+            return
+
         if 'type' in event:
             _type = event['type'].lower()
             if _type == 'heartbeat':
