@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class MesosSchedulerDriver(Process, SchedulerDriver):
+    _timeout = 60
 
     def __init__(self, sched, framework, master_uri, use_addict=False):
         super(MesosSchedulerDriver, self).__init__()
@@ -44,11 +45,12 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     @property
     def framework_id(self):
-        return self._framework.get('id')
+        id = self._framework.get('id')
+        return id and id.get('value')
 
     @framework_id.setter
     def framework_id(self, id):
-        self._framework['id'] = id
+        self._framework['id'] = dict(value=id)
 
     def _get_version(self, master):
         if master is not None:
@@ -56,7 +58,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             host, port = master.split(':', 2)
             port = int(port)
             try:
-                conn = HTTPConnection(host, port, timeout=1)
+                conn = HTTPConnection(host, port, timeout=self._timeout)
                 conn.request('GET', '/version')
                 resp = conn.getresponse()
                 if resp.status < 200 or resp.status >= 300:
@@ -90,16 +92,17 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             self.change_master(uri)
 
     def stop(self, failover=False):
-        if not failover:
-            try:
-                self._teardown()
-            except Exception:
-                logger.exception('Failed to Teardown')
+        with self._lock:
+            if not failover:
+                try:
+                    self._teardown()
+                except Exception:
+                    logger.exception('Failed to Teardown')
 
-        if self.detector:
-            self.detector.stop()
+            if self.detector:
+                self.detector.stop()
 
-        super(MesosSchedulerDriver, self).stop()
+            super(MesosSchedulerDriver, self).stop()
 
     def _get_conn(self):
         if not self.connected:
@@ -110,7 +113,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
         host, port = self.master.split(':', 2)
         port = int(port)
-        self._conn = HTTPConnection(host, port, timeout=1)
+        self._conn = HTTPConnection(host, port, timeout=self._timeout)
         return self._conn
 
     def _send(self, body, path='/api/v1/scheduler', method='POST', headers={}):
@@ -151,14 +154,15 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 return {}
 
     def _teardown(self):
-        framework_id = self.framework_id
-        if framework_id:
-            self._send(dict(
-                type='TEARDOWN',
-                framework_id=dict(
-                    value=framework_id,
-                ),
-            ))
+        if self.connected:
+            framework_id = self.framework_id
+            if framework_id:
+                self._send(dict(
+                    type='TEARDOWN',
+                    framework_id=dict(
+                        value=framework_id,
+                    ),
+                ))
 
     def acceptOffers(self, offer_ids, operations, filters=None):
         if not operations:
@@ -330,12 +334,16 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.change_master(None)
 
     def gen_request(self):
-        data = json.dumps(dict(
+        request = dict(
             type='SUBSCRIBE',
             subscribe=dict(
                 framework_info=self.framework
             ),
-        ))
+        )
+        if 'id' in self._framework:
+            request['framework_id'] = self._framework['id']
+
+        data = json.dumps(request)
         request = ('POST /api/v1/scheduler HTTP/1.1\r\nHost: %s\r\n'
                    'Content-Type: application/json\r\n'
                    'Accept: application/json\r\n'
@@ -412,6 +420,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.sched.error(self, message)
 
     def on_event(self, event):
+        if self.aborted:
+            return
+
         if 'type' in event:
             _type = event['type'].lower()
             if _type == 'heartbeat':

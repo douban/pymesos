@@ -190,10 +190,19 @@ class ProcScheduler(Scheduler):
     def statusUpdate(self, driver, update):
         with self._lock:
             proc_id = int(update['task_id']['value'])
+            state = update['state']
             logger.info('Status update for proc, id=%s, state=%s' % (
-                proc_id, update['state']))
+                proc_id, state))
             agent_id = update['agent_id']['value']
-            if update['state'] == 'TASK_RUNNING':
+            if proc_id not in self.procs_launched:
+                logger.warning(
+                    'Unknown proc %s update for %s ignored',
+                    proc_id, state
+                )
+                driver.reviveOffers()
+                return
+
+            if state == 'TASK_RUNNING':
                 if agent_id in self.agent_to_proc:
                     self.agent_to_proc[agent_id].add(proc_id)
                 else:
@@ -202,10 +211,10 @@ class ProcScheduler(Scheduler):
                 proc = self.procs_launched[proc_id]
                 proc._started()
 
-            elif update['state'] not in {
+            elif state not in {
                 'TASK_STAGING', 'TASK_STARTING', 'TASK_RUNNING'
             }:
-                success = (update['state'] == 'TASK_FINISHED')
+                success = (state == 'TASK_FINISHED')
                 message = update.get('message')
                 data = update.get('data')
                 if data:

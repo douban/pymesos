@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import atexit
 import select
 import socket
@@ -230,10 +231,16 @@ class Popen(object):
         self._prepare_handlers(stdin, stdout, stderr)
         self._submit()
         with self._cond:
-            self._cond.wait(_STARTING_TIMEOUT)
-            if self._state == _STARTING:
-                self.cancel()
-                raise RuntimeError('Too long to start!')
+            deadline = time.time() + _STARTING_TIMEOUT
+            while True:
+                if self._state != _STARTING:
+                    break
+
+                delta = deadline - time.time()
+                if deadline <= 0:
+                    raise RuntimeError('Too long to start!')
+
+                self._cond.wait(delta)
 
         if self._exc:
             raise self._exc
