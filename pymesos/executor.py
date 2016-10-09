@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class MesosExecutorDriver(Process, ExecutorDriver):
+    _timeout = 10
 
     def __init__(self, executor, use_addict=False):
         env = os.environ
@@ -170,7 +171,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
         host, port = self.master.split(':', 2)
         port = int(port)
-        self._conn = HTTPConnection(host, port, timeout=1)
+        self._conn = HTTPConnection(host, port, timeout=self._timeout)
         return self._conn
 
     def _send(self, body, path='/api/v1/executor', method='POST', headers={}):

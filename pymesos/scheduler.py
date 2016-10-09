@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class MesosSchedulerDriver(Process, SchedulerDriver):
-    _timeout = 60
+    _timeout = 10
 
     def __init__(self, sched, framework, master_uri, use_addict=False):
         super(MesosSchedulerDriver, self).__init__()
