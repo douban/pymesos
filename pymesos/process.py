@@ -162,7 +162,7 @@ class Process(object):
 
     def __init__(self, master=None):
         self._master = None
-        self._stop = True
+        self._started = False
         self._lock = RLock()
         self._wakeup_fds = None
         self._io_thread = None
@@ -172,7 +172,7 @@ class Process(object):
     @property
     def aborted(self):
         with self._lock:
-            return self._stop
+            return not self._started
 
     @property
     def master(self):
@@ -204,7 +204,7 @@ class Process(object):
 
     def process_event(self, event):
         with self._lock:
-            if not self._stop:
+            if self._started:
                 self.on_event(event)
 
     def change_master(self, new_master):
@@ -232,7 +232,7 @@ class Process(object):
                 to_write = set()
                 to_read = set([_wakeup_fd])
                 with self._lock:
-                    if self._stop:
+                    if not self._started:
                         break
 
                     if self._new_master != self._master:
@@ -305,7 +305,7 @@ class Process(object):
         except Exception:
             logger.exception('Thread abort:')
             with self._lock:
-                self._stop = True
+                self._started = False
 
             global _exc_info
             _exc_info = sys.exc_info()
@@ -324,7 +324,7 @@ class Process(object):
 
     def start(self):
         with self._lock:
-            if not self._stop:
+            if self._started:
                 logger.warning('Process already started!')
                 return
 
@@ -332,7 +332,7 @@ class Process(object):
             self.join()
 
         self._wakeup_fds = os.pipe()
-        self._stop = False
+        self._started = True
         self._io_thread = Thread(target=self._run, name='Process IO')
         self._io_thread.daemon = True
         self._io_thread.start()
@@ -342,7 +342,7 @@ class Process(object):
 
     def stop(self):
         with self._lock:
-            self._stop = True
+            self._started = False
 
         self._notify()
 
