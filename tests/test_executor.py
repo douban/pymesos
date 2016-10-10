@@ -173,6 +173,7 @@ def test_on_subscribed(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     executor_info = {
         'executor_id': {
             'value': executor_id
@@ -212,6 +213,7 @@ def test_on_launch(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     task_id = str(uuid.uuid4())
     framework_info = {
         'id': {
@@ -247,6 +249,7 @@ def test_on_kill(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     task_id = {
         'value': str(uuid.uuid4())
     }
@@ -273,6 +276,7 @@ def test_on_acknowledged(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     assert driver.updates == {}
     assert driver.tasks == {}
     tid = str(uuid.uuid4())
@@ -306,6 +310,7 @@ def test_on_message(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
     event = {
@@ -331,6 +336,7 @@ def test_on_error(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
     event = {
@@ -356,6 +362,7 @@ def test_on_shutdown(mocker):
     mocker.patch('os.environ', env)
     exc = mocker.Mock()
     driver = MesosExecutorDriver(exc)
+    driver._started = True
     event = {
         'type': 'shutdown'
     }

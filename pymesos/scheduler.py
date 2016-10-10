@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class MesosSchedulerDriver(Process, SchedulerDriver):
-    _timeout = 60
+    _timeout = 10
 
     def __init__(self, sched, framework, master_uri, use_addict=False):
         super(MesosSchedulerDriver, self).__init__()
@@ -40,6 +40,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             framework['capabilities'] = capabilities
         else:
             framework.pop('capabilities', None)
+
+        if 'failover_timeout' not in framework:
+            framework['failover_timeout'] = 100
 
         return framework
 
@@ -163,6 +166,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                         value=framework_id,
                     ),
                 ))
+                self._framework.pop('id', None)
 
     def acceptOffers(self, offer_ids, operations, filters=None):
         if not operations:
@@ -420,9 +424,6 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.sched.error(self, message)
 
     def on_event(self, event):
-        if self.aborted:
-            return
-
         if 'type' in event:
             _type = event['type'].lower()
             if _type == 'heartbeat':

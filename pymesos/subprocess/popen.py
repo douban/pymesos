@@ -26,7 +26,10 @@ class Redirector(object):
         self._lock = RLock()
         self._wakeup_fd = wfd
         self._aborted = False
-        self._io_thread = Thread(target=Redirector._loop, args=(self, rfd))
+        self._io_thread = Thread(
+            target=Redirector._loop, args=(self, rfd),
+            name='Redirector'
+        )
         self._io_thread.daemon = True
         self._io_thread.start()
 
@@ -175,6 +178,7 @@ class Redirector(object):
         with self._lock:
             self._aborted = True
         os.close(self._wakeup_fd)
+        self._io_thread.join()
 
 
 _STARTING, _RUNNING, _STOPPED = list(range(3))
