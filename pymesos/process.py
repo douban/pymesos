@@ -126,7 +126,7 @@ class Connection(object):
                         raise
 
                     try:
-                        self._callback.on_event(event)
+                        self._callback.process_event(event)
                     except Exception:
                         logger.exception('Failed to process event')
                         raise
@@ -201,6 +201,11 @@ class Process(object):
 
     def on_close(self):
         raise NotImplementedError
+
+    def process_event(self, event):
+        with self._lock:
+            if not self._stop:
+                self.on_event(event)
 
     def change_master(self, new_master):
         with self._lock:
