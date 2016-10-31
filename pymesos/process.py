@@ -10,6 +10,8 @@ import socket
 import logging
 from six import reraise
 from six.moves import _thread as thread
+from six.moves.http_client import OK, TEMPORARY_REDIRECT
+from six.moves.urllib.parse import urlparse
 from threading import Thread, RLock
 from http_parser.http import HttpParser
 
@@ -86,7 +88,20 @@ class Connection(object):
 
             if self._stream_id is None and self._parser.is_headers_complete():
                 code = self._parser.get_status_code()
-                if code != 200:
+                if code == TEMPORARY_REDIRECT:
+                    headers = {
+                        k.upper(): v
+                        for k, v in list(self._parser.get_headers().items())
+                    }
+                    new_master = headers['LOCATION']
+                    new_master = urlparse(new_master).netloc or new_master
+                    logger.warning(
+                        'Try to redirect to new master: %s', new_master
+                    )
+                    self._callback.change_master(new_master)
+                    return False
+
+                elif code != OK:
                     msg = self._parser.recv_body()
                     if not self._parser.is_message_complete():
                         msg += ' ...'
@@ -96,11 +111,10 @@ class Connection(object):
                     raise RuntimeError('Response is not chunked')
 
                 headers = {
-                    k.upper(): v for k, v in list(
-                        self._parser.get_headers().items())}
-                self._stream_id = headers.get(
-                    'MESOS-STREAM-ID', ''
-                )
+                    k.upper(): v
+                    for k, v in list(self._parser.get_headers().items())
+                }
+                self._stream_id = headers.get('MESOS-STREAM-ID', '')
                 self._callback.stream_id = self._stream_id
 
             if self._parser.is_partial_body():
