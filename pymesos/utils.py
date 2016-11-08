@@ -32,7 +32,7 @@ def parse_duration(s):
 
 
 def encode_data(data):
-    return b2a_base64(data).strip()
+    return b2a_base64(data).strip().decode('ascii')
 
 
 def decode_data(data):
