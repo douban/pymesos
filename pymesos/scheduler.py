@@ -19,6 +19,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.detector = None
         self._conn = None
         self.version = None
+        self._failover = False
         self._dict_cls = Dict if use_addict else dict
 
     @property
@@ -96,16 +97,21 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def stop(self, failover=False):
         with self._lock:
-            if not failover:
-                try:
-                    self._teardown()
-                except Exception:
-                    logger.exception('Failed to Teardown')
+            self._failover = failover
+            detector = self.detector
+            self.detector = None
 
-            if self.detector:
-                self.detector.stop()
+        if detector:
+            detector.stop()
 
-            super(MesosSchedulerDriver, self).stop()
+        super(MesosSchedulerDriver, self).stop()
+
+    def _shutdown(self):
+        if not self.failover:
+            try:
+                self._teardown()
+            except Exception:
+                logger.exception('Failed to Teardown')
 
     def _get_conn(self):
         if not self.connected:
