@@ -107,7 +107,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         super(MesosSchedulerDriver, self).stop()
 
     def _shutdown(self):
-        if not self.failover:
+        if not self._failover:
             try:
                 self._teardown()
             except Exception:
