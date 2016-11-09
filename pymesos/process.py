@@ -217,9 +217,8 @@ class Process(object):
         raise NotImplementedError
 
     def process_event(self, event):
-        with self._lock:
-            if self._started:
-                self.on_event(event)
+        if self._started:
+            self.on_event(event)
 
     def change_master(self, new_master):
         with self._lock:
@@ -231,6 +230,9 @@ class Process(object):
         with self._lock:
             if self._wakeup_fds:
                 os.write(self._wakeup_fds[1], b'\0')
+
+    def _shutdown(self):
+        pass
 
     def _run(self):
         try:
@@ -326,6 +328,8 @@ class Process(object):
             thread.interrupt_main()
 
         finally:
+            self._shutdown()
+
             if conn:
                 conn.close()
                 conn = None
