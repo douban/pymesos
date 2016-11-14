@@ -207,7 +207,7 @@ class MesosSchedulerDriver(Process):
         msg = ReconcileTasksMessage()
         msg.framework_id.MergeFrom(self.framework_id)
         if statuses is not None:
-            msg.statuses = statuses
+            msg.statuses.extend(statuses)
         self.send(self.master, msg)
 
     def launchTasks(self, offer_id, tasks, filters):
