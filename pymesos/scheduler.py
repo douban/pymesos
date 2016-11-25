@@ -327,7 +327,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def onNewMasterDetectedMessage(self, data):
         master = None
         try:
-            parsed = json.loads(data)
+            parsed = json.loads(data.decode('utf-8'))
             if parsed and "address" in parsed:
                 ip = parsed["address"].get("ip")
                 port = parsed["address"].get("port")
