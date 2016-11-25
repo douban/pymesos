@@ -25,5 +25,4 @@ deploy:
         secure: oOvA3FYYL518XSnZwbGfykxpcqpEIbDJTAh+sg3WeoIXDZzYG6vHkEDBpUDVZb/QEKQ9SlAiPDkZwT3I0b5IN7+pf//UHrN/By99ENqNpK3W9I1GYIOAO6NUwqM3/hmAROppA7Qs5C7A3b++f+0RCLvuf2xQYjQTttU+QI5zc9U=
     on:
         tags: true
-        distributions: sdist bdist_wheel
         repo: douban/pymesos
