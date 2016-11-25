@@ -28,6 +28,7 @@ def _handle_sigint(signum, frame):
 
     raise KeyboardInterrupt
 
+
 _exc_info = None
 _prev_handler = signal.signal(signal.SIGINT, _handle_sigint)
 LENGTH_PATTERN = re.compile(br'\d+\n')
