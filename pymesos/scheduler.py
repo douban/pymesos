@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 class MesosSchedulerDriver(Process, SchedulerDriver):
     _timeout = 10
 
-    def __init__(self, sched, framework, master_uri, use_addict=False):
+    def __init__(self, sched, framework, master_uri,
+                 use_addict=False, implicit_acknowledgements=True):
         super(MesosSchedulerDriver, self).__init__()
         self.sched = sched
         self.master_uri = master_uri
@@ -21,6 +22,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.version = None
         self._failover = False
         self._dict_cls = Dict if use_addict else dict
+        self.implicit_acknowledgements = implicit_acknowledgements
 
     @property
     def framework(self):
@@ -405,7 +407,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def on_update(self, event):
         status = event['status']
         self.sched.statusUpdate(self, self._dict_cls(status))
-        self.acknowledgeStatusUpdate(status)
+        if self.implicit_acknowledgements:
+            self.acknowledgeStatusUpdate(status)
 
     def on_message(self, message):
         executor_id = message['executor_id']
