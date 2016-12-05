@@ -81,9 +81,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def change_master(self, master):
         self.version = self._get_version(master)
         super(MesosSchedulerDriver, self).change_master(master)
-        if self._conn is not None:
-            self._conn.close()
-            self._conn = None
+        self._close()
 
     def start(self):
         super(MesosSchedulerDriver, self).start()
@@ -147,8 +145,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 conn.request(method, path, body=data, headers=headers)
                 resp = conn.getresponse()
             except Exception:
-                self._conn.close()
-                self._conn = None
+                self._close()
                 raise
 
             if resp.status < 200 or resp.status >= 300:
@@ -364,10 +361,13 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         )
         return request.encode('utf-8')
 
-    def on_close(self):
+    def _close(self):
         if self._conn is not None:
             self._conn.close()
             self._conn = None
+
+    def on_close(self):
+        self._close()
 
         self.sched.disconnected(self)
 
