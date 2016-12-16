@@ -10,7 +10,7 @@ import socket
 import logging
 from six import reraise
 from six.moves import _thread as thread
-from six.moves.http_client import OK, TEMPORARY_REDIRECT
+from six.moves.http_client import OK, TEMPORARY_REDIRECT, SERVICE_UNAVAILABLE
 from six.moves.urllib.parse import urlparse
 from threading import Thread, RLock
 from http_parser.http import HttpParser
@@ -100,6 +100,10 @@ class Connection(object):
                         'Try to redirect to new master: %s', new_master
                     )
                     self._callback.change_master(new_master)
+                    return False
+
+                elif code == SERVICE_UNAVAILABLE:
+                    logger.warnig('Master is not available, retry.')
                     return False
 
                 elif code != OK:
