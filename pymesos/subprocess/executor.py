@@ -122,9 +122,9 @@ class ProcExecutor(Executor):
         driver.start()
         while not driver.aborted:
             try:
-                logger.debug('start waiting childrean...')
+                logger.debug('start waiting children...')
                 pid, state = os.waitpid(-1, 0)
-                logger.debug('stop waiting childrean...')
+                logger.debug('stop waiting children...')
 
                 with self.cond:
                     if pid in self.pid_to_proc:
