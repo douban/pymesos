@@ -23,7 +23,16 @@ class ProcScheduler(Scheduler):
         self.framework = self._init_framework()
         self.executor = None
         self.master = str(CONFIG.get('master', os.environ['MESOS_MASTER']))
-        self.driver = MesosSchedulerDriver(self, self.framework, self.master)
+        self.principal = str(
+            CONFIG.get('principal', os.environ.get('DEFAULT_PRINCIPAL'))
+        )
+        self.secret = str(
+            CONFIG.get('secret', os.environ.get('DEFAULT_SECRET'))
+        )
+        self.driver = MesosSchedulerDriver(
+            self, self.framework, self.master, principal=self.principal,
+            secret=self.secret
+        )
         self.procs_pending = {}
         self.procs_launched = {}
         self.agent_to_proc = {}
