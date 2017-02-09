@@ -2,6 +2,7 @@ import json
 import logging
 from addict import Dict
 from six.moves.http_client import HTTPConnection
+from binascii import b2a_base64
 from .process import Process
 from .interface import SchedulerDriver
 
@@ -12,7 +13,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     _timeout = 10
 
     def __init__(self, sched, framework, master_uri,
-                 use_addict=False, implicit_acknowledgements=True):
+                 use_addict=False, implicit_acknowledgements=True,
+                 principal=None, secret=None):
         super(MesosSchedulerDriver, self).__init__()
         self.sched = sched
         self.master_uri = master_uri
@@ -23,6 +25,14 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._failover = False
         self._dict_cls = Dict if use_addict else dict
         self.implicit_acknowledgements = implicit_acknowledgements
+        if principal is not None and secret is not None:
+            self._basic_credential = 'Basic %s' % (
+                b2a_base64(
+                    ('%s:%s' % (principal, secret)).encode('ascii')
+                ).decode('ascii').strip()
+            )
+        else:
+            self._basic_credential = None
 
     @property
     def framework(self):
@@ -140,6 +150,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             stream_id = self.stream_id
             if stream_id:
                 headers['Mesos-Stream-Id'] = stream_id
+
+            if self._basic_credential:
+                headers['Authorization'] = self._basic_credential
 
             try:
                 conn.request(method, path, body=data, headers=headers)
@@ -353,11 +366,17 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             request['framework_id'] = self._framework['id']
 
         data = json.dumps(request)
+        _authorization = ''
+        if self._basic_credential is not None:
+            _authorization = 'Authorization: %s\r\n' % (
+                self._basic_credential,
+            )
+
         request = ('POST /api/v1/scheduler HTTP/1.1\r\nHost: %s\r\n'
                    'Content-Type: application/json\r\n'
-                   'Accept: application/json\r\n'
+                   'Accept: application/json\r\n%s'
                    'Connection: close\r\nContent-Length: %s\r\n\r\n%s') % (
-                       self.master, len(data), data
+                       self.master, _authorization, len(data), data
         )
         return request.encode('utf-8')
 
