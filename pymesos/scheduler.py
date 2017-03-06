@@ -259,6 +259,20 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         )
         self._send(body)
 
+    def suppressOffers(self):
+        if not self.connected:
+            return
+
+        framework_id = self.framework_id
+        assert framework_id
+        body = dict(
+            type='SUPPRESS',
+            framework_id=dict(
+                value=framework_id,
+            ),
+        )
+        self._send(body)
+
     def killTask(self, task_id):
         framework_id = self.framework_id
         assert framework_id
