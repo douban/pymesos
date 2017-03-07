@@ -428,10 +428,17 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             )
 
     def on_offers(self, event):
-        offers = event['offers']
-        self.sched.resourceOffers(
-            self, [self._dict_cls(offer) for offer in offers]
-        )
+        offers = event.get('offers', [])
+        if offers:
+            self.sched.resourceOffers(
+                self, [self._dict_cls(offer) for offer in offers]
+            )
+
+        inverse_offers = event.get('inverse_offers', [])
+        if inverse_offers:
+            self.sched.inverseResourceOffers(
+                self, [self._dict_cls(offer) for offer in inverse_offers]
+            )
 
     def on_rescind(self, event):
         offer_id = event['offer_id']
