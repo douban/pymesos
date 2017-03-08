@@ -436,7 +436,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
         inverse_offers = event.get('inverse_offers', [])
         if inverse_offers:
-            self.sched.inverseResourceOffers(
+            self.sched.inverseOffers(
                 self, [self._dict_cls(offer) for offer in inverse_offers]
             )
 

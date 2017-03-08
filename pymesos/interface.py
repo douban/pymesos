@@ -75,7 +75,7 @@ class Scheduler(object):
       tasks will fail with a TASK_LOST status and a message saying as much).
     """
 
-  def inverseResourceOffers(self, driver, offers):
+  def inverseOffers(self, driver, offers):
     """
       Invoked when an inverse offer is sent to the framework.  An inverse
       offer and a resource offer can hold many of the same fields, but an

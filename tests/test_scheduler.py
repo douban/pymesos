@@ -341,7 +341,7 @@ def test_on_offers(mocker):
     }
     driver.on_event(event)
     sched.resourceOffers.assert_called_once_with(driver, offers)
-    sched.inverseResourceOffers.assert_not_called()
+    sched.inverseOffers.assert_not_called()
 
 
 def test_on_offers_inverse(mocker):
@@ -362,7 +362,7 @@ def test_on_offers_inverse(mocker):
     }
     driver.on_event(event)
     sched.resourceOffers.assert_not_called()
-    sched.inverseResourceOffers.assert_called_once_with(driver, offers)
+    sched.inverseOffers.assert_called_once_with(driver, offers)
 
 
 def test_on_rescind(mocker):
