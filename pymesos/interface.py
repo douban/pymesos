@@ -75,6 +75,14 @@ class Scheduler(object):
       tasks will fail with a TASK_LOST status and a message saying as much).
     """
 
+  def inverseOffers(self, driver, offers):
+    """
+      Invoked when an inverse offer is sent to the framework.  An inverse
+      offer and a resource offer can hold many of the same fields, but an
+      inverse offer requests resources rather than offering them.  Inverse
+      offers may be accepted, rejected, re-offered, and rescinded.
+    """
+
   def offerRescinded(self, driver, offerId):
     """
       Invoked when an offer is no longer valid (e.g., the slave was lost or

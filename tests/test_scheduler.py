@@ -341,6 +341,28 @@ def test_on_offers(mocker):
     }
     driver.on_event(event)
     sched.resourceOffers.assert_called_once_with(driver, offers)
+    sched.inverseOffers.assert_not_called()
+
+
+def test_on_offers_inverse(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._started = True
+    offers = [{
+        'offer_id': {'value': str(uuid.uuid4())}
+    } for _ in range(random.randint(1, 10))]
+    event = {
+        'type': 'OFFERS',
+        'offers': {
+            'inverse_offers': offers
+        }
+    }
+    driver.on_event(event)
+    sched.resourceOffers.assert_not_called()
+    sched.inverseOffers.assert_called_once_with(driver, offers)
 
 
 def test_on_rescind(mocker):
