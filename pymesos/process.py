@@ -103,7 +103,7 @@ class Connection(object):
                     return False
 
                 elif code == SERVICE_UNAVAILABLE:
-                    logger.warnig('Master is not available, retry.')
+                    logger.warning('Master is not available, retry.')
                     return False
 
                 elif code != OK:
