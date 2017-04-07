@@ -4,8 +4,6 @@ PyMesos
 .. image:: https://img.shields.io/travis/douban/pymesos.svg
    :target: https://travis-ci.org/douban/pymesos
 
-.. image:: https://img.shields.io/pypi/dm/pymesos.svg
-   :target: https://pypi.python.org/pypi/pymesos
 
 A pure python implementation of Apache Mesos scheduler and executor.
 
