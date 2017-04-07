@@ -190,6 +190,7 @@ class Popen(object):
     _next_id = 0
     _scheduler = None
     _redirector = None
+    _lock = RLock()
 
     def __init__(self, args, bufsize=0, executable=None,
                  stdin=None, stdout=None, stderr=None,
@@ -256,10 +257,11 @@ class Popen(object):
 
     def _submit(self):
         cls = self.__class__
-        if not cls._scheduler:
-            cls._scheduler = ProcScheduler()
-            cls._scheduler.start()
-            atexit.register(cls._scheduler.stop)
+        with cls._lock:
+            if not cls._scheduler:
+                cls._scheduler = ProcScheduler()
+                cls._scheduler.start()
+                atexit.register(cls._scheduler.stop)
 
         cls._scheduler.submit(self)
 
