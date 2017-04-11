@@ -54,7 +54,6 @@ class ProcExecutor(Executor):
         params = pickle.loads(decode_data(task['data']))
         a = params['a']
         kw = params['kw']
-        mem = params['mem']
         handlers = params['handlers']
         hostname = params['hostname']
 
@@ -63,22 +62,10 @@ class ProcExecutor(Executor):
             logger.info('Connect %s:%s for %s' % (hostname, handlers[i], key))
             s.connect((hostname, handlers[i]))
 
-        preexec_fn = kw.pop('preexec_fn', None)
         kw.pop('close_fds', None)
 
-        def _preexec():
-            import resource
-            (soft, hard) = resource.getrlimit(resource.RLIMIT_AS)
-            assert mem > 0, 'Task memory %s should be positive' % (mem,)
-            _mem = mem * 1024 * 1024
-            limit = _mem if soft < 0 or _mem < soft else soft
-            resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
-
-            if preexec_fn is not None:
-                preexec_fn()
-
         try:
-            p = subprocess.Popen(*a, preexec_fn=_preexec, close_fds=True, **kw)
+            p = subprocess.Popen(*a, close_fds=True, **kw)
         except:
             exc_type, exc_value, tb = sys.exc_info()
             # Save the traceback and attach it to the exception object
