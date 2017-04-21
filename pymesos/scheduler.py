@@ -1,8 +1,11 @@
 import json
+import uuid
 import logging
+from functools import partial
+from binascii import b2a_base64
+
 from addict import Dict
 from six.moves.http_client import HTTPConnection
-from binascii import b2a_base64
 from .process import Process
 from .interface import SchedulerDriver
 
@@ -25,6 +28,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._failover = False
         self._dict_cls = Dict if use_addict else dict
         self.implicit_acknowledgements = implicit_acknowledgements
+        self.principal = principal
         if principal is not None and secret is not None:
             self._basic_credential = 'Basic %s' % (
                 b2a_base64(
@@ -33,6 +37,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             )
         else:
             self._basic_credential = None
+        self.createVolumes = partial(self.persistentVolumes, action="create")
+        self.destroyVolumes = partial(self.persistentVolumes, action="destroy")
 
     @property
     def framework(self):
@@ -349,6 +355,58 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             ),
         )
         self._send(body)
+
+    def persistentVolumes(self, offer_id, volumes,
+                          role=None, filters=None, action=None):
+        '''
+        volumes is a list containing dict of size and container_path
+        '''
+        assert self.framework_id
+
+        if action not in ["create", "destroy"]:
+            raise RuntimeError(
+                'action %s invalid for persistent volumes' % action)
+
+        operations = [{
+            "type": action.upper(),
+            action: dict(
+                volumes=[dict(
+                    name='disk',
+                    type="SCALAR",
+                    scalar=dict(value=v.size),  # size in MB
+                    role=role or '*',
+                    reservation=dict(principal=self.principal),
+                    disk=dict(
+                        persistence=dict(
+                            id=str(uuid.uuid4()),
+                            principal=self.principal
+                        ),
+                        volume=dict(
+                            mode="RW",
+                            container_path=v.container_path
+                        )
+                    )
+                ) for v in volumes]
+            )
+        }]
+        print(operations)
+        self.acceptOffers([offer_id], operations, filters=filters)
+
+    def reserveResources(self, offer_id, resources, filters=None):
+        assert self.framework_id
+        operations = [dict(
+            type="RESERVE",
+            reserve=dict(resources=resources)
+        )]
+        self.acceptOffers([offer_id], operations, filters=filters)
+
+    def unreserveResources(self, offer_id, resources, filters=None):
+        assert self.framework_id
+        operations = [dict(
+            type="UNRESERVE",
+            reserve=dict(resources=resources)
+        )]
+        self.acceptOffers([offer_id], operations, filters=filters)
 
     def onNewMasterDetectedMessage(self, data):
         master = None
