@@ -14,7 +14,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def __init__(self, sched, framework, master_uri,
                  use_addict=False, implicit_acknowledgements=True,
-                 principal=None, secret=None):
+                 principal=None, secret=None, failover=False):
         super(MesosSchedulerDriver, self).__init__()
         self.sched = sched
         self.master_uri = master_uri
@@ -22,7 +22,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.detector = None
         self._conn = None
         self.version = None
-        self._failover = False
+        self._failover = failover
         self._dict_cls = Dict if use_addict else dict
         self.implicit_acknowledgements = implicit_acknowledgements
         if principal is not None and secret is not None:
