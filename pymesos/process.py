@@ -33,6 +33,7 @@ _exc_info = None
 _prev_handler = signal.signal(signal.SIGINT, _handle_sigint)
 LENGTH_PATTERN = re.compile(br'\d+\n')
 logger = logging.getLogger(__name__)
+PIPE_BUF = getattr(select, 'PIPE_BUF', 4096)
 
 
 class Connection(object):
@@ -77,7 +78,7 @@ class Connection(object):
 
     def read(self):
         try:
-            buf = self._sock.recv(select.PIPE_BUF)
+            buf = self._sock.recv(PIPE_BUF)
             n_recv = len(buf)
             if n_recv == 0:
                 logger.error('Remote %s closed', self.addr)
@@ -303,7 +304,7 @@ class Process(object):
 
                 for fd in readable:
                     if fd == _wakeup_fd:
-                        os.read(_wakeup_fd, select.PIPE_BUF)
+                        os.read(_wakeup_fd, PIPE_BUF)
                     elif conn and fd == conn.fileno():
                         if not conn.read():
                             conn.close()

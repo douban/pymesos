@@ -12,6 +12,7 @@ from subprocess import PIPE, STDOUT
 from .scheduler import ProcScheduler, CONFIG, _TYPE_SIGNAL
 
 logger = logging.getLogger(__name__)
+PIPE_BUF = getattr(select, 'PIPE_BUF', 4096)
 
 
 class Redirector(object):
@@ -54,7 +55,7 @@ class Redirector(object):
 
     def _loop(self, rfd):
         MINIMAL_INTERVAL = 0.1
-        BUFFER_SIZE = select.PIPE_BUF
+        BUFFER_SIZE = PIPE_BUF
         while True:
             more_to_read = False
             with self._lock:
@@ -389,7 +390,7 @@ class Popen(object):
         return self.returncode
 
     def communicate(self, input=None):
-        BUFFER_SIZE = select.PIPE_BUF
+        BUFFER_SIZE = PIPE_BUF
         buf = input and input[:]
         out = None
         err = None
