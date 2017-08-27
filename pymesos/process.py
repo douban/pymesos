@@ -86,7 +86,28 @@ class Connection(object):
 
             n_parsed = self._parser.execute(buf, n_recv)
             if n_parsed != n_recv:
-                raise RuntimeError('Failed to parse')
+                if hasattr(self._parser, 'errno'):
+                    # using http_parser.pyparser
+
+                    from http_parser.pyparser import INVALID_CHUNK
+                    if self._parser.errno == INVALID_CHUNK:
+                        # need more chunk data
+                        return True
+
+                    if self._parser.errno:
+                        raise RuntimeError(
+                            'Failed to parse, code:%s %s' % (
+                                self._parser.errno,
+                                self._parser.errstr,
+                            )
+                        )
+
+                else:
+                    raise RuntimeError(
+                        'Failed to parse, code:%s' % (
+                            self._parser.get_errno(),
+                        )
+                    )
 
             if self._stream_id is None and self._parser.is_headers_complete():
                 code = self._parser.get_status_code()
