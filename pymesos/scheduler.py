@@ -1,3 +1,4 @@
+import six
 import json
 import logging
 from addict import Dict
@@ -145,7 +146,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 data = json.dumps(body).encode('utf-8')
                 headers['Content-Type'] = 'application/json'
             else:
-                data = ''
+                data = b''
 
             stream_id = self.stream_id
             if stream_id:
@@ -353,7 +354,10 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
     def onNewMasterDetectedMessage(self, data):
         master = None
         try:
-            parsed = json.loads(data.decode('utf-8'))
+            if isinstance(data, six.binary_type):
+                data = data.decode('utf-8')
+
+            parsed = json.loads(data)
             if parsed and "address" in parsed:
                 ip = parsed["address"].get("ip")
                 port = parsed["address"].get("port")
