@@ -3,7 +3,7 @@ from .scheduler import MesosSchedulerDriver
 from .executor import MesosExecutorDriver
 from .utils import encode_data, decode_data
 
-__VERSION__ = '0.2.14'
+__VERSION__ = '0.2.15'
 
 __all__ = (
     'Scheduler',
