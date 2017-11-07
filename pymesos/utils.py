@@ -14,12 +14,16 @@ POSTFIX = {
 
 def parse_duration(s):
     s = s.strip()
+    t = None
     unit = None
-    postfix = None
     for n, u in POSTFIX.items():
         if s.endswith(n):
+            try:
+                t = float(s[:-len(n)])
+            except ValueError:
+                continue
+
             unit = u
-            postfix = n
             break
 
     assert unit is not None, \
@@ -27,8 +31,7 @@ def parse_duration(s):
             s, ','.join('\'%s\'' % n for n in POSTFIX)
         )
 
-    n = float(s[:-len(postfix)])
-    return n * unit
+    return t * unit
 
 
 def encode_data(data):
