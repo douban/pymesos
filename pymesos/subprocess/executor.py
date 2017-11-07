@@ -66,7 +66,7 @@ class ProcExecutor(Executor):
 
         try:
             p = subprocess.Popen(*a, close_fds=True, **kw)
-        except:
+        except Exception:
             exc_type, exc_value, tb = sys.exc_info()
             # Save the traceback and attach it to the exception object
             exc_lines = traceback.format_exception(exc_type,
@@ -117,10 +117,10 @@ class ProcExecutor(Executor):
                     if pid in self.pid_to_proc:
                         proc_id = self.pid_to_proc.pop(pid)
                         proc = self.procs.pop(proc_id)
-                        h = state >> 8
-                        l = state & 0x7F
-                        returncode = -l or h
-                        success = not l
+                        high = state >> 8
+                        low = state & 0x7F
+                        returncode = -low or high
+                        success = not low
                         logger.info('Proc[%s:%s] terminated. success=%s, '
                                     'returncode=%s', proc_id, pid, success,
                                     returncode)

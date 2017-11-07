@@ -54,7 +54,7 @@ class MasterDetector(object):
     def stop(self):
         try:
             self.zk.stop()
-        except:
+        except Exception:
             pass
 
 
