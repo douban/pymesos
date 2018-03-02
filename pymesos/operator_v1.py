@@ -165,9 +165,6 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
 
 
 class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
-    """
-        For now, supports only operations that retrieve data.
-    """
 
     def __init__(self, master_uri, operator=None, use_addict=False):
         """

@@ -999,13 +999,46 @@ def test_attach_container_input(mocker):
         }
     ]
     driver.attachContainerInput(container_id, process_ios)
-    awaited_result = '153\n{"type": "ATTACH_CONTAINER_INPUT", "attach_container_input": {"type": "CONTAINER_ID", ' + \
-                     '"container_id": {"value": "da737efb-a9d4-4622-84ef-f55eb07b861a"}}}163\n{"type": ' + \
-                     '"ATTACH_CONTAINER_INPUT", "attach_container_input": {"type": "PROCESS_IO", "process_io": ' + \
-                     '{"type": "DATA", "data": {"type": "STDIN", "data": "dGVzdAo="}}}}210\n{"type": ' + \
-                     '"ATTACH_CONTAINER_INPUT", "attach_container_input": {"type": "PROCESS_IO", "process_io": ' + \
-                     '{"type": "CONTROL", "control": {"type": "HEARTBEAT", "heartbeat": {"interval": ' + \
-                     '{"nanoseconds": 30000000000}}}}}}'
+    container_id_msg = dict(
+        type='ATTACH_CONTAINER_INPUT',
+        attach_container_input=dict(
+            type='CONTAINER_ID',
+            container_id=dict(
+                value='da737efb-a9d4-4622-84ef-f55eb07b861a',
+            )
+        ),
+    )
+    process_io_msg_1st = dict(
+        type='ATTACH_CONTAINER_INPUT',
+        attach_container_input=dict(
+            type='PROCESS_IO',
+            process_io=dict(type='DATA',
+                            data=dict(
+                                type='STDIN',
+                                data='dGVzdAo=',
+                            ),
+                            ),
+        ),
+    )
+    process_io_msg_2nd = dict(
+        type='ATTACH_CONTAINER_INPUT',
+        attach_container_input=dict(
+            type='PROCESS_IO',
+            process_io=dict(
+                type="CONTROL",
+                control=dict(
+                    type="HEARTBEAT",
+                    heartbeat=dict(
+                        interval=dict(
+                            nanoseconds=30000000000,
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    awaited_result = '153\n' + json.dumps(container_id_msg) + '163\n' + json.dumps(
+        process_io_msg_1st) + '210\n' + json.dumps(process_io_msg_2nd)
     driver._send.assert_called_once_with(awaited_result, headers={'Accept': 'application/recordio'})
 
 
