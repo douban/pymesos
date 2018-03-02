@@ -476,7 +476,8 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
             ),
         )
         # Messages are encoded in RecordIO format
-        msg_str = json.dumps(msg)
+        sort_keys = True
+        msg_str = json.dumps(msg, sort_keys=sort_keys)
         record_io = '{}\n{}'.format(len(msg_str), msg_str)
         body = ''
         body += record_io
@@ -495,7 +496,7 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
                     'PROCESS_IO messages may contain subtypes of either DATA \
                     or CONTROL')
             process_io['attach_container_input']['process_io'] = msg
-            msg_str = json.dumps(process_io)
+            msg_str = json.dumps(process_io, sort_keys=sort_keys)
             record_io = '{}\n{}'.format(len(msg_str), msg_str)
             body += record_io
         headers = {'Accept': 'application/recordio'}
