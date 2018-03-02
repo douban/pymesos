@@ -165,12 +165,12 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
 
 
 class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
-
     def __init__(self, master_uri, operator=None, use_addict=False):
         """
 
         :param master_uri:
-        :param operator: Optional. Only if you want to send requests that result in a stream of events (SUBSCRIBE).
+        :param operator: Optional. Only if you want to send requests that
+        result in a stream of events (SUBSCRIBE).
         :type operator: OperatorMaster
         """
         super(MesosOperatorMasterDriver, self).__init__(master=master_uri)
@@ -222,7 +222,8 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
 
     def on_subscribed(self, info):
         state = info['get_state']
-        logger.info('Operator client subscribed with cluster state: %s' % state)
+        logger.info(
+            'Operator client subscribed with cluster state: %s' % state)
 
     def on_task_added(self, event):
         task_info = event['task']
@@ -273,7 +274,9 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
         body = dict(
             type='UPDATE_WEIGHTS',
             update_weights=dict(
-                weight_infos=[dict(role=weight_info['role'], weight=weight_info['weight']) for weight_info in
+                weight_infos=[dict(role=weight_info['role'],
+                                   weight=weight_info['weight']) for
+                              weight_info in
                               weight_infos],
             ),
         )
@@ -353,7 +356,8 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
             type='START_MAINTENANCE',
             start_maintenance=dict(
                 machines=[dict(
-                    hostname=machine['hostname'], ip=machine['ip']) for machine in machines],
+                    hostname=machine['hostname'], ip=machine['ip']) for machine
+                    in machines],
             ),
         )
         self._send(body)
@@ -363,7 +367,8 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
             type='STOP_MAINTENANCE',
             stop_maintenance=dict(
                 machines=[dict(
-                    hostname=machine['hostname'], ip=machine['ip']) for machine in machines],
+                    hostname=machine['hostname'], ip=machine['ip']) for machine
+                    in machines],
             ),
         )
         self._send(body)
@@ -431,7 +436,8 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
             ),
         )
         if parent_id is not None:
-            body['wait_nested_container']['container_id']['parent'] = dict(value=parent_id, )
+            body['wait_nested_container']['container_id']['parent'] = dict(
+                value=parent_id, )
         self._send(body)
 
     def killNestedContainer(self, container_id, parent_id=None):
@@ -444,7 +450,8 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
             ),
         )
         if parent_id is not None:
-            body['kill_nested_container']['container_id']['parent'] = dict(value=parent_id, )
+            body['kill_nested_container']['container_id']['parent'] = dict(
+                value=parent_id, )
         self._send(body)
 
     def launchNestedContainerSession(self, launch_nested_container_session):
@@ -456,8 +463,9 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
         self._send(body, headers=headers)
 
     def attachContainerInput(self, container_id, process_ios):
-        # The first message sent over an ATTACH_CONTAINER_INPUT stream must be of type CONTAINER_ID and contain the
-        # ContainerID of the container being attached to.
+        # The first message sent over an ATTACH_CONTAINER_INPUT stream must be
+        # of type CONTAINER_ID and contain the ContainerID of the container
+        # being attached to.
         msg = dict(
             type='ATTACH_CONTAINER_INPUT',
             attach_container_input=dict(
@@ -483,7 +491,9 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
         )
         for msg in process_ios:
             if msg['type'] != 'DATA' and msg['type'] != 'CONTROL':
-                raise ValueError('PROCESS_IO messages may contain subtypes of either DATA or CONTROL')
+                raise ValueError(
+                    'PROCESS_IO messages may contain subtypes of either DATA \
+                    or CONTROL')
             process_io['attach_container_input']['process_io'] = msg
             msg_str = json.dumps(process_io)
             record_io = '{}\n{}'.format(len(msg_str), msg_str)
@@ -500,7 +510,8 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
                 )
             ),
         )
-        headers = {'Accept': 'application/recordio', 'Message-Accept': 'application/json'}
+        headers = {'Accept': 'application/recordio',
+                   'Message-Accept': 'application/json'}
         return self._send(body, headers=headers)
 
     def removeNestedContainer(self, container_id, parent_id=None):
@@ -513,7 +524,8 @@ class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
             ),
         )
         if parent_id is not None:
-            body['remove_nested_container']['container_id']['parent'] = dict(value=parent_id, )
+            body['remove_nested_container']['container_id']['parent'] = dict(
+                value=parent_id, )
         self._send(body)
 
     def addResourceProviderConfig(self, info):

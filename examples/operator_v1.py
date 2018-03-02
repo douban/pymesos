@@ -5,6 +5,7 @@ import sys
 
 from pymesos import MesosOperatorMasterDriver, OperatorMaster
 
+
 class MinimalOperator(OperatorMaster):
     def __init__(self):
         pass
@@ -43,6 +44,7 @@ def main(master):
     res = driver.getHealth()
     print(res)
     driver.run()
+
 
 if __name__ == '__main__':
     import logging

@@ -1,10 +1,8 @@
 import json
 import uuid
 import random
-import string
-from six.moves import range
 from http_parser.http import HttpParser
-from pymesos import MesosOperatorAgentDriver, MesosOperatorMasterDriver, encode_data
+from pymesos import MesosOperatorAgentDriver, MesosOperatorMasterDriver
 
 
 def test_gen_request(mocker):
@@ -984,8 +982,7 @@ def test_attach_container_input(mocker):
                 'type': 'STDIN',
                 'data': 'dGVzdAo='
             }
-        }
-        ,
+        },
         {
             'type': 'CONTROL',
             'control': {
@@ -1037,9 +1034,11 @@ def test_attach_container_input(mocker):
             ),
         ),
     )
-    awaited_result = '153\n' + json.dumps(container_id_msg) + '163\n' + json.dumps(
+    awaited_result = '153\n' + json.dumps(
+        container_id_msg) + '163\n' + json.dumps(
         process_io_msg_1st) + '210\n' + json.dumps(process_io_msg_2nd)
-    driver._send.assert_called_once_with(awaited_result, headers={'Accept': 'application/recordio'})
+    driver._send.assert_called_once_with(awaited_result, headers={
+        'Accept': 'application/recordio'})
 
 
 def test_attach_container_output(mocker):
@@ -1055,7 +1054,8 @@ def test_attach_container_output(mocker):
                 'value': container_id,
             },
         },
-    }, headers={'Accept': 'application/recordio', 'Message-Accept': 'application/json'})
+    }, headers={'Accept': 'application/recordio',
+                'Message-Accept': 'application/json'})
 
 
 def test_remove_nested_container(mocker):
@@ -1103,7 +1103,8 @@ def test_add_resource_provider_config(mocker):
                         ],
                         'command': {
                             'shell': 'true',
-                            'value': './test-csi-plugin --available_capacity=2GB --work_dir=workdir',
+                            'value': './test-csi-plugin --available_capacity=\
+                            2GB --work_dir=workdir',
                             'uris': [
                                 {
                                     'value': '/PATH/TO/test-csi-plugin',
@@ -1112,8 +1113,10 @@ def test_add_resource_provider_config(mocker):
                             ]
                         },
                         'resources': [
-                            {'name': 'cpus', 'type': 'SCALAR', 'scalar': {'value': random.uniform(0, 200)}},
-                            {'name': 'mem', 'type': 'SCALAR', 'scalar': {'value': random.uniform(0, 200)}}
+                            {'name': 'cpus', 'type': 'SCALAR',
+                             'scalar': {'value': random.uniform(0, 200)}},
+                            {'name': 'mem', 'type': 'SCALAR',
+                             'scalar': {'value': random.uniform(0, 200)}}
                         ]
                     }
                 ]
@@ -1154,7 +1157,8 @@ def test_update_resource_provider_config(mocker):
                         ],
                         'command': {
                             'shell': 'true',
-                            'value': './test-csi-plugin --available_capacity=2GB --work_dir=workdir',
+                            'value': './test-csi-plugin --available_capacity=\
+                            2GB --work_dir=workdir',
                             'uris': [
                                 {
                                     'value': '/PATH/TO/test-csi-plugin',
@@ -1163,8 +1167,10 @@ def test_update_resource_provider_config(mocker):
                             ]
                         },
                         'resources': [
-                            {'name': 'cpus', 'type': 'SCALAR', 'scalar': {'value': random.uniform(0, 200)}},
-                            {'name': 'mem', 'type': 'SCALAR', 'scalar': {'value': random.uniform(0, 200)}}
+                            {'name': 'cpus', 'type': 'SCALAR',
+                             'scalar': {'value': random.uniform(0, 200)}},
+                            {'name': 'mem', 'type': 'SCALAR',
+                             'scalar': {'value': random.uniform(0, 200)}}
                         ]
                     }
                 ]
