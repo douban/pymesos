@@ -29,6 +29,9 @@ __all__ = (
   'ExecutorDriver',
   'Scheduler',
   'SchedulerDriver',
+  'OperatorMasterDriver'
+  'OperatorMaster',
+  'OperatorAgentDriver',
 )
 
 class Scheduler(object):
@@ -406,4 +409,374 @@ class ExecutorDriver(object):
       Sends a message to the framework scheduler. These messages are best
       effort; do not expect a framework message to be retransmitted in any
       reliable fashion.
+    """
+
+
+class OperatorDaemonDriver(object):
+  """
+    Operator HTTP API: Operations common to master daemon and agent daemon.
+  """
+
+  def getHealth(self):
+    """
+      This call retrieves the health status of master daemon or agent daemon.
+    """
+
+  def getFlags(self):
+    """
+      This call retrieves the daemon's overall flag configuration.
+    """
+
+  def getVersion(self):
+    """
+      This call retrieves the daemon's version information.
+    """
+
+  def getMetrics(self, timeout):
+    """
+      This call gives the snapshot of current metrics to the end user. If timeout is set in the call, it would be used
+      to determine the maximum amount of time the API will take to respond. If the timeout is exceeded, some metrics may
+      not be included in the response.
+    """
+
+  def getLoggingLevel(self):
+    """
+      This call retrieves the daemon's logging level.
+    """
+
+  def setLoggingLevel(self, level, duration):
+    """
+      Sets the logging verbosity level for a specified duration for master daemon or agent daemon. Mesos uses glog for
+      logging. The library only uses verbose logging which means nothing will be output unless the verbosity level is
+      set (by default it's 0, libprocess uses levels 1, 2, and 3).
+    """
+
+  def listFiles(self, path):
+    """
+      This call retrieves the file listing for a directory in master daemon or agent daemon.
+    """
+
+  def readFile(self, path, offset, length):
+    """
+      Reads data from a file. This call takes path of the file to be read in the daemon, offset to start reading
+      position and length for the maximum number of bytes to read.
+    """
+
+  def getState(self):
+    """
+      This call retrieves the overall cluster state.
+    """
+
+  def getFrameworks(self):
+    """
+      This call retrieves information about all the frameworks known to the master daemon or agent daemon.
+    """
+
+  def getExecutors(self):
+    """
+      Queries about all the executors known to the master daemon or agent daemon.
+    """
+
+  def getTasks(self):
+    """
+      Query about all the tasks known to the master daemon or agent daemon.
+    """
+
+
+class OperatorMasterDriver(OperatorDaemonDriver):
+  """
+    Interface for Mesos operator drivers. Users may wish to extend this
+    class in mock objects for tests.
+  """
+
+  def start(self):
+    """
+      Starts the operator driver. This needs to be called before any other
+      driver calls are made.
+    """
+
+  def stop(self):
+    """
+      Stops the operator driver.
+    """
+
+  def abort(self):
+    """
+      Aborts the driver so that no more callbacks can be made to the
+      operator.  The semantics of abort and stop have deliberately been
+      separated so that code can detect an aborted driver (i.e., via the
+      return status of OperatorMasterDriver.join), and instantiate and start
+      another driver if desired (from within the same process, although this
+      functionality is currently not supported for executors).
+    """
+
+  def join(self):
+    """
+      Waits for the driver to be stopped or aborted, possibly blocking the
+      current thread indefinitely.  The return status of this function can
+      be used to determine if the driver was aborted (see mesos.proto for a
+      description of Status).
+    """
+
+  def run(self):
+    """
+      Starts and immediately joins (i.e., blocks on) the driver.
+    """
+
+  def getAgents(self):
+    """
+      This call retrieves information about all the agents known to the master.
+    """
+
+  def getRoles(self):
+    """
+      Query the information about roles.
+    """
+
+  def getWeights(self):
+    """
+      This call retrieves the information about role weights.
+    """
+
+  def updateWeights(self, weight_infos):
+    """
+      This call updates weights for specific role. This call takes weight_infos which needs role value and weight value.
+    """
+
+  def getMaster(self):
+    """
+      This call retrieves the information on master.
+    """
+
+  def reserveResources(self, agent_id, resources):
+    """
+      This call reserve resources dynamically on a specific agent. This call takes agent_id and resources details like
+      the following.
+    """
+
+  def unreserveResources(self, agent_id, resources):
+    """
+      This call unreserve resources dynamically on a specific agent. This call takes agent_id and resources details like
+      the following.
+    """
+
+  def createVolumes(self, agent_id, volumes):
+    """
+      This call create persistent volumes on reserved resources. The request is forwarded asynchronously to the Mesos
+      agent where the reserved resources are located. That asynchronous message may not be delivered or creating the
+      volumes at the agent might fail. This call takes agent_id and volumes details like the following.
+    """
+
+  def destroyVolumes(self, agent_id, volumes):
+    """
+      This call destroys persistent volumes. The request is forwarded asynchronously to the Mesos agent where the
+      reserved resources are located.
+    """
+
+  def getMaintenanceStatus(self):
+    """
+      This call retrieves the cluster's maintenance status.
+    """
+
+  def getMaintenanceSchedule(self):
+    """
+      This call retrieves the cluster's maintenance status.
+    """
+
+  def updateMaintenanceSchedule(self, windows):
+    """
+      This call retrieves the cluster's maintenance schedule.
+    """
+
+  def startMaintenance(self, machines):
+    """
+      This call starts the maintenance of the cluster, this would bring a set of machines down.
+    """
+
+  def stopMaintenance(self, machines):
+    """
+      Stops the maintenance of the cluster, this would bring a set of machines back up.
+    """
+
+  def getQuota(self):
+    """
+      This call retrieves the cluster's configured quotas.
+    """
+
+  def setQuota(self, quota_request):
+    """
+      This call sets the quota for resources to be used by a particular role.
+    """
+
+  def removeQuota(self, role):
+    """
+      This call removes the quota for a particular role.
+    """
+
+  def markAgentGone(self, agent_id):
+    """
+      This call can be used by operators to assert that an agent instance has failed and is never coming back
+      (e.g., ephemeral instance from cloud provider). The master would shutdown the agent and send TASK_GONE_BY_OPERATOR
+      updates for all the running tasks. This signal can be used by stateful frameworks to re-schedule their workloads
+      (volumes, reservations etc.) to other agent instances. It is possible that the tasks might still be running if the
+      operator's assertion was wrong and the agent was partitioned away from the master. The agent would be shutdown
+      when it tries to re-register with the master when the partition heals. This call is idempotent.
+    """
+
+class OperatorMaster(object):
+  """
+    Base class for Mesos operators. Users' operators should extend this
+    class to get default implementations of methods they don't override.
+  """
+
+  # def heartbeat(self):
+  #   """
+  #     Periodically sent by the master to the subscriber according to 'Subscribed.heartbeat_interval_seconds'. If the
+  #     subscriber does not receive any events (including heartbeats) for an extended period of time (e.g., 5 x
+  #     heartbeat_interval_seconds), it is likely that the connection is lost or there is a network partition. In that
+  #     case, the subscriber should close the existing subscription connection and resubscribe using a backoff strategy.
+  #   """
+
+  def taskAdded(self, task_info):
+    """
+      Invoked whenever a task has been added to the master. This can happen either when a new task launch is processed
+      by the master or when an agent re-registers with a failed over master.
+    """
+
+  def taskUpdated(self, task_info):
+    """
+      Invoked whenever the state of the task changes in the master. This can happen when a status update is received or
+      generated by the master. Since status updates are retried by the agent, not all status updates received by the
+      master result in the event being sent.
+    """
+
+  def frameworkAdded(self, framework_info):
+    """
+      Sent whenever a framework becomes known to the master. This can happen when a new framework registers with the
+      master.
+    """
+
+  def frameworkUpdated(self, framework_info):
+    """
+      Sent whenever a framework re-registers with the master upon a disconnection (network error) or upon a master
+      failover.
+    """
+
+  def frameworkRemoved(self, framework_info):
+    """
+      Sent whenever a framework is removed. This can happen when a framework is explicitly teardown by the operator or
+      if it fails to re-register with the master within the failover timeout.
+    """
+
+  def agentAdded(self, agent_info):
+    """
+      Sent whenever an agent becomes known to it. This can happen when an agent registered for the first time, or
+      reregistered after a master failover.
+    """
+
+  def agentRemoved(self, agent_id):
+    """
+      Sent whenever a agent is removed. This can happen when the agent is scheduled for maintenance. (NOTE: It's
+      possible that an agent might become active once it has been removed, i.e. if the master has gc'ed its list of
+      known "dead" agents. See MESOS-5965 for context).
+    """
+
+class OperatorAgentDriver(OperatorDaemonDriver):
+  """
+    This API contains all the calls accepted by the agent.
+  """
+
+  def getContainers(self):
+    """
+      This call retrieves information about containers running on this agent. It contains ContainerStatus and
+      ResourceStatistics along with some metadata of the containers.
+    """
+
+  def launchNestedContainer(self, launch_nested_container):
+    """
+      This call launches a nested container. Any authorized entity, including the executor itself, its tasks, or the
+      operator can use this API to launch a nested container.
+    """
+
+  def waitNestedContainer(self, container_id, parent_id=None):
+    """
+      This call waits for a nested container to terminate or exit. Any authorized entity, including the executor itself,
+      its tasks, or the operator can use this API to wait on a nested container.
+    """
+
+  def killNestedContainer(self, container_id, parent_id=None):
+    """
+      This call initiates the destruction of a nested container. Any authorized entity, including the executor itself,
+      its tasks, or the operator can use this API to kill a nested container.
+    """
+
+  def launchNestedContainerSession(self, launch_nested_container_session):
+    """
+      This call launches a nested container whose lifetime is tied to the lifetime of the HTTP call establishing this
+      connection. The STDOUT and STDERR of the nested container is streamed back to the client so long as the connection
+      is active.
+    """
+
+  def attachContainerInput(self, container_id):
+    """
+      This call attaches to the STDIN of the primary process of a container and streams input to it. This call can only
+      be made against containers that have been launched with an associated IOSwitchboard (i.e. nested containers
+      launched via a LAUNCH_NESTED_CONTAINER_SESSION call or normal containers launched with a TTYInfo in their
+      ContainerInfo). Only one ATTACH_CONTAINER_INPUT call can be active for a given container at a time. Subsequent
+      attempts to attach will fail.
+
+      The first message sent over an ATTACH_CONTAINER_INPUT stream must be of type CONTAINER_ID and contain the
+      ContainerID of the container being attached to. Subsequent messages must be of type PROCESS_IO, but they may
+      contain subtypes of either DATA or CONTROL. DATA messages must be of type STDIN and contain the actual data to
+      stream to the STDIN of the container being attached to. Currently, the only valid CONTROL message sends a
+      heartbeat to keep the connection alive. We may add more CONTROL messages in the future.
+    """
+
+  def attachContainerOutput(self, container_id):
+    """
+      This call attaches to the STDOUT and STDERR of the primary process of a container and streams its output back to
+      the client. This call can only be made against containers that have been launched with an associated IOSwitchboard
+      (i.e. nested containers launched via a LAUNCH_NESTED_CONTAINER_SESSION call or normal containers launched with a
+      TTYInfo in their ContainerInfo field). Multiple ATTACH_CONTAINER_OUTPUT calls can be active for a given container
+      at once.
+    """
+
+  def removeNestedContainer(self, container_id, parent_id = None):
+    """
+      This call triggers the removal of a nested container and its artifacts (e.g., the sandbox and runtime directories).
+      This call can only be made against containers that have already terminated, and whose parent container has not
+      been destroyed. Any authorized entity, including the executor itself, its tasks, or the operator can use this API
+      call.
+    """
+
+  def addResourceProviderConfig(self, info):
+    """
+      This call launches a Local Resource Provider on the agent with the specified ResourceProviderInfo.
+    """
+
+  def updateResourceProviderConfig(self, info):
+    """
+      This call updates a Local Resource Provider on the agent with the specified ResourceProviderInfo.
+    """
+
+  def removeResourceProviderConfig(self, type, name):
+    """
+      This call terminates a given Local Resource Provider on the agent and prevents it from being launched again until
+      the config is added back. The master and the agent will think the resource provider has disconnected, similar to
+      agent disconnection.
+      If there exists a task that is using the resources provided by the resource provider, its execution will not be
+      affected. However, offer operations for the local resource provider will not be successful. In fact, if a local
+      resource provider is disconnected, the master will rescind the offers related to that local resource provider,
+      effectively disallowing frameworks to perform operations on the disconnected local resource provider.
+      The local resource provider can be re-added after its removal using ADD_RESOURCE_PROVIDER_CONFIG. Note that
+      removing a local resource provider is different than marking a local resource provider as gone, in which case the
+      local resource provider will not be allowed to be re-added. Marking a local resource provider as gone is not yet
+      supported.
+    """
+
+  def pruneImages(self, excluded_images=None):
+    """
+      This call triggers garbage collection for container images. This call can only be made when all running containers
+      are launched with Mesos version 1.5 or newer. An optional list of excluded images from GC can be speficied via
+      prune_images.excluded_images field.
     """
