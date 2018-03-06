@@ -218,7 +218,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         assert framework_id
 
         accept_inverse_offers = dict(
-            offer_ids=[offer_ids] if isinstance(offer_ids, dict) else offer_ids
+            inverse_offer_ids=[offer_ids]
+            if isinstance(offer_ids, dict)
+            else offer_ids
         )
 
         if filters is not None:
@@ -272,7 +274,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         framework_id = self.framework_id
         assert framework_id
         decline_inverse_offers = dict(
-            offer_ids=[offer_ids] if isinstance(offer_ids, dict) else offer_ids
+            inverse_offer_ids=[offer_ids]
+            if isinstance(offer_ids, dict)
+            else offer_ids
         )
 
         if filters is not None:
