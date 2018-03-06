@@ -138,6 +138,17 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.tasks[task_id] = task_info
         self.executor.launchTask(self, self._dict_cls(task_info))
 
+    def on_launch_group(self, event):
+        task_group = event['task_group']
+        task_infos = []
+        for task_info in task_group['tasks']:
+            task_id = task_info['task_id']['value']
+            assert task_id not in self.tasks
+            self.tasks[task_id] = task_info
+            task_infos.append(self._dict_cls(task_info))
+
+        self.executor.launchTaskGroup(self, task_infos)
+
     def on_kill(self, event):
         task_id = event['task_id']
         self.executor.killTask(self, self._dict_cls(task_id))

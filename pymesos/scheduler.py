@@ -195,7 +195,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         assert framework_id
 
         accept = dict(
-            offer_ids=offer_ids,
+            offer_ids=[offer_ids]
+            if isinstance(offer_ids, dict)
+            else offer_ids,
             operations=operations,
         )
 
@@ -208,6 +210,26 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 value=framework_id,
             ),
             accept=accept,
+        )
+        self._send(body)
+
+    def acceptInverseOffers(self, offer_ids, filters=None):
+        framework_id = self.framework_id
+        assert framework_id
+
+        accept_inverse_offers = dict(
+            offer_ids=[offer_ids] if isinstance(offer_ids, dict) else offer_ids
+        )
+
+        if filters is not None:
+            accept_inverse_offers['filters'] = filters
+
+        body = dict(
+            type='ACCEPT_INVERSE_OFFERS',
+            framework_id=dict(
+                value=framework_id,
+            ),
+            accept_inverse_offers=accept_inverse_offers,
         )
         self._send(body)
 
@@ -243,6 +265,25 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 value=framework_id,
             ),
             decline=decline,
+        )
+        self._send(body)
+
+    def declineInverseOffer(self, offer_ids, filters=None):
+        framework_id = self.framework_id
+        assert framework_id
+        decline_inverse_offers = dict(
+            offer_ids=[offer_ids] if isinstance(offer_ids, dict) else offer_ids
+        )
+
+        if filters is not None:
+            decline_inverse_offers['filters'] = filters
+
+        body = dict(
+            type='DECLINE_INVERSE_OFFERS',
+            framework_id=dict(
+                value=framework_id,
+            ),
+            decline_inverse_offers=decline_inverse_offers,
         )
         self._send(body)
 
@@ -305,6 +346,24 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             )
             self._send(body)
 
+    def acknowledgeOperationStatusUpdate(self, status):
+        if 'uuid' in status and 'operation_id' in status:
+            framework_id = self.framework_id
+            assert framework_id
+            acknowledge_operation_status = dict(
+                uuid=status['uuid'],
+                operation_id=status['operation_id']
+            )
+
+            body = dict(
+                type='ACKNOWLEDGE_OPERATION_STATUS',
+                framework_id=dict(
+                    value=framework_id,
+                ),
+                acknowledge_operation_status=acknowledge_operation_status,
+            )
+            self._send(body)
+
     def reconcileTasks(self, tasks):
         framework_id = self.framework_id
         assert framework_id
@@ -315,6 +374,33 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             ),
             reconcile=dict(
                 tasks=[dict(task_id=task['task_id']) for task in tasks],
+            ),
+        )
+        self._send(body)
+
+    def reconcileOperations(self, operations_):
+        framework_id = self.framework_id
+        assert framework_id
+        operations = []
+        for op_ in operations_:
+            op = dict(
+                operation_id=op_['operation_id']
+            )
+            if 'agent_id' in op_:
+                op['agent_id'] = op_['agent_id']
+
+            if 'resource_provider_id' in op_:
+                op['resource_provider_id'] = op_['resource_provider_id']
+
+            operations.append(op)
+
+        body = dict(
+            type='RECONCILE_OPERATIONS',
+            framework_id=dict(
+                value=framework_id,
+            ),
+            reconcile_operations=dict(
+                operations=operations,
             ),
         )
         self._send(body)
@@ -438,6 +524,14 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 self, [self._dict_cls(offer) for offer in offers]
             )
 
+        version = self.version and tuple(
+            int(n) for n in self.version.split('.')
+        )
+
+        if not (version and version >= (1, 0, 0)):
+            self.on_inverse_offers(event)
+
+    def on_inverse_offers(self, event):
         inverse_offers = event.get('inverse_offers', [])
         if inverse_offers:
             self.sched.inverseOffers(
@@ -448,11 +542,21 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         offer_id = event['offer_id']
         self.sched.offerRescinded(self, self._dict_cls(offer_id))
 
+    def on_rescind_inverse_offer(self, event):
+        offer_id = event['offer_id']
+        self.sched.inverseOfferRescinded(self, self._dict_cls(offer_id))
+
     def on_update(self, event):
         status = event['status']
         self.sched.statusUpdate(self, self._dict_cls(status))
         if self.implicit_acknowledgements:
             self.acknowledgeStatusUpdate(status)
+
+    def on_update_operation_status(self, event):
+        status = event['status']
+        self.sched.operationStatusUpdate(self, self._dict_cls(status))
+        if self.implicit_acknowledgements:
+            self.acknowledgeOperationStatusUpdate(status)
 
     def on_message(self, message):
         executor_id = message['executor_id']
