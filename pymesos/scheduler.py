@@ -191,6 +191,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         if not operations:
             return self.declineOffer(offer_ids, filters=filters)
 
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
 
@@ -239,6 +242,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         if not tasks:
             return self.declineOffer(offer_ids, filters=filters)
 
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
 
@@ -252,6 +258,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.acceptOffers(offer_ids, operations, filters=filters)
 
     def declineOffer(self, offer_ids, filters=None):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         decline = dict(
@@ -271,6 +280,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def declineInverseOffer(self, offer_ids, filters=None):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         decline_inverse_offers = dict(
@@ -320,6 +332,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def killTask(self, task_id):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         body = dict(
@@ -334,7 +349,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def acknowledgeStatusUpdate(self, status):
-        if 'uuid' in status:
+        if self.connected and 'uuid' in status:
             framework_id = self.framework_id
             assert framework_id
             acknowledge = dict()
@@ -351,24 +366,23 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
             self._send(body)
 
     def acknowledgeOperationStatusUpdate(self, status):
-        if 'uuid' in status and 'operation_id' in status:
+        if self.connected and 'uuid' in status and 'operation_id' in status:
             framework_id = self.framework_id
             assert framework_id
-            acknowledge_operation_status = dict(
-                uuid=status['uuid'],
-                operation_id=status['operation_id']
-            )
 
             body = dict(
                 type='ACKNOWLEDGE_OPERATION_STATUS',
                 framework_id=dict(
                     value=framework_id,
                 ),
-                acknowledge_operation_status=acknowledge_operation_status,
+                acknowledge_operation_status=status,
             )
             self._send(body)
 
     def reconcileTasks(self, tasks):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         body = dict(
@@ -383,6 +397,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def reconcileOperations(self, operations_):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         operations = []
@@ -410,6 +427,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def sendFrameworkMessage(self, executor_id, agent_id, data):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         message = dict(
@@ -428,6 +448,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self._send(body)
 
     def requestResources(self, requests):
+        if not self.connected:
+            return
+
         framework_id = self.framework_id
         assert framework_id
         body = dict(
