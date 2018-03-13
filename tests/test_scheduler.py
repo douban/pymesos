@@ -108,6 +108,9 @@ def test_accept_offers(mocker):
         }
     }]
     driver.acceptOffers(offer_ids, operations)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.acceptOffers(offer_ids, operations)
     driver._send.assert_called_once_with({
         'type': 'ACCEPT',
         'framework_id': {
@@ -137,6 +140,9 @@ def test_launch_tasks(mocker):
         }
     ]
     driver.launchTasks(offer_ids, tasks)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.launchTasks(offer_ids, tasks)
     driver._send.assert_called_once_with({
         'type': 'ACCEPT',
         'framework_id': {
@@ -163,6 +169,9 @@ def test_decline_offer(mocker):
     driver._send = mocker.Mock()
     offer_ids = [str(uuid.uuid4()) for _ in range(random.randint(1, 10))]
     driver.declineOffer(offer_ids)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.declineOffer(offer_ids)
     driver._send.assert_called_once_with({
         'type': 'DECLINE',
         'framework_id': {
@@ -170,6 +179,29 @@ def test_decline_offer(mocker):
         },
         'decline': {
             'offer_ids': offer_ids
+        }
+    })
+
+
+def test_decline_inverse_offer(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    offer_ids = [str(uuid.uuid4()) for _ in range(random.randint(1, 10))]
+    driver.declineInverseOffer(offer_ids)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.declineInverseOffer(offer_ids)
+    driver._send.assert_called_once_with({
+        'type': 'DECLINE_INVERSE_OFFERS',
+        'framework_id': {
+            'value': ID
+        },
+        'decline_inverse_offers': {
+            'inverse_offer_ids': offer_ids
         }
     })
 
@@ -191,6 +223,26 @@ def test_revive_offers(mocker):
     })
 
 
+def test_kill_task(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    driver.killTask({"value": "my-task"})
+    driver._send.assert_not_called()
+    driver._stream_id = str(uuid.uuid4())
+    driver.killTask({"value": "my-task"})
+    driver._send.assert_called_once_with({
+        'type': 'KILL',
+        'framework_id': {'value': ID},
+        'kill': {
+            'task_id': {'value': 'my-task'},
+        }
+    })
+
+
 def test_acknowledge_status_update(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
@@ -207,6 +259,9 @@ def test_acknowledge_status_update(mocker):
         'uuid': uid
     }
     driver.acknowledgeStatusUpdate(status)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.acknowledgeStatusUpdate(status)
     driver._send.assert_called_once_with({
         'type': 'ACKNOWLEDGE',
         'framework_id': {
@@ -216,6 +271,38 @@ def test_acknowledge_status_update(mocker):
             'agent_id': agent_id,
             'task_id': task_id,
             'uuid': uid
+        }
+    })
+
+
+def test_acknowledge_operation_status_update(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    agent_id = dict(value=str(uuid.uuid4()))
+    operation_id = dict(value=str(uuid.uuid4()))
+    uid = encode_data(uuid.uuid4().bytes)
+    status = {
+        'agent_id': agent_id,
+        'operation_id': operation_id,
+        'uuid': uid
+    }
+    driver.acknowledgeOperationStatusUpdate(status)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.acknowledgeOperationStatusUpdate(status)
+    driver._send.assert_called_once_with({
+        'type': 'ACKNOWLEDGE_OPERATION_STATUS',
+        'framework_id': {
+            'value': ID
+        },
+        'acknowledge_operation_status': {
+            'agent_id': agent_id,
+            'operation_id': operation_id,
+            'uuid': uid,
         }
     })
 
@@ -237,6 +324,9 @@ def test_reconcile_tasks(mocker):
         for id in task_ids
     ]
     driver.reconcileTasks(tasks)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.reconcileTasks(tasks)
     driver._send.assert_called_once_with({
         'type': 'RECONCILE',
         'framework_id': {
@@ -244,6 +334,37 @@ def test_reconcile_tasks(mocker):
         },
         'reconcile': {
             'tasks': tasks
+        }
+    })
+
+
+def test_reconcile_operations(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    op_ids = [str(uuid.uuid4()) for _ in range(random.randint(1, 10))]
+    operations = [
+        {
+            'operation_id': {
+                'value': id
+            }
+        }
+        for id in op_ids
+    ]
+    driver.reconcileOperations(operations)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
+    driver.reconcileOperations(operations)
+    driver._send.assert_called_once_with({
+        'type': 'RECONCILE_OPERATIONS',
+        'framework_id': {
+            'value': ID
+        },
+        'reconcile_operations': {
+            'operations': operations
         }
     })
 
@@ -260,6 +381,9 @@ def test_send_framework_message(mocker):
     message = ''.join(random.choice(string.printable)
                       for _ in range(random.randint(1, 100)))
     message = encode_data(message.encode('utf-8'))
+    driver.sendFrameworkMessage(executor_id, agent_id, message)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
     driver.sendFrameworkMessage(executor_id, agent_id, message)
     driver._send.assert_called_once_with({
         'type': 'MESSAGE',
@@ -285,6 +409,9 @@ def test_request_resources(mocker):
         'agent_id': {'value': str(uuid.uuid4())},
         'resources': {}
     } for _ in range(random.randint(1, 10))]
+    driver.requestResources(requests)
+    driver._send.assert_not_called()
+    driver._stream_id = 'a-stream-id'
     driver.requestResources(requests)
     driver._send.assert_called_once_with({
         'type': 'REQUEST',
