@@ -62,6 +62,11 @@ class Scheduler(object):
       the master fails and another is taking over.
     """
 
+  def processHeartBeat(self):
+    """
+      Invoked when the scheduler gets a heartbeat
+    """
+
   def resourceOffers(self, driver, offers):
     """
       Invoked when resources have been offered to this framework. A single
