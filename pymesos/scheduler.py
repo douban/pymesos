@@ -607,10 +607,15 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         message = event['message']
         self.sched.error(self, message)
 
+    def on_heartbeat(self):
+        self.sched.processHeartBeat()
+
     def on_event(self, event):
         if 'type' in event:
             _type = event['type'].lower()
+
             if _type == 'heartbeat':
+                self.on_heartbeat()
                 return
 
             if _type not in event:
