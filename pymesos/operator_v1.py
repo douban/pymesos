@@ -1,5 +1,6 @@
 import json
 import logging
+from threading import RLock
 
 from addict import Dict
 from six.moves.http_client import HTTPConnection
@@ -412,10 +413,15 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
 class MesosOperatorAgentDriver(MesosOperatorDaemonDriver):
     def __init__(self, agent_uri):
         super(MesosOperatorAgentDriver, self).__init__(agent_uri)
+        self._lock = RLock()
 
-    def getContainers(self):
+    def getContainers(self, show_nested=False, show_standalone=False):
         body = dict(
             type='GET_CONTAINERS',
+            get_containers=dict(
+                show_nested=show_nested,
+                show_standalone=show_standalone,
+            ),
         )
         return self._send(body)
 
