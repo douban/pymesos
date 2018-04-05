@@ -858,8 +858,8 @@ def test_get_containers(mocker):
     driver._send.assert_called_once_with({
         'type': 'GET_CONTAINERS',
         'get_containers': {
-            'show_nested': 'true',
-            'show_standalone': 'false',
+            'show_nested': True,
+            'show_standalone': False,
         }
     })
 
