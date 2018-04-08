@@ -854,9 +854,13 @@ def test_get_containers(mocker):
     agent = mocker.Mock()
     driver = MesosOperatorAgentDriver(agent)
     driver._send = mocker.Mock()
-    driver.getContainers()
+    driver.getContainers(show_nested=True)
     driver._send.assert_called_once_with({
         'type': 'GET_CONTAINERS',
+        'get_containers': {
+            'show_nested': True,
+            'show_standalone': False,
+        }
     })
 
 

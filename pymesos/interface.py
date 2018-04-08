@@ -742,10 +742,13 @@ class OperatorAgentDriver(OperatorDaemonDriver):
     This API contains all the calls accepted by the agent.
   """
 
-  def getContainers(self):
+  def getContainers(self, show_nested=False, show_standalone=False):
     """
       This call retrieves information about containers running on this agent. It contains ContainerStatus and
       ResourceStatistics along with some metadata of the containers.
+      There are two knobs in the request to control the types of the containers this API will return:
+      * show_nested: Whether to show nested containers [default: false].
+      * show_standalone: Whether to show standalone containers [default: false].
     """
 
   def launchNestedContainer(self, launch_nested_container):
