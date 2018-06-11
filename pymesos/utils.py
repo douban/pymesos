@@ -11,6 +11,8 @@ POSTFIX = {
     'weeks': 7 * 24 * 60 * 60
 }
 
+DAY = 86400  # POSIX day
+
 
 def parse_duration(s):
     s = s.strip()
