@@ -532,6 +532,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         )
         if self.version:
             master_info['version'] = self.version
+        elif 'master_info' in info and 'version' in info['master_info']:
+            master_info['version'] = info['master_info']['version']
 
         if reregistered:
             self.sched.reregistered(self, self._dict_cls(master_info))
