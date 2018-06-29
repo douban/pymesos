@@ -3,7 +3,9 @@ import re
 import sys
 import json
 import time
+import math
 import errno
+import random
 import select
 import signal
 import socket
@@ -14,6 +16,16 @@ from six.moves.http_client import OK, TEMPORARY_REDIRECT, SERVICE_UNAVAILABLE
 from six.moves.urllib.parse import urlparse
 from threading import Thread, RLock
 from http_parser.http import HttpParser
+from .utils import DAY
+
+
+def _strerror(err):
+    try:
+        return os.strerror(err)
+    except (ValueError, OverflowError, NameError):
+        if err in errno.errorcode:
+            return errno.errorcode[err]
+        return "Unknown error %s" % err
 
 
 def _handle_sigint(signum, frame):
@@ -35,6 +47,11 @@ LENGTH_PATTERN = re.compile(br'\d+\n')
 logger = logging.getLogger(__name__)
 PIPE_BUF = getattr(select, 'PIPE_BUF', 4096)
 
+SLEEP_TIMEOUT_SCALE = 2
+SLEEP_TIMEOUT_INIT = 2
+SLEEP_TIMEOUT_MAX = 300
+SELECT_TIMEOUT = 2
+
 
 class Connection(object):
 
@@ -44,12 +61,12 @@ class Connection(object):
         self._addr = (host, port)
         self._sock = socket.socket()
         self._sock.setblocking(0)
+        self.connected = False
         try:
             self._sock.connect(self._addr)
         except socket.error as e:
             if e.errno != errno.EAGAIN and e.errno != errno.EINPROGRESS:
                 raise
-
         self._parser = HttpParser()
         self._callback = callback
         self._stream_id = None
@@ -63,6 +80,13 @@ class Connection(object):
     @property
     def stream_id(self):
         return self._stream_id
+
+    def handle_connect_event(self):
+        err = self._sock.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
+        if err == 0:
+            self.connected = True
+            return ""
+        return _strerror(err)
 
     def write(self):
         try:
@@ -193,6 +217,7 @@ class Connection(object):
     def close(self):
         self._sock.close()
         self._sock = None
+        self.connected = False
         self._parser = None
         self._request = None
         self._response = None
@@ -201,7 +226,7 @@ class Connection(object):
 
 class Process(object):
 
-    def __init__(self, master=None):
+    def __init__(self, master=None, timeout=DAY):
         self._master = None
         self._started = False
         self._lock = RLock()
@@ -209,6 +234,7 @@ class Process(object):
         self._io_thread = None
         self._new_master = master
         self._stream_id = None
+        self._timeout = timeout
 
     @property
     def aborted(self):
@@ -268,83 +294,85 @@ class Process(object):
 
             conn = None
             self.stream_id = None
-            next_connect_deadline = 0
-            CONNECT_TIMEOUT = 2
-            CONNECT_RETRY_INTERVAL = 2
+            num_conn_retry = 0
+            connect_deadline = 0
+
             while True:
+                if not conn and self._master:
+                    conn = Connection(self._master, self)
+
+                    # reset deadline at first retry of every period
+                    if num_conn_retry < 1:
+                        connect_deadline = self._timeout + time.time()
+
+                    if time.time() > connect_deadline:
+                        raise Exception("connect reach deadline")
+
                 to_write = set()
                 to_read = set([_wakeup_fd])
-                with self._lock:
-                    if not self._started:
-                        break
-
-                    if self._new_master != self._master:
-                        if conn is not None:
-                            conn.close()
-                            conn = None
-                            self.stream_id = None
-                            next_connect_deadline = (
-                                time.time() + CONNECT_RETRY_INTERVAL
-                            )
-
-                        self._master = self._new_master
-
-                    if (conn is None and self._master is not None and
-                            time.time() > next_connect_deadline):
-                        conn = Connection(self._master, self)
-                        next_connect_deadline = time.time()
-
-                if conn is not None:
+                if conn:
+                    to_read.add(conn.fileno())
                     if conn.want_write():
                         to_write.add(conn.fileno())
 
-                    to_read.add(conn.fileno())
+                readable, writeable, _ = select.select(to_read, to_write, [],
+                                                       SELECT_TIMEOUT)
 
-                now = time.time()
-                if next_connect_deadline > now:
-                    timeout = next_connect_deadline - now
-                elif next_connect_deadline + CONNECT_TIMEOUT > now:
-                    timeout = next_connect_deadline + CONNECT_TIMEOUT - now
-                else:
-                    timeout = None
+                if _wakeup_fd in readable:
+                    with self._lock:
+                        if not self._started:
+                            break
 
-                readable, writeable, _ = select.select(
-                    to_read, to_write, [], timeout
-                )
+                        if self._new_master != self._master:
+                            if conn is not None:
+                                to_read.discard(conn.fileno())
+                                to_write.discard(conn.fileno())
+                                conn.close()
+                                conn = None
+                                self.stream_id = None
+                            self._master = self._new_master
+                            num_conn_retry = 0
 
-                for fd in writeable:
-                    assert fd == conn.fileno()
-                    next_connect_deadline = 0
+                    readable.remove(_wakeup_fd)
+                    os.read(_wakeup_fd, PIPE_BUF)
+
+                if not conn:
+                    continue
+
+                if not conn.connected:
+                    err = conn.handle_connect_event()
+                    if err:
+                        sleep_timeout = self._backoff(num_conn_retry)
+                        num_conn_retry += 1
+                        conn.close()
+                        conn = None
+
+                        deadline = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                 time.localtime(
+                                                     connect_deadline))
+                        logger.warning(
+                            'connect to %s error: %s,'
+                            ' sleep %ds and try again,'
+                            ' deadline: %s',
+                            self._master, err, sleep_timeout, deadline)
+
+                        time.sleep(sleep_timeout)
+                        continue
+                    else:
+                        num_conn_retry = 0
+
+                if writeable:
                     if not conn.write():
                         conn.close()
                         conn = None
                         self.stream_id = None
-                        next_connect_deadline = (
-                            time.time() + CONNECT_RETRY_INTERVAL
-                        )
+                        continue
 
-                for fd in readable:
-                    if fd == _wakeup_fd:
-                        os.read(_wakeup_fd, PIPE_BUF)
-                    elif conn and fd == conn.fileno():
-                        if not conn.read():
-                            conn.close()
-                            conn = None
-                            self.stream_id = None
-                            next_connect_deadline = (
-                                time.time() + CONNECT_RETRY_INTERVAL
-                            )
-
-                if (conn is not None and next_connect_deadline != 0 and
-                        time.time() > next_connect_deadline + CONNECT_TIMEOUT):
-                    logger.error('Connect to %s timeout', conn.addr)
-                    conn.close()
-                    conn = None
-                    self.stream_id = None
-                    next_connect_deadline = (
-                        time.time() + CONNECT_RETRY_INTERVAL
-                    )
-
+                if readable:
+                    if not conn.read():
+                        conn.close()
+                        conn = None
+                        self.stream_id = None
         except Exception:
             logger.exception('Thread abort:')
             with self._lock:
@@ -366,6 +394,18 @@ class Process(object):
                 os.close(r)
                 os.close(w)
                 self._wakeup_fds = None
+
+    def _backoff(self, num_conn_retry):
+        def _random_time(new, old):
+            max_shift = (new - old) / SLEEP_TIMEOUT_SCALE
+            return random.uniform(-max_shift, max_shift)
+
+        new_timeout = SLEEP_TIMEOUT_INIT * math.pow(SLEEP_TIMEOUT_SCALE,
+                                                    num_conn_retry)
+        old_timeout = new_timeout / SLEEP_TIMEOUT_SCALE
+
+        return min(SLEEP_TIMEOUT_MAX,
+                   new_timeout + _random_time(new_timeout, old_timeout))
 
     def start(self):
         with self._lock:

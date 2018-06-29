@@ -9,7 +9,7 @@ from addict import Dict
 from six.moves.http_client import HTTPConnection
 from .process import Process
 from .interface import ExecutorDriver
-from .utils import parse_duration, encode_data, decode_data
+from .utils import DAY, parse_duration, encode_data, decode_data
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,11 @@ logger = logging.getLogger(__name__)
 class MesosExecutorDriver(Process, ExecutorDriver):
     _timeout = 10
 
-    def __init__(self, executor, use_addict=False):
+    def __init__(self, executor, use_addict=False, timeout=DAY):
         env = os.environ
         agent_endpoint = env['MESOS_AGENT_ENDPOINT']
-        super(MesosExecutorDriver, self).__init__(master=agent_endpoint)
+        super(MesosExecutorDriver, self).__init__(master=agent_endpoint,
+                                                  timeout=timeout)
 
         framework_id = env['MESOS_FRAMEWORK_ID']
         assert framework_id

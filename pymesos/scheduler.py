@@ -6,6 +6,7 @@ from six.moves.http_client import HTTPConnection
 from binascii import b2a_base64
 from .process import Process
 from .interface import SchedulerDriver
+from .utils import DAY
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,9 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
 
     def __init__(self, sched, framework, master_uri,
                  use_addict=False, implicit_acknowledgements=True,
-                 principal=None, secret=None, failover=False):
-        super(MesosSchedulerDriver, self).__init__()
+                 principal=None, secret=None, failover=False,
+                 timeout=DAY):
+        super(MesosSchedulerDriver, self).__init__(timeout=timeout)
         self.sched = sched
         self.master_uri = master_uri
         self._framework = framework

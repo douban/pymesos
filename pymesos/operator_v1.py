@@ -7,6 +7,7 @@ from six.moves.http_client import HTTPConnection
 
 from .interface import OperatorDaemonDriver
 from .process import Process
+from .utils import DAY
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +167,8 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
 
 
 class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
-    def __init__(self, master_uri, operator=None, use_addict=False):
+    def __init__(self, master_uri, operator=None, use_addict=False,
+                 timeout=DAY):
         """
 
         :param master_uri:
@@ -174,7 +176,8 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
         result in a stream of events (SUBSCRIBE).
         :type operator: OperatorMaster
         """
-        super(MesosOperatorMasterDriver, self).__init__(master=master_uri)
+        super(MesosOperatorMasterDriver, self).__init__(master=master_uri,
+                                                        timeout=timeout)
         super(MesosOperatorMasterDriver, self).init(master_uri)
         self.operator = operator
         self._dict_cls = Dict if use_addict else dict
