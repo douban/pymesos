@@ -512,7 +512,7 @@ class OperatorDaemonDriver(object):
       This call retrieves the file listing for a directory in master daemon or agent daemon.
     """
 
-  def readFile(self, path, offset, length):
+  def readFile(self, path, length, offset):
     """
       Reads data from a file. This call takes path of the file to be read in the daemon, offset to start reading
       position and length for the maximum number of bytes to read.
