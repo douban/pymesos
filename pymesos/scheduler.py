@@ -574,8 +574,10 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         self.sched.offerRescinded(self, self._dict_cls(offer_id))
 
     def on_rescind_inverse_offer(self, event):
-        offer_id = event['offer_id']
-        self.sched.inverseOfferRescinded(self, self._dict_cls(offer_id))
+        inverse_offer_id = event['inverse_offer_id']
+        self.sched.inverseOfferRescinded(
+            self, self._dict_cls(inverse_offer_id)
+        )
 
     def on_update(self, event):
         status = event['status']
