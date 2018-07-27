@@ -180,7 +180,20 @@ class MesosOperatorMasterDriver(Process, MesosOperatorDaemonDriver):
                                                         timeout=timeout)
         super(MesosOperatorMasterDriver, self).init(master_uri)
         self.operator = operator
+        self.master_uri = master_uri
         self._dict_cls = Dict if use_addict else dict
+
+    def start(self):
+        super(MesosOperatorMasterDriver, self).start()
+        uri = self.master_uri
+        if uri.startswith('zk://') or uri.startswith('zoo://'):
+            from .detector import MasterDetector
+            self.detector = MasterDetector(uri[uri.index('://') + 3:], self)
+            self.detector.start()
+        else:
+            if ':' not in uri:
+                uri += ':5050'
+            self.change_master(uri)
 
     def gen_request(self):
         body = json.dumps(
