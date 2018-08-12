@@ -29,7 +29,7 @@ __all__ = (
   'ExecutorDriver',
   'Scheduler',
   'SchedulerDriver',
-  'OperatorMasterDriver'
+  'OperatorMasterDriver',
   'OperatorMaster',
   'OperatorAgentDriver',
 )
