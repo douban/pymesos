@@ -305,7 +305,7 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
         )
         self._send(body)
 
-    def reviveOffers(self):
+    def reviveOffers(self, roles=()):
         if not self.connected:
             return
 
@@ -317,9 +317,11 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 value=framework_id,
             ),
         )
+        if roles:
+            body['revive'] = dict(roles=list(roles))
         self._send(body)
 
-    def suppressOffers(self):
+    def suppressOffers(self, roles=()):
         if not self.connected:
             return
 
@@ -331,6 +333,8 @@ class MesosSchedulerDriver(Process, SchedulerDriver):
                 value=framework_id,
             ),
         )
+        if roles:
+            body['suppress'] = dict(roles=list(roles))
         self._send(body)
 
     def killTask(self, task_id):

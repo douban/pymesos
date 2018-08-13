@@ -223,6 +223,63 @@ def test_revive_offers(mocker):
     })
 
 
+def test_revive_offers_roles(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    driver._stream_id = str(uuid.uuid4())
+    driver.reviveOffers(['role1', 'role2'])
+    driver._send.assert_called_once_with({
+        'type': 'REVIVE',
+        'framework_id': {
+            'value': ID
+        },
+        'revive': {
+            'roles': ['role1', 'role2']
+        }
+    })
+
+
+def test_suppress_offers(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    driver._stream_id = str(uuid.uuid4())
+    driver.suppressOffers()
+    driver._send.assert_called_once_with({
+        'type': 'SUPPRESS',
+        'framework_id': {
+            'value': ID
+        },
+    })
+
+
+def test_suppress_offers_roles(mocker):
+    ID = str(uuid.uuid4())
+    sched = mocker.Mock()
+    framework = {'id': {'value': ID}}
+    master = mocker.Mock()
+    driver = MesosSchedulerDriver(sched, framework, master)
+    driver._send = mocker.Mock()
+    driver._stream_id = str(uuid.uuid4())
+    driver.suppressOffers(['role1', 'role2'])
+    driver._send.assert_called_once_with({
+        'type': 'SUPPRESS',
+        'framework_id': {
+            'value': ID
+        },
+        'suppress': {
+            'roles': ['role1', 'role2']
+        }
+    })
+
+
 def test_kill_task(mocker):
     ID = str(uuid.uuid4())
     sched = mocker.Mock()
