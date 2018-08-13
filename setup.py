@@ -23,6 +23,7 @@ def find_version(*paths):
 
 version = find_version('pymesos', '__init__.py')
 
+
 setup(
     name='pymesos',
     version=version,
@@ -41,7 +42,14 @@ setup(
     download_url=(
         'https://github.com/douban/pymesos/archive/%s.tar.gz' % version
     ),
-    install_requires=['six', 'http-parser', 'addict'],
+    install_requires=[
+        'six',
+        'addict'
+    ],
+    dependency_links=[
+        ('git+https://github.com/benoitc/http-parser.git'
+         '@06dff06907b169d1b447d7f62c52f7a836f60903#egg=http-parser')
+    ],
     setup_requires=pytest_runner,
     tests_require=[
         'pytest-cov',

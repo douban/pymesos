@@ -1,7 +1,6 @@
 addict==1.0.0
 coverage==4.2
 funcsigs==1.0.2
-http-parser==0.8.3
 mock==2.0.0
 pbr==1.10.0
 py==1.4.31
@@ -12,3 +11,4 @@ pytest-randomly==1.1.0
 pytest-runner==2.9
 six==1.10.0
 zkpython==0.4.2
+-e git+https://github.com/benoitc/http-parser.git@06dff06907b169d1b447d7f62c52f7a836f60903#egg=http-parser
