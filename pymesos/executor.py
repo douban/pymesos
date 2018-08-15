@@ -76,6 +76,10 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         )
         return request.encode('utf-8')
 
+    def start(self):
+        super(MesosExecutorDriver, self).start()
+        self._notify()
+
     def on_close(self):
         if self._conn is not None:
             self._conn.close()
