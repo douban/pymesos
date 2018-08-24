@@ -58,7 +58,7 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
                 self._conn.close()
                 self._conn = None
                 raise
-                
+
             if resp.status >= 300 and resp.status <= 399:
                 url = resp.getheader('location')
                 parsed = urlparse(url)
