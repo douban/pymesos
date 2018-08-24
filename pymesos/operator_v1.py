@@ -59,7 +59,7 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
                 self._conn = None
                 raise
                 
-            if resp.status <= 300 and resp.status <= 399:
+            if resp.status >= 300 and resp.status <= 399:
                 url = resp.getheader('location')
                 parsed = urlparse(url, allow_fragments=True)
                 self._daemon = '%s:%s' % (parsed.hostname, parsed.port)
