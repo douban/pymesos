@@ -4,6 +4,7 @@ from threading import RLock
 
 from addict import Dict
 from six.moves.http_client import HTTPConnection
+from six.moves.urllib.parse import urlparse
 
 from .interface import OperatorDaemonDriver
 from .process import Process
@@ -57,6 +58,14 @@ class MesosOperatorDaemonDriver(OperatorDaemonDriver):
                 self._conn.close()
                 self._conn = None
                 raise
+
+            if resp.status >= 300 and resp.status <= 399:
+                url = resp.getheader('location')
+                parsed = urlparse(url)
+                self._daemon = '%s:%s' % (parsed.hostname, parsed.port)
+                self._conn.close()
+                self._conn = None
+                return self._send(body, path, method, headers)
 
             if resp.status < 200 or resp.status >= 300:
                 raise RuntimeError(
