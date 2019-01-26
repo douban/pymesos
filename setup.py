@@ -41,7 +41,7 @@ setup(
     download_url=(
         'https://github.com/douban/pymesos/archive/%s.tar.gz' % version
     ),
-    install_requires=['six', 'http-parser', 'addict'],
+    install_requires=['six', 'http-parser', 'addict', 'zkpython'],
     setup_requires=pytest_runner,
     tests_require=[
         'pytest-cov',
