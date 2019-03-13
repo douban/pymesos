@@ -10,3 +10,5 @@
 /dist/
 /venv/
 .vscode/
+Pipfile
+Pipfile.lock

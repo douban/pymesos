@@ -49,7 +49,9 @@ PIPE_BUF = getattr(select, 'PIPE_BUF', 4096)
 
 SLEEP_TIMEOUT_SCALE = 2
 SLEEP_TIMEOUT_INIT = 2
-SLEEP_TIMEOUT_MAX = 300
+# SLEEP_TIMEOUT_MAX used by backoff and cater to mesos restriction
+# https://github.com/apache/mesos/blob/0dc24dba9afdca1948eea5cad05f861162dc8dd6/src/slave/constants.hpp#L45
+SLEEP_TIMEOUT_MAX = 15
 SELECT_TIMEOUT = 2
 
 
