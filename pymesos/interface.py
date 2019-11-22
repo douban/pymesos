@@ -62,7 +62,7 @@ class Scheduler(object):
       the master fails and another is taking over.
     """
 
-  def processHeartBeat(self):
+  def processHeartBeat(self, driver):
     """
       Invoked when the scheduler gets a heartbeat
     """
