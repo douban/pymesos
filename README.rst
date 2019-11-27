@@ -1,12 +1,12 @@
 PyMesos
 ========
 
-.. image:: https://badges.gitter.im/douban/pymesos.svg
-   :alt: Join the chat at https://gitter.im/douban/pymesos
-   :target: https://gitter.im/douban/pymesos?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://img.shields.io/travis/douban/pymesos.svg
    :target: https://travis-ci.org/douban/pymesos
+
+
+.. image:: https://badge.fury.io/py/pymesos.svg
+    :target: https://badge.fury.io/py/pymesos
 
 
 A pure python implementation of Apache Mesos scheduler, executor and operator.
