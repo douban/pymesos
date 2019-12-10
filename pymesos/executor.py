@@ -15,9 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class MesosExecutorDriver(Process, ExecutorDriver):
-    _timeout = 10
-
-    def __init__(self, executor, use_addict=False, timeout=DAY):
+    def __init__(self, executor, use_addict=False, timeout=DAY, http_timeout=10):
         env = os.environ
         agent_endpoint = env['MESOS_AGENT_ENDPOINT']
         super(MesosExecutorDriver, self).__init__(master=agent_endpoint,
@@ -44,6 +42,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
         self.updates = {}
         self._conn = None
         self._dict_cls = Dict if use_addict else dict
+        self._http_timeout = http_timeout
 
     def _delay_kill(self):
         def _():
@@ -187,7 +186,7 @@ class MesosExecutorDriver(Process, ExecutorDriver):
 
         host, port = self.master.split(':', 2)
         port = int(port)
-        self._conn = HTTPConnection(host, port, timeout=self._timeout)
+        self._conn = HTTPConnection(host, port, timeout=self._http_timeout)
         return self._conn
 
     def _send(self, body, path='/api/v1/executor', method='POST', headers={}):
