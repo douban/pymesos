@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class MesosExecutorDriver(Process, ExecutorDriver):
-    def __init__(self, executor, use_addict=False, timeout=DAY, http_timeout=10):
+    def __init__(self, executor, use_addict=False, timeout=DAY,
+                 http_timeout=10):
         env = os.environ
         agent_endpoint = env['MESOS_AGENT_ENDPOINT']
         super(MesosExecutorDriver, self).__init__(master=agent_endpoint,
