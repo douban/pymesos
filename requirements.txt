@@ -1,7 +1,7 @@
 addict==1.0.0
 coverage==4.2
 funcsigs==1.0.2
-http-parser==0.8.3
+-e git+https://github.com/hugovk/http-parser.git@68cbb4984f1361c3f216bf6ab3d8d32c6cf02822#egg=http-parser
 mock==2.0.0
 pbr==1.10.0
 py==1.4.31

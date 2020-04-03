@@ -15,7 +15,7 @@ def find_version(*paths):
                                   version_file, re.M)
 
     if not version_match:
-        raise RuntimeError("Unable to find version string in %s" % (fname,))
+        raise RuntimeError("Unable to find version string in %s" % (fname, ))
 
     version = version_match.group(1)
     return version
@@ -38,14 +38,13 @@ setup(
     author="Zhongbo Tian",
     author_email="tianzhongbo@douban.com",
     url="https://github.com/douban/pymesos",
-    download_url=(
-        'https://github.com/douban/pymesos/archive/%s.tar.gz' % version
-    ),
-    install_requires=['six', 'http-parser', 'addict', 'zkpython'],
+    download_url=('https://github.com/douban/pymesos/archive/%s.tar.gz' %
+                  version),
+    install_requires=[
+        'six',
+        'http-parser @ git+https://github.com/hugovk/http-parser.git@68cbb4984f1361c3f216bf6ab3d8d32c6cf02822#egg=http-parser'
+        'addict', 'zkpython'
+    ],
     setup_requires=pytest_runner,
-    tests_require=[
-        'pytest-cov',
-        'pytest-randomly',
-        'pytest-mock',
-        'pytest'],
+    tests_require=['pytest-cov', 'pytest-randomly', 'pytest-mock', 'pytest'],
 )
