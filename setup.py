@@ -42,7 +42,7 @@ setup(
                   version),
     install_requires=[
         'six',
-        'http-parser @ git+https://github.com/hugovk/http-parser.git@68cbb4984f1361c3f216bf6ab3d8d32c6cf02822#egg=http-parser'
+        'http-parser @ git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser'
         'addict', 'zkpython'
     ],
     setup_requires=pytest_runner,
