@@ -1,7 +1,7 @@
 addict==2.2.1
 coverage==4.2
 funcsigs==1.0.2
--e git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser
+http-parser==0.9.0
 mock==2.0.0
 pbr==1.10.0
 py==1.4.31

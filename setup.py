@@ -24,7 +24,7 @@ def find_version(*paths):
 version = find_version('pymesos', '__init__.py')
 install_requires=[
     'six',
-    'http-parser @ git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser',
+    'http-parser',
     'addict',
 ]
 PY3 = sys.version_info > (3, )
