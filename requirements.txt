@@ -1,4 +1,4 @@
-addict==1.0.0
+addict==2.2.1
 coverage==4.2
 funcsigs==1.0.2
 -e git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser
@@ -12,3 +12,4 @@ pytest-randomly==1.1.0
 pytest-runner==2.9
 six==1.10.0
 zkpython==0.4.2
+kazoo==2.7.0
