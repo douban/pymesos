@@ -13,6 +13,7 @@ A pure python implementation of Apache Mesos scheduler, executor and operator.
 
 Note:
 ------
+If you encounter errors when install zkpython, please do ``suto apt install python-dev libzookeeper-st-dev libzookeeper-mt-dev`` first.
 
 Since ``PyMesos 0.2.0``, ``Apache Mesos`` HTTP API is implemented instead of the ``Protobuf`` API.
 
