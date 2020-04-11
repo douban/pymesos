@@ -22,7 +22,19 @@ def find_version(*paths):
 
 
 version = find_version('pymesos', '__init__.py')
+install_requires=[
+    'six',
+    'http-parser @ git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser',
+    'addict',
+]
+PY3 = sys.version_info > (3, )
+PYPY = getattr(sys, 'pypy_version_info', False) and True or False
 
+if (PY3 or PYPY):
+    install_requires += ['kazoo']
+else:
+    install_requires += ['zkpython']
+print(install_requires)
 setup(
     name='pymesos',
     version=version,
@@ -35,16 +47,13 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python',
     ],
+    keywords='mesos',
     author="Zhongbo Tian",
     author_email="tianzhongbo@douban.com",
     url="https://github.com/douban/pymesos",
     download_url=('https://github.com/douban/pymesos/archive/%s.tar.gz' %
                   version),
-    install_requires=[
-        'six',
-        'http-parser @ git+https://github.com/benoitc/http-parser.git@d6ce4b5c58e68d5cf3be0676d9b97c3bd9ca88df#egg=http-parser'
-        'addict', 'zkpython'
-    ],
+    install_requires=install_requires,
     setup_requires=pytest_runner,
     tests_require=['pytest-cov', 'pytest-randomly', 'pytest-mock', 'pytest'],
 )
